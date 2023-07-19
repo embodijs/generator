@@ -1,22 +1,22 @@
-import type { ElementData, RenderHelper, beforeBuildFunc } from "@embodi/types";
+import type { ElementData, RenderHelper, beforeBuildFunc } from '@embodi/types';
 
-import Component from './component.svelte';
-import type { GroupElementData } from "./types";
-
+import Component from './group.svelte';
+import type { GroupElementData } from './types';
 
 export const identifier = 'Group';
 
-export {Component};
-
+export { Component };
 
 export interface dataType extends ElementData {
-  content: ElementData[]
+	content: ElementData[];
 }
 
-export const beforeBuild: beforeBuildFunc<GroupElementData> = async (data: GroupElementData, helper: RenderHelper): Promise<ElementData> => {
-
-  return {
-    ...data,
-    content: await helper.compute(data.content)
-  }
-}
+export const beforeBuild: beforeBuildFunc<GroupElementData> = async (
+	data: GroupElementData,
+	helper: RenderHelper
+): Promise<ElementData> => {
+	return {
+		...data,
+		content: await helper.compute(data.content)
+	};
+};

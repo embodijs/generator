@@ -1,5 +1,5 @@
 export interface AbortException {
-  code: 'ENOENT',
-  errno: number,
-  syscall: 'open'
+	code: 'ENOENT';
+	errno: number;
+	syscall: 'open';
 }

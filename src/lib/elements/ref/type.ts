@@ -1,7 +1,7 @@
-import type { ElementData, jsonFile } from "@embodi/types";
+import type { ElementData, jsonFile } from '@embodi/types';
 
 export interface RefElementData extends ElementData {
-    type: "Ref",
-    name: string,
-    path: jsonFile
+	type: 'Ref';
+	name: string;
+	path: jsonFile;
 }

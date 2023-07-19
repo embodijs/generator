@@ -4,5 +4,4 @@
  *  ############
  */
 
-
-export const elements = []
+export const elements = [];
