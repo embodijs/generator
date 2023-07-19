@@ -68,7 +68,7 @@ export default class RenderEngine implements RenderHelper {
 
 	async storeAsset(content: Buffer, name: string, fileType: string) {
 		const queryHash = createHash('sha1').update(JSON.stringify(content)).digest('hex');
-		const path = `/files_/${name}-${queryHash}.${fileType}`;
+		const path = `/files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
 		await fs.writeFile(resolve('./static', `.${path}`), content);
 
 		return path;
