@@ -6,10 +6,5 @@ export default defineConfig({
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		globals: true
-	},
-	build: {
-		rollupOptions: {	
-			external: ['sharp'],
-		},
-	},
+	}
 });

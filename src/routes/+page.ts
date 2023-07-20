@@ -1,8 +1,5 @@
 import type { PageLoad } from './$types';
 
-export const prerender = true;
-export const ssr = true;
-export const csr = false;
 export const load: PageLoad = async ({ fetch, url }) => {
 	const main = new URL(url);
 	main.pathname = 'main';
