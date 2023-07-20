@@ -1,8 +1,9 @@
-import { getElement } from '$lib/elements/index';
+import { getBuildData } from './get';
 import { createHash } from 'crypto';
 import type { ElementData, JsonMap, RenderHelper, imagePath } from '@embodi/types';
 import { promises as fs } from 'fs';
 import { resolve } from 'node:path';
+import { ElementNotFoundException } from '$lib/expections/template';
 
 interface GeneralAssetOptions {
 	name?: string;
@@ -47,10 +48,18 @@ export default class RenderEngine implements RenderHelper {
 	}
 
 	private async computeHelper(data: ElementData): Promise<ElementData> {
-		const element = getElement(data.type);
-		if (element.beforeBuild) {
-			console.info(`Running beforeBuild for ${data.type}`);
-			return element.beforeBuild(data, this);
+		try {
+			const element = getBuildData(data.type);
+			if (element.beforeBuild) {
+				console.info(`Running beforeBuild for ${data.type}`);
+				return element.beforeBuild(data, this);
+			}
+		} catch (err) {
+			if((err instanceof ElementNotFoundException)) {
+				console.info(err.message);	
+			} else {
+				throw err;
+			}
 		}
 
 		return data;
