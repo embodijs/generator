@@ -1,7 +1,6 @@
 {
 	"name": "generator",
 	"version": "0.0.1",
-	"private": true,
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -43,6 +42,7 @@
 	"type": "module",
 	"dependencies": {
 		"embodi-template": "file:../example/template",
-		"nanoid": "^4.0.2"
+		"nanoid": "^4.0.2",
+		"sharp": "^0.32.3"
 	}
 }
