@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,7 +14,10 @@ const config = {
 		adapter: adapter({
 			strict: true,
 			precompress: true
-		})
+		}),
+		alias: {
+			$routes: './src/routes',
+		}
 	}
 };
 

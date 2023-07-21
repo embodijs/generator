@@ -5,7 +5,7 @@ class MemoryDemo extends ContentManager {
 	data: Record<string, unknown>;
 
 	constructor() {
-		super('./')
+		super('./');
 		this.data = {};
 	}
 

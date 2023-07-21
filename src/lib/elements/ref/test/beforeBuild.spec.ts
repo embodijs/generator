@@ -1,4 +1,4 @@
-import { beforeBuild } from '../render.server';
+import { beforeBuild } from '../server';
 import type { RefElementData } from '../type';
 import type { RenderHelper } from '@embodi/types';
 

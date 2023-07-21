@@ -2,11 +2,9 @@ import type { JsonMap } from '@embodi/types';
 import fs from 'fs/promises';
 import fsSync from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import { ContentNotFoundException } from '../exceptions/contentNotFoundException';
 import { ContentManager } from '../contentManager';
 import type { AbortException } from '../types';
-import { caching, type MemoryCache } from 'cache-manager';
 import { searchJsonByMongoQuery, type Query } from './filesystem.helper';
 
 export type supportedContentTypes = 'JSON' | 'TEXT';
@@ -114,7 +112,7 @@ interface JsonFilesystemConfigIntern extends FilesystemBaseOptions {
 }
 
 export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements ContentManager {
-	cache: Promise<MemoryCache>;
+
 	config: JsonFilesystemConfigIntern;
 	modified: Date;
 
@@ -125,10 +123,6 @@ export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements
 		};
 		super(basePath, config);
 		this.config = config;
-		this.cache = caching('memory', {
-			max: 100,
-			ttl: 7 * 60 * 60 * 1000 //7h
-		});
 		this.modified = new Date();
 	}
 
@@ -149,29 +143,15 @@ export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements
 	}
 
 	async find(query: Query<T>) {
-		const queryHash = crypto
-			.createHash('sha1')
-			.update(
-				JSON.stringify({
-					...query,
-					__modified: (await fs.stat(this.basePath)).mtimeMs
-				})
-			)
-			.digest('hex');
-		const cache = await this.cache;
-		let data = await cache.get<T[]>(queryHash);
-		if (data == null) {
-			const identifiers = await this.listOfIdentifiers();
-			const allFiles: T[] = await Promise.all(
-				identifiers.map((id) => {
-					return this.load(id);
-				})
-			);
-			data = searchJsonByMongoQuery(query, allFiles);
-			await cache.set(queryHash, data);
-		}
 
-		return data;
+		const identifiers = await this.listOfIdentifiers();
+		const allFiles: T[] = await Promise.all(
+			identifiers.map((id) => {
+				return this.load(id);
+			})
+		);
+
+		return searchJsonByMongoQuery(query, allFiles);;
 	}
 
 	override async put(identifier: string, content: T, partial?: false): Promise<void>;

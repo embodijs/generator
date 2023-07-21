@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getComponentFor } from '$lib/elements';
+	import { getComponentFor } from '$lib/elements/register';
 	import type { GroupElementData } from './types';
 
 	export let data: GroupElementData;
@@ -15,21 +15,9 @@
 		{/each}
 	</ul>
 {:else}
-	<svelte:element this={element} class="e-{element} d-{design} w-{width} {tailwindcss}">
+	<svelte:element this={element} class="group-element {tailwindcss}">
 		{#each content as { type, ...props }}
 			<svelte:component this={getComponentFor(type)} data={props} />
 		{/each}
 	</svelte:element>
 {/if}
-
-<style lang="postcss">
-	.e-section {
-		@apply mx-auto;
-	}
-	.d-default {
-		@apply py-7 px-3;
-	}
-	.w-default {
-		max-width: var(--default-content-width);
-	}
-</style>

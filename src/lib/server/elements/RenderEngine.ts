@@ -1,4 +1,4 @@
-import { getBuildData } from './get';
+import { getBuildFuntion } from './register';
 import { createHash } from 'crypto';
 import type { ElementData, JsonMap, RenderHelper, imagePath } from '@embodi/types';
 import { promises as fs } from 'fs';
@@ -18,7 +18,10 @@ interface ImageAssetOptions extends GeneralAssetOptions {
 export type AssetOptions = ImageAssetOptions | GeneralAssetOptions;
 
 export default class RenderEngine implements RenderHelper {
-	constructor(private svelteFetch: typeof fetch, private path: string) {}
+	constructor(
+		private svelteFetch: typeof fetch,
+		private path: string
+	) {}
 
 	createEngine(path: string) {
 		return new RenderEngine(this.svelteFetch, resolve(this.path, path));
@@ -49,14 +52,14 @@ export default class RenderEngine implements RenderHelper {
 
 	private async computeHelper(data: ElementData): Promise<ElementData> {
 		try {
-			const element = getBuildData(data.type);
+			const element = getBuildFuntion(data.type);
 			if (element.beforeBuild) {
 				console.info(`Running beforeBuild for ${data.type}`);
 				return element.beforeBuild(data, this);
 			}
 		} catch (err) {
-			if((err instanceof ElementNotFoundException)) {
-				console.info(err.message);	
+			if (err instanceof ElementNotFoundException) {
+				console.info(err.message);
 			} else {
 				throw err;
 			}
