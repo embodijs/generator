@@ -2,6 +2,7 @@
 	"name": "@embodi/generator",
 	"version": "0.1.0",
 	"type": "module",
+	"repository": "https://github.com/embodijs/generator.git",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
