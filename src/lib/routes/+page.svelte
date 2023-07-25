@@ -1,13 +1,14 @@
 <script context="module" lang="ts">
-	import type { EmbodiComponent, PageFile } from '@embodi/types';
-	import * as group from '$lib/elements/group/component';
+	import type { PageFile } from '@embodi/types';
+	import Group from '$lib/elements/group/group.svelte';
 	import { registerComponent } from "$lib/elements/register";
-	registerComponent('GROUP', <EmbodiComponent>group );
+	registerComponent<GroupElementData>('GROUP', Group );
 
 </script>
 
 <script lang="ts">
 	import { getComponentFor } from '$lib/elements/register';
+	import type { GroupElementData } from '$lib/elements/group/types';
 	
 
 	export let data: PageFile;

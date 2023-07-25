@@ -1,27 +1,19 @@
 import { CompileException } from "$lib/expections/compile";
-import type { EmbodiComponent } from "@embodi/types";
-import type { SvelteComponent } from "svelte";
+import type { ElementData, EmbodiComponent } from "@embodi/types";
 
 const elements: Record<string, EmbodiComponent> = {};
 
-export function registerComponent(name: string, element: EmbodiComponent) {
-	elements[name] = element;
+export function registerComponent<T extends ElementData = ElementData>(name: string, element: EmbodiComponent<T>) {
+	elements[name.toUpperCase()] = element;
 }
 
-export function getClientElement(name: string): EmbodiComponent {
+export function getComponentFor(name: string): EmbodiComponent {
+
 	const upperCaseName = name.toUpperCase();
-	const [, element] = Object.entries(elements).find(([key]) => key.toUpperCase() === upperCaseName) ?? [];
+	const [, element] = Object.entries(elements).find(([key]) => key === upperCaseName) ?? [];
 	if (element == null) {
 		throw new CompileException(`Element ${name} seems to be not registered or installed`);
 	}
 	return element;
-}
 
-export function getComponentFor(name: string): typeof SvelteComponent | undefined {
-	try {
-		return getClientElement(name).Component;
-	} catch (err) {
-		console.error(`Could not load compoennt ${name}`);
-		console.error(err);
-	}
 }

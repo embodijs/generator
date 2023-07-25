@@ -7,7 +7,7 @@ let pageFolder: string;
 let fileFolder: string;
 
 export function registerBuildFunction(name: string, element: EmbodiBuildFunction) {
-	elements[name] = element;
+	elements[name.toUpperCase()] = element;
 }
 
 export function setPageFolder(path: string) {
@@ -32,7 +32,7 @@ export function getFileFolder() {
 export function getBuildFuntion(name: string): EmbodiBuildFunction {
 	const upperCaseName = name.toUpperCase();
 	const [, element] =
-		Object.entries(elements).find(([key]) => key.toUpperCase() === upperCaseName) ?? [];
+		Object.entries(elements).find(([key]) => key === upperCaseName) ?? [];
 	if (element == null) {
 		throw new ElementNotFoundException(name);
 	}
