@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"type": "module",
 	"repository": "https://github.com/embodijs/generator.git",
+	"license": "apache-2.0",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
@@ -64,7 +65,5 @@
 		"vite": "^4.3.6",
 		"vitest": "^0.33.0"
 	},
-	"dependencies": {
-		"nanoid": "^4.0.2"
-	}
+	"dependencies": {}
 }

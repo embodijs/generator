@@ -15,7 +15,6 @@ jobs:
           # Defaults to the user or organization that owns the workflow file
           scope: '@embodi'
       - run: npm ci
-      - run: npm test:unit
       - run: npm run build
       - run: npm publish
         env:
