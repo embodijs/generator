@@ -1,7 +1,7 @@
-import { faker, he } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import RenderEngine from "./RenderEngine";
 import { registerBuildFunction } from "./register";
-import { escape } from "querystring";
+import path from "node:path";
 
 let returnData: unknown;
 vi.mock("node:fs", async () => {
@@ -124,6 +124,16 @@ describe("test RenderEngine", () => {
             expect(buildFunctions.beforeBuild).toBeCalledWith(data[a], engine);
             expect(changingBuildFunctions.beforeBuild).toBeCalledWith(data[b], engine);
             expect(buildFunctions.beforeBuild).toBeCalledWith(data[c], engine);
+        });
+    });
+
+    describe("test createEngine", () => {
+        test("should create a new engine", () => {
+            const engine = new RenderEngine(vi.fn(), "./test");
+            const newEngine = engine.createEngine("sub");
+            expect(newEngine).toBeInstanceOf(RenderEngine);
+            expect(newEngine).not.toBe(engine);
+            expect(newEngine.getPath()).toEqual(path.resolve("./test/sub"));
         });
     });
 

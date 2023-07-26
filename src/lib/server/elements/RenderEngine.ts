@@ -6,10 +6,17 @@ import { resolve, basename, extname } from 'node:path';
 import { ElementNotFoundException } from '$lib/expections/template';
 
 export default class RenderEngine implements RenderHelper {
+
 	constructor(
-		private svelteFetch: typeof fetch,
-		private path: string
-	) {}
+		protected svelteFetch: typeof fetch,
+		protected path: string
+	) {
+		this.path = resolve(this.path);
+	}
+
+	getPath() {
+		return this.path;
+	}
 
 	createEngine(path: string) {
 		return new RenderEngine(this.svelteFetch, resolve(this.path, path));
@@ -31,7 +38,7 @@ export default class RenderEngine implements RenderHelper {
 		}
 	}
 
-	private async computeHelper(data: ElementData): Promise<ElementData> {
+	protected async computeHelper(data: ElementData): Promise<ElementData> {
 		try {
 			const element = getBuildFuntion(data.type);
 			if (element.beforeBuild) {
