@@ -1,21 +1,9 @@
 import { getBuildFuntion } from './register';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import type { ElementData, JsonMap, RenderHelper, imagePath } from '@embodi/types';
-import { promises as fs } from 'fs';
-import { resolve } from 'node:path';
+import { promises as fs } from 'node:fs';
+import { resolve, basename, extname } from 'node:path';
 import { ElementNotFoundException } from '$lib/expections/template';
-
-interface GeneralAssetOptions {
-	name?: string;
-}
-
-interface ImageAssetOptions extends GeneralAssetOptions {
-	format?: 'webp' | 'jpg' | 'jpeg' | 'png';
-	width?: number;
-	height?: number;
-}
-
-export type AssetOptions = ImageAssetOptions | GeneralAssetOptions;
 
 export default class RenderEngine implements RenderHelper {
 	constructor(
@@ -36,14 +24,7 @@ export default class RenderEngine implements RenderHelper {
 	async load(path: string): Promise<unknown> {
 		if (path.endsWith('.json')) {
 			return JSON.parse(await fs.readFile(resolve(this.path, path), 'utf-8'));
-		} else if (
-			path.endsWith('.png') ||
-			path.endsWith('.jpg') ||
-			path.endsWith('.jpeg') ||
-			path.endsWith('.webp') ||
-			path.endsWith('.gif') ||
-			path.endsWith('.svg')
-		) {
+		} else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(extname(path))) {
 			return fs.readFile(resolve(this.path, path));
 		} else {
 			return fs.readFile(resolve(this.path, path), 'utf-8');
@@ -78,11 +59,20 @@ export default class RenderEngine implements RenderHelper {
 		}
 	}
 
-	async storeAsset(content: Buffer, name: string, fileType: string) {
+	async copyAsset(path: string, folder: string): Promise<string> {
+		const source = resolve(this.path, path);
+		const destination = resolve('./static', `.${folder}`, basename(path));
+		await fs.copyFile(source, destination);
+		return destination;
+	}
+
+	async storeAsset(content: Buffer | string, name: string, fileType: string): Promise<string> {
+
 		const queryHash = createHash('sha1').update(JSON.stringify(content)).digest('hex');
 		const path = `/files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
 		await fs.writeFile(resolve('./static', `.${path}`), content);
 
 		return path;
+
 	}
 }
