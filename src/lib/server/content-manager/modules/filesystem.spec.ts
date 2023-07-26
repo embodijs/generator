@@ -10,7 +10,7 @@ async function createFiles(base: string, paths: string[]) {
 		paths.map(async (path) => {
 			const fullPath = join(base, path);
 			await fs.mkdir(dirname(fullPath), { recursive: true });
-			await fs.writeFile(fullPath, faker.random.alphaNumeric());
+			await fs.writeFile(fullPath, faker.string.alphanumeric());
 		})
 	);
 }
@@ -74,7 +74,7 @@ describe('Content-Manager: Filesystem', () => {
 
 		it('write file', async () => {
 			const manager = new Filesystem(TEST_BASE_PATH);
-			const image = faker.image.city();
+			const image = faker.image.urlLoremFlickr({ category: 'city' });
 			await manager.put('city_image.jpg', image);
 
 			expect((await fs.readFile(join(TEST_BASE_PATH, 'city_image.jpg'))).toString()).toBe(
@@ -85,7 +85,7 @@ describe('Content-Manager: Filesystem', () => {
 		it('write to sub dir', async () => {
 			const file = '/cities/city_image.jpg';
 			const manager = new Filesystem(TEST_BASE_PATH);
-			const image = faker.image.city();
+			const image = faker.image.urlLoremFlickr({ category: 'city' });
 			await manager.put(file, image);
 
 			expect((await fs.readFile(join(TEST_BASE_PATH, file))).toString()).toBe(image.toString());
