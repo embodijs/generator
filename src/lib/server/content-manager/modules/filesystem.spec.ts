@@ -113,7 +113,7 @@ describe('Content-Manager: Filesystem', () => {
 		});
 
 		it('read file', async () => {
-			const image = faker.image.cats();
+			const image = faker.image.urlLoremFlickr({ category: 'cats' });
 			await fs.writeFile(join(TEST_BASE_PATH, 'cat_image.png'), image);
 
 			const manager = new Filesystem(TEST_BASE_PATH);
@@ -122,7 +122,7 @@ describe('Content-Manager: Filesystem', () => {
 
 		it('read from sub dir', async () => {
 			const location = 'subdir/cat_image.png';
-			const image = faker.image.cats();
+			const image = faker.image.urlLoremFlickr({ category: 'cats' });
 			await fs.mkdir(dirname(join(TEST_BASE_PATH, location)));
 			await fs.writeFile(join(TEST_BASE_PATH, location), image);
 
