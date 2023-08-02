@@ -8,7 +8,7 @@ import { ElementNotFoundException } from '$lib/expections/template';
 export default class RenderEngine implements RenderHelper {
 
 	constructor(
-		protected svelteFetch: typeof fetch,
+		protected internalFetch: typeof fetch,
 		protected path: string
 	) {
 		this.path = resolve(this.path);
@@ -19,11 +19,11 @@ export default class RenderEngine implements RenderHelper {
 	}
 
 	createEngine(path: string) {
-		return new RenderEngine(this.svelteFetch, resolve(this.path, path));
+		return new RenderEngine(this.internalFetch, resolve(this.path, path));
 	}
 
 	fetch(...args: Parameters<typeof fetch>) {
-		return this.svelteFetch(...args);
+		return this.internalFetch(...args);
 	}
 
 	async load(path: imagePath): Promise<Buffer>;
