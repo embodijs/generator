@@ -10,7 +10,7 @@ async function createFiles(base: string, paths: string[]) {
 		paths.map(async (path) => {
 			const fullPath = join(base, path);
 			await fs.mkdir(dirname(fullPath), { recursive: true });
-			await fs.writeFile(fullPath, faker.random.alphaNumeric());
+			await fs.writeFile(fullPath, faker.string.alphanumeric());
 		})
 	);
 }
@@ -74,7 +74,7 @@ describe('Content-Manager: Filesystem', () => {
 
 		it('write file', async () => {
 			const manager = new Filesystem(TEST_BASE_PATH);
-			const image = faker.image.city();
+			const image = faker.image.urlLoremFlickr({ category: 'city' });
 			await manager.put('city_image.jpg', image);
 
 			expect((await fs.readFile(join(TEST_BASE_PATH, 'city_image.jpg'))).toString()).toBe(
@@ -85,7 +85,7 @@ describe('Content-Manager: Filesystem', () => {
 		it('write to sub dir', async () => {
 			const file = '/cities/city_image.jpg';
 			const manager = new Filesystem(TEST_BASE_PATH);
-			const image = faker.image.city();
+			const image = faker.image.urlLoremFlickr({ category: 'city' });
 			await manager.put(file, image);
 
 			expect((await fs.readFile(join(TEST_BASE_PATH, file))).toString()).toBe(image.toString());
@@ -113,7 +113,7 @@ describe('Content-Manager: Filesystem', () => {
 		});
 
 		it('read file', async () => {
-			const image = faker.image.cats();
+			const image = faker.image.urlLoremFlickr({ category: 'cats' });
 			await fs.writeFile(join(TEST_BASE_PATH, 'cat_image.png'), image);
 
 			const manager = new Filesystem(TEST_BASE_PATH);
@@ -122,7 +122,7 @@ describe('Content-Manager: Filesystem', () => {
 
 		it('read from sub dir', async () => {
 			const location = 'subdir/cat_image.png';
-			const image = faker.image.cats();
+			const image = faker.image.urlLoremFlickr({ category: 'cats' });
 			await fs.mkdir(dirname(join(TEST_BASE_PATH, location)));
 			await fs.writeFile(join(TEST_BASE_PATH, location), image);
 

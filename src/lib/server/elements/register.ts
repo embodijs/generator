@@ -1,4 +1,4 @@
-import type { EmbodiBuildFunction } from '@embodi/types';
+import type { EmbodiBuildFunction, RenderHelper } from '@embodi/types';
 import { ElementNotFoundException } from '$lib/expections/template';
 import { CompileException } from '$lib/expections/compile';
 
@@ -28,6 +28,13 @@ export function getFileFolder() {
 	return fileFolder;
 }
 
+export function runBeforeAll(helper: RenderHelper) {
+	const promises = Object.values(elements).map((element) => {
+		if (element.beforeAll == null) return Promise.resolve();
+		return element.beforeAll(helper);
+	});
+	return Promise.all(promises);
+}
 
 export function getBuildFuntion(name: string): EmbodiBuildFunction {
 	const upperCaseName = name.toUpperCase();
