@@ -1,15 +1,20 @@
 import { faker } from "@faker-js/faker";
 import RenderEngine from "./RenderEngine";
 import { registerBuildFunction } from "./register";
-import path from "node:path";
+import path, { resolve } from "node:path";
 
 let returnData: unknown;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const writeFileFunction = vi.fn(async (path: string, file: unknown) => { return; });
 vi.mock("node:fs", async () => {
-    return { promises: {
-        readFile: vi.fn(async () => {
-            return returnData;
-        })
-    }
+    return { 
+        existsSync: vi.fn(() => true),
+        promises: {
+            readFile: vi.fn(async () => {
+                return returnData;
+            }),
+            writeFile: (path: string, file: unknown) => writeFileFunction(path, file),
+        }
 }});
 
 describe("test RenderEngine", () => {
@@ -134,6 +139,43 @@ describe("test RenderEngine", () => {
             expect(newEngine).toBeInstanceOf(RenderEngine);
             expect(newEngine).not.toBe(engine);
             expect(newEngine.getPath()).toEqual(path.resolve("./test/sub"));
+        });
+    });
+
+    describe("test storeAsset", () => {
+        test.each([
+            [faker.lorem.word(), 'png'],
+            [faker.lorem.word(), 'jpg'],
+            [faker.lorem.word(), 'jpeg'],
+            [faker.lorem.word(), 'webp'],
+            [faker.lorem.word(), 'gif']
+        ] as const)('should store a image as asset with name "%s" and format "%s"', async (name, format) => {
+            const engine = new RenderEngine(vi.fn(), "./test");
+            const data = Buffer.from(faker.image.urlPlaceholder({ 
+                format,
+                height: 100,
+                width: 100
+            }));
+            const type = 'png';
+            const path = await engine.storeAsset(data, name, type);
+            expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${type}$`));
+            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
+            
+        });
+
+        test.each([
+            [faker.lorem.word(), 'pdf'],
+            [faker.lorem.word(), 'mp4'],
+            [faker.lorem.word(), 'mp3'],
+            [faker.lorem.word(), 'txt'],
+            [faker.lorem.word(), 'json']
+        ])('should store a file as asset with name "%s" and format "%s"', async (name, format) => {
+            const engine = new RenderEngine(vi.fn(), "./test");
+            const data = Buffer.from("embodi is a nice an well tested static site generator");
+            const path = await engine.storeAsset(data, name, format);
+            expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${format}$`));
+            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
+            
         });
     });
 
