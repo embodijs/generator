@@ -1,5 +1,5 @@
-import { faker } from '@faker-js/faker';
 import { searchJsonByMongoQuery } from './filesystem.helper';
+import { createRandomJson } from '$tests/utils/random';
 
 const defaultData = [
 	{
@@ -53,7 +53,7 @@ describe('test serachJsonByMongoQuery', () => {
 	});
 
 	it('get all values with empty search object', () => {
-		const data = JSON.parse(faker.datatype.json());
+		const data = createRandomJson();
 
 		const result = searchJsonByMongoQuery({}, Array.isArray(data) ? data : [data]);
 		expect(result).toEqual(Array.isArray(data) ? data : [data]);
