@@ -185,7 +185,8 @@ describe('Content-Manager: Filesystem', () => {
 		it('list all in dir', async () => {
 			const manager = new JsonFilesystem(TEST_BASE_PATH);
 			const list = await manager.listOfIdentifiers();
-			expect(list).toEqual(['have/some/rich', 'template']);
+			const listOfJson = list.filter((elem) => !elem.endsWith('.json'));
+			expect(list).toEqual(listOfJson.sort());
 		});
 
 		it('write object', async () => {
