@@ -10,7 +10,7 @@
 </script>
 
 <main class="relative">
-	{#each content as { type, ...data }}
-		<svelte:component this={getComponentFor(type)} {data} />
+	{#each content as data}
+		<svelte:component this={getComponentFor(data.type)} {data} />
 	{/each}
 </main>
