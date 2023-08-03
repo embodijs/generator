@@ -77,7 +77,7 @@ describe("test RenderEngine", () => {
             const buildFunctions = {
                 beforeBuild: vi.fn((data) => Promise.resolve(data))
             };
-            registerBuildFunction(data.type, buildFunctions);
+            registerBuildFunction(buildFunctions, data.type);
             const engine = new RenderEngine(vi.fn(), "./test");
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
@@ -109,9 +109,9 @@ describe("test RenderEngine", () => {
             const changingBuildFunctions = {
                 beforeBuild: vi.fn((data) => Promise.resolve({...data, ...addedData}))
             };
-            registerBuildFunction(data[a].type, buildFunctions);
-            registerBuildFunction(data[b].type, changingBuildFunctions);
-            registerBuildFunction(data[c].type, buildFunctions);
+            registerBuildFunction(buildFunctions, data[a].type);
+            registerBuildFunction(changingBuildFunctions, data[b].type);
+            registerBuildFunction(buildFunctions, data[c].type);
             const engine = new RenderEngine(vi.fn(), "./test");
             const computed = await engine.compute(data);
 
