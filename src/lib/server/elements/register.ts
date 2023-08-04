@@ -6,8 +6,8 @@ const elements: Record<string, EmbodiBuildFunction> = {};
 let pageFolder: string;
 let fileFolder: string;
 
-export function registerBuildFunction(name: string, element: EmbodiBuildFunction) {
-	elements[name.toUpperCase()] = element;
+export function registerBuildFunction(element: EmbodiBuildFunction, ...names: string[]) {
+	names.forEach(name => elements[name.toUpperCase()] = element);
 }
 
 export function setPageFolder(path: string) {

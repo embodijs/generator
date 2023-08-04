@@ -3,7 +3,6 @@ import type { ElementData, EmbodiComponent } from "@embodi/types";
 
 const elements: Record<string, EmbodiComponent> = {};
 
-
 export function registerComponent<T extends ElementData = ElementData>(element: EmbodiComponent<T>, ...names: string[]) {
 	names.forEach(name => elements[name.toUpperCase()] = element);
 }

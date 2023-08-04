@@ -1,8 +1,8 @@
 import { getBuildFuntion } from './register';
 import { createHash } from 'node:crypto';
 import type { ElementData, JsonMap, RenderHelper, imagePath } from '@embodi/types';
-import { promises as fs } from 'node:fs';
-import { resolve, basename, extname } from 'node:path';
+import { promises as fs, existsSync } from 'node:fs';
+import { resolve, basename, extname, dirname } from 'node:path';
 import { ElementNotFoundException } from '$lib/expections/template';
 
 export default class RenderEngine implements RenderHelper {
@@ -56,6 +56,13 @@ export default class RenderEngine implements RenderHelper {
 		return data;
 	}
 
+	protected async createPathIfNotExists(path: string) {
+		const folderPath = dirname(path);
+		if(!existsSync(folderPath)){
+			await fs.mkdir(folderPath, { recursive: true });
+		}
+	}	
+
 	async compute(data: ElementData): Promise<ElementData>;
 	async compute(data: ElementData[]): Promise<ElementData[]>;
 	async compute(data: ElementData | ElementData[]) {
@@ -76,8 +83,11 @@ export default class RenderEngine implements RenderHelper {
 	async storeAsset(content: Buffer | string, name: string, fileType: string): Promise<string> {
 
 		const queryHash = createHash('sha1').update(JSON.stringify(content)).digest('hex');
+		//static path for source from browser
 		const path = `/files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
-		await fs.writeFile(resolve('./static', `.${path}`), content);
+		const fullPath = resolve('./static', `.${path}`); //relativ path to rescolve
+		await this.createPathIfNotExists(fullPath);
+		await fs.writeFile(fullPath, content);
 
 		return path;
 
