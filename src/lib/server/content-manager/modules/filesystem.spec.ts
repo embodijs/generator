@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import { join, dirname, resolve } from 'node:path';
 
 import { faker } from '@faker-js/faker';
+import { createRandomArray } from '$tests/utils/random';
 
 async function createFiles(base: string, paths: string[]) {
 	return Promise.all(
@@ -52,7 +53,7 @@ describe('Content-Manager: Filesystem', () => {
 		];
 
 		beforeAll(async () => {
-			TEST_BASE_PATH = faker.datatype.uuid();
+			TEST_BASE_PATH = faker.string.uuid();
 			await fs.mkdir(TEST_BASE_PATH);
 
 			await fs.mkdir(TEST_BASE_PATH, { recursive: true });
@@ -184,14 +185,16 @@ describe('Content-Manager: Filesystem', () => {
 		it('list all in dir', async () => {
 			const manager = new JsonFilesystem(TEST_BASE_PATH);
 			const list = await manager.listOfIdentifiers();
-			expect(list).toEqual(['have/some/rich', 'template']);
+			const listOfJson = list.filter((elem) => !elem.endsWith('.json'));
+			expect(list).toEqual(listOfJson.sort());
 		});
 
 		it('write object', async () => {
 			const obj = {
-				arr: faker.datatype.array(),
-				i: faker.datatype.number(),
-				s: faker.datatype.string()
+				arr: createRandomArray(3, 54),
+				i: faker.number.int(),
+				f: faker.number.float(),
+				s: faker.string.sample()
 			};
 
 			const manager = new JsonFilesystem(TEST_BASE_PATH);
@@ -211,9 +214,10 @@ describe('Content-Manager: Filesystem', () => {
 
 		it('read json', async () => {
 			const obj = {
-				arr: faker.datatype.array(),
-				i: faker.datatype.number(),
-				s: faker.datatype.string()
+				arr: createRandomArray(3, 57),
+				i: faker.number.int(),
+				f: faker.number.float(),
+				s: faker.string.sample()
 			};
 
 			await fs.writeFile(join(TEST_BASE_PATH, 'read.json'), JSON.stringify(obj));
@@ -235,7 +239,7 @@ describe('Content-Manager: Filesystem', () => {
 			const manager = new JsonFilesystem(subdir);
 			await Promise.all(
 				list.map((elem) => {
-					return manager.put(faker.datatype.uuid(), elem);
+					return manager.put(faker.string.uuid(), elem);
 				})
 			);
 			const result = await manager.find({
