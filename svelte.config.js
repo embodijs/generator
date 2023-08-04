@@ -17,6 +17,7 @@ const config = {
 		}),
 		alias: {
 			$routes: './src/routes',
+			$tests: './tests',
 		}
 	}
 };
