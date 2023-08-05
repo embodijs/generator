@@ -1,5 +1,5 @@
 
-import { registerBuildFunction, getBuildFuntion, setFileFolder, getFileFolder, runBeforeAll } from "./register";
+import { registerBuildFunction, getBuildFuntion, runBeforeAll } from "./register";
 import type { RenderHelper, beforeAllFunc, beforeBuildFunc } from "@embodi/types";
 
 describe("test register", () => {
@@ -64,20 +64,4 @@ describe("test register", () => {
     });
         
 
-
-    describe("test setFileFolder", () => {
-        test("should set the file folder", () => {
-            const path = "test";
-            setFileFolder(path);
-            expect(getFileFolder()).toEqual(path);
-        });
-    });
-
-    describe("test setFileFolder", () => {
-        test("should set the file folder", () => {
-            const path = "test";
-            setFileFolder(path);
-            expect(getFileFolder()).toEqual(path);
-        });
-    });
 });

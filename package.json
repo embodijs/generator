@@ -19,12 +19,15 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest"
 	},
-	"svlete": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"types": "./dist/exports/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
+			"types": "./dist/exports/index.d.ts",
+			"default": "./dist/exports/index.js"
+		},
+		"./vite": {
+			"types": "./dist/exports/vite/index.d.ts",
+			"default": "./dist/exports/vite/index.js"
 		},
 		"./routes/+page.server": {
 			"types": "./dist/routes/+page.server.d.ts",
@@ -36,6 +39,9 @@
 		}
 	},
 	"files": [
+		"src",
+		"!src/**/*.test.*",
+		"!src/**/*.spec.*",
 		"dist",
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"

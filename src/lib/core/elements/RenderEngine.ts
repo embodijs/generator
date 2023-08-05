@@ -1,17 +1,23 @@
-import { getBuildFuntion } from './register';
-import { createHash } from 'node:crypto';
-import type { ElementData, JsonMap, RenderHelper, imagePath } from '@embodi/types';
+import { getBuildFuntion } from './register.js';
+import type { ElementData, JsonMap, RenderHelper, imagePath } from '$exports/types';
 import { promises as fs, existsSync } from 'node:fs';
 import { resolve, basename, extname, dirname } from 'node:path';
-import { ElementNotFoundException } from '$lib/expections/template';
+import { ElementNotFoundException } from '$exceptions/template.js';
+import type { PluginContext } from "rollup";
+import { createHash } from 'node:crypto';
 
 export default class RenderEngine implements RenderHelper {
 
+	protected path: string;
+	protected viteContext: PluginContext;
+
 	constructor(
-		protected internalFetch: typeof fetch,
-		protected path: string
+		path: string,
+		context: PluginContext
 	) {
-		this.path = resolve(this.path);
+		this.path = resolve(path);
+		console.log(this.path)
+		this.viteContext = context;
 	}
 
 	getPath() {
@@ -19,11 +25,7 @@ export default class RenderEngine implements RenderHelper {
 	}
 
 	createEngine(path: string) {
-		return new RenderEngine(this.internalFetch, resolve(this.path, path));
-	}
-
-	fetch(...args: Parameters<typeof fetch>) {
-		return this.internalFetch(...args);
+		return new RenderEngine(resolve(this.path, path), this.viteContext);
 	}
 
 	async load(path: imagePath): Promise<Buffer>;
@@ -84,12 +86,17 @@ export default class RenderEngine implements RenderHelper {
 
 		const queryHash = createHash('sha1').update(JSON.stringify(content)).digest('hex');
 		//static path for source from browser
-		const path = `/files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
-		const fullPath = resolve('./static', `.${path}`); //relativ path to rescolve
-		await this.createPathIfNotExists(fullPath);
-		await fs.writeFile(fullPath, content);
 
-		return path;
+		const path = `files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
 
+
+		//static path for source from browser
+		const resolveId = this.viteContext.emitFile({
+			type: 'asset',
+			fileName: path,
+			source: content
+		});
+
+		return await this.viteContext.getFileName(resolveId);
 	}
 }

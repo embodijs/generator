@@ -1,42 +1,29 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from '../../routes/[...page]/$types';
-import { JsonFilesystem, type ContentManager } from '$lib/server/content-manager';
-import type { PageFile } from '@embodi/types';
-import RenderEngine from '$lib/server/elements/RenderEngine';
-import { getPageFolder, runBeforeAll } from '$lib/server/elements/register';
+import { LoadException, PageLoadException } from '$exceptions/load.js';
+
+import pages from 'virtual:embodi/pages';
 
 
-
-
-let alreadyRun = false;
-
-async function runOnce (helber: RenderEngine): Promise<void> {
-	if(alreadyRun === true) return;
-	await runBeforeAll(helber);
-	alreadyRun = true;
-}
-
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	const { page } = params.page === "" ? { page: "main" } : params;
-	const path = getPageFolder();
-	const pages: ContentManager = new JsonFilesystem<PageFile>(path);
-	const helper = new RenderEngine(fetch, path);
-	await runOnce(helper);
-	console.info('Start loading page data: ', page);
-
-	if (!(await pages.has(page))) {
-		console.warn('No page data found');
-		throw error(404);
-	}
-	const data = await pages.load(page);
-
+export const load: PageServerLoad = async ({ params }) => {
+	const { page } = params.page === "" ? { page: "/" } : params;
 	
+	console.info('Start loading page data: ', page);
+	
+	try {
+		console.log(pages);
+		const data = pages.find(({slug}) => slug === page);
+		if(data == null) throw new PageLoadException(404 , `No page with slug ${slug} found`);
+		console.info('Send page data');
+		return data;
 
-	const manipulatedData: PageFile = {
-		...data,
-		content: await helper.compute(data.content)
-	};
+	} catch (err) {
+		if(err instanceof LoadException) {
+			console.warn(err.message);
+			throw error(err.getHttpStatusCode());
+		}
 
-	console.info('Send page data');
-	return manipulatedData;
+		console.error(err);
+		throw error(500);
+	}
 };

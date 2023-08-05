@@ -17,7 +17,11 @@ const config = {
 		}),
 		alias: {
 			$routes: './src/routes',
+			$core: './src/lib/core',
+			$exports: './src/lib/exports',
+			$exceptions: './src/lib/exceptions',
 			$tests: './tests',
+
 		}
 	}
 };

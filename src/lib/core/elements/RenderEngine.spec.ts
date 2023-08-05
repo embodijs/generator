@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import RenderEngine from "./RenderEngine";
 import { registerBuildFunction } from "./register";
 import path, { resolve } from "node:path";
+import type { PluginContext } from "rollup";
 
 let returnData: unknown;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,6 +19,12 @@ vi.mock("node:fs", async () => {
 }});
 
 describe("test RenderEngine", () => {
+
+    const mockGetFileNamePath = faker.system.filePath();
+    const mockViteContext = {
+        getFileName: vi.fn((id: string) => Promise.resolve(mockGetFileNamePath)),
+        emitFile: vi.fn((path: string, file: unknown) => { return faker.string.uuid() }),
+    }as unknown as PluginContext;
 
     afterAll(() => {
         vi.restoreAllMocks();
@@ -36,7 +43,7 @@ describe("test RenderEngine", () => {
 
             returnData = JSON.stringify(testJson);
 
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const data = await engine.load("test.json");
             expect(data).toEqual(testJson);
 
@@ -56,7 +63,7 @@ describe("test RenderEngine", () => {
                 width: 100
             });
             returnData = Buffer.from(image);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const data = await engine.load(`ape.${ext}`);
             expect(data).toEqual(Buffer.from(image));
 
@@ -66,7 +73,7 @@ describe("test RenderEngine", () => {
         test("should load a text file", async () => {
             const text = faker.lorem.paragraph();
             returnData = text;
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const data = await engine.load("test.txt");
             expect(data).toEqual(text);
 
@@ -83,7 +90,7 @@ describe("test RenderEngine", () => {
                 beforeBuild: vi.fn((data) => Promise.resolve(data))
             };
             registerBuildFunction(buildFunctions, data.type);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
             expect(buildFunctions.beforeBuild).toBeCalledWith(data, engine);
@@ -117,7 +124,7 @@ describe("test RenderEngine", () => {
             registerBuildFunction(buildFunctions, data[a].type);
             registerBuildFunction(changingBuildFunctions, data[b].type);
             registerBuildFunction(buildFunctions, data[c].type);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const computed = await engine.compute(data);
 
             const modifiedArray = [...data];
@@ -134,7 +141,7 @@ describe("test RenderEngine", () => {
 
     describe("test createEngine", () => {
         test("should create a new engine", () => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const newEngine = engine.createEngine("sub");
             expect(newEngine).toBeInstanceOf(RenderEngine);
             expect(newEngine).not.toBe(engine);
@@ -150,7 +157,7 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'webp'],
             [faker.lorem.word(), 'gif']
         ] as const)('should store a image as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const data = Buffer.from(faker.image.urlPlaceholder({ 
                 format,
                 height: 100,
@@ -170,7 +177,7 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'txt'],
             [faker.lorem.word(), 'json']
         ])('should store a file as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new RenderEngine("./test",  mockViteContext);;
             const data = Buffer.from("embodi is a nice an well tested static site generator");
             const path = await engine.storeAsset(data, name, format);
             expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${format}$`));
