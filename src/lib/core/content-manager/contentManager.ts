@@ -1,5 +1,5 @@
 
-import type { JsonMap } from '@embodi/types';
+import type { JsonMap } from '$exports/types';
 import crypto from 'crypto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

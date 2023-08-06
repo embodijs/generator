@@ -11,7 +11,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	console.info('Start loading page data: ', page);
 	
 	try {
-		console.log(pages);
 		const data = pages.find(({slug}) => slug === page);
 		if(data == null) throw new PageLoadException(404 , `No page with slug ${slug} found`);
 		console.info('Send page data');

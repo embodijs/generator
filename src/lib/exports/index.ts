@@ -1,5 +1,6 @@
 
-import { registerBuildFunction, setPageFolder, registerComponent, getComponentFor } from '../core/elements/register';
+import { registerComponent, getComponentFor } from '../core/elements/register';
 
 
-export { registerComponent, registerBuildFunction, setPageFolder, getComponentFor };
+export { registerComponent, getComponentFor };
+export * from './types';

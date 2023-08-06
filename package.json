@@ -50,7 +50,6 @@
 		"svelte": "^4.0.0"
 	},
 	"devDependencies": {
-		"@embodi/types": "file:../types",
 		"@faker-js/faker": "^8.0.2",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.2",

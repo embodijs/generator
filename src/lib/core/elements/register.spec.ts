@@ -1,6 +1,6 @@
 
 import { registerBuildFunction, getBuildFuntion, runBeforeAll } from "./register";
-import type { RenderHelper, beforeAllFunc, beforeBuildFunc } from "@embodi/types";
+import type { RenderHelper, beforeAllFunc, beforeBuildFunc } from "$exports/types";
 
 describe("test register", () => {
     describe("test registerBuildFunction", () => {

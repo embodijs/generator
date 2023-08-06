@@ -1,4 +1,4 @@
-import type { JsonMap } from '@embodi/types';
+import type { JsonMap } from '$exports/types';
 import fs from 'fs/promises';
 import fsSync from 'node:fs';
 import path from 'node:path';

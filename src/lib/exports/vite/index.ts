@@ -1,6 +1,6 @@
 import { JsonFilesystem, type ContentManager } from "$core/content-manager/index.js";
 import RenderEngine from "$core/elements/RenderEngine.js";
-import { getContentFolder, getPageFolder, getPages, registerElement, registerPage, runBeforeAll, setContentFolder, setPageFolder } from "$core/elements/register.js";
+import { getContentFolder, getPageFolder, registerElement, runBeforeAll, setContentFolder, setPageFolder } from "$core/elements/register.js";
 import type { PageFile } from "$exports/types";
 import type { Plugin } from "vite";
 import type { PluginContext } from "rollup";
@@ -63,10 +63,11 @@ export const embodi = async (init: ViteEmbodiConfig): Promise<Plugin> => {
         },
         async load(id) {
             if(id === resolveVirtualModuleId){
-                console.log(pages);
                 return `export default ${JSON.stringify(pages)}`;
             }
+        },
+        transform(code, id) {
+            console.log(`ID: ${id}`)
         }
-
     }
 }

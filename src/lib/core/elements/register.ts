@@ -2,7 +2,7 @@ import { CompileException } from "$exceptions/compile.js";
 import { ElementNotFoundException } from '$exceptions/template.js';
 
 import type { ElementData, EmbodiComponent, EmbodiElement, EmbodiBuildFunction, RenderHelper } from "$exports/types";
-import type { HandledPageFile, PageFile } from "@embodi/types";
+import type { HandledPageFile, PageFile } from "$exports/types";
 import { PageLoadException } from "$exceptions/load.js";
 
 let pageFolder: string;
