@@ -3,17 +3,17 @@ import type { ElementData, JsonMap, RenderHelper, imagePath } from '$exports/typ
 import { promises as fs, existsSync } from 'node:fs';
 import { resolve, basename, extname, dirname } from 'node:path';
 import { ElementNotFoundException } from '$exceptions/template.js';
-import type { PluginContext } from "rollup";
 import { createHash } from 'node:crypto';
+import type { VitePluginContext } from './ContextHandlers.js';
 
 export default class RenderEngine implements RenderHelper {
 
 	protected path: string;
-	protected viteContext: PluginContext;
+	protected viteContext: VitePluginContext;
 
 	constructor(
 		path: string,
-		context: PluginContext
+		context: VitePluginContext
 	) {
 		this.path = resolve(path);
 		this.viteContext = context;

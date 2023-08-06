@@ -3,14 +3,15 @@ import RenderEngine from "$core/elements/RenderEngine.js";
 import { getContentFolder, getPageFolder, registerElement, runBeforeAll, setContentFolder, setPageFolder } from "$core/elements/register.js";
 import type { PageFile } from "$exports/types";
 import type { Plugin } from "vite";
-import type { PluginContext } from "rollup";
 
 import type { ViteEmbodiConfig } from "./types";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, extname } from "node:path";
+import { ViteBuildContext, ViteDevContext, type VitePluginContext } from "$core/elements/ContextHandlers.js";
+import { nanoid } from "nanoid";
 export type { ViteEmbodiConfig };
 
 
-const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: string, rollupContext: PluginContext) => async (path: string): Promise<PageFile> => {
+const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: string, rollupContext: VitePluginContext) => async (path: string): Promise<PageFile> => {
     const { content, ...meta} = await contentManager.load(path);
     const helper = new RenderEngine(dirname(resolve(basePath, path)), rollupContext);
 
@@ -37,23 +38,31 @@ export const embodi = async (init: ViteEmbodiConfig): Promise<Plugin> => {
     const resolveVirtualModuleId = "\0" + virtualModuleId
 
     let pages: PageFile[];
+    let config: unknown;
+    let contextHandle: VitePluginContext;
+    const basePath = `/@embodi-${nanoid()}/`;
 
     return {
         name: 'vite-plugin-embodi',
-
-       async buildStart() {
+        configResolved(resolvedConfig) {
+            // store the resolved config
+            config = resolvedConfig
+        },
+        async buildStart() {
 
             handleInit(init);
 
             const pageBasePath = getPageFolder();
             const contentBasePath = getContentFolder();
 
-            const engine = new RenderEngine(contentBasePath, this);
+            contextHandle = config.command === "serve" ? new ViteDevContext(basePath) : new ViteBuildContext(this);      
+        
+            const engine = new RenderEngine(contentBasePath, contextHandle);
             await runBeforeAll(engine);
 
 	        const pageManager = new JsonFilesystem<PageFile>(pageBasePath);
             const raw =  await pageManager.listOfIdentifiers();
-            pages = await Promise.all(raw.map(prepareHandlePage(pageManager, pageBasePath, this)));
+            pages = await Promise.all(raw.map(prepareHandlePage(pageManager, pageBasePath, contextHandle)));
             
         },
         resolveId(id) {
@@ -66,8 +75,21 @@ export const embodi = async (init: ViteEmbodiConfig): Promise<Plugin> => {
                 return `export default ${JSON.stringify(pages)}`;
             }
         },
-        transform(code, id) {
-            console.log(`ID: ${id}`)
+        configureServer(server) {
+            server.middlewares.use((req, res, next) => {
+                if(req.url?.startsWith(basePath)) {
+                    console.log("Request for ", req.url);
+                    const file = (contextHandle as ViteDevContext).getFile(req.url)
+                    if(file != null) {
+                        res.writeHead(200, {
+                            'Content-Type': `image/${extname(req.url ?? "jpg")}}`,
+                            'Content-Length': file.length
+                        });
+                        return res.end(file);
+                    }
+                }
+                next();
+            });
         }
     }
 }
