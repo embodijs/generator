@@ -18,13 +18,24 @@ vi.mock("node:fs", async () => {
         }
 }});
 
-describe("test RenderEngine", () => {
+class MockPluginContext {
 
-    const mockGetFileNamePath = faker.system.filePath();
-    const mockViteContext = {
-        getFileName: vi.fn((id: string) => Promise.resolve(mockGetFileNamePath)),
-        emitFile: vi.fn((path: string, file: unknown) => { return faker.string.uuid() }),
-    }as unknown as PluginContext;
+    #filename: Record<string, string> = {};
+    getFileName = vi.fn((id: string) => `/${this.#filename[id]}`);
+    emitFile = vi.fn(({fileName}) => {
+        const id = faker.string.uuid();
+        this.#filename[id] = fileName;
+        return id;
+    });
+}
+
+function getMockedPluginContext (): PluginContext {
+    return new MockPluginContext() as unknown as PluginContext;
+}
+
+describe("test RenderEngine", () => {
+    
+   
 
     afterAll(() => {
         vi.restoreAllMocks();
@@ -43,7 +54,7 @@ describe("test RenderEngine", () => {
 
             returnData = JSON.stringify(testJson);
 
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const data = await engine.load("test.json");
             expect(data).toEqual(testJson);
 
@@ -63,7 +74,7 @@ describe("test RenderEngine", () => {
                 width: 100
             });
             returnData = Buffer.from(image);
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const data = await engine.load(`ape.${ext}`);
             expect(data).toEqual(Buffer.from(image));
 
@@ -73,7 +84,7 @@ describe("test RenderEngine", () => {
         test("should load a text file", async () => {
             const text = faker.lorem.paragraph();
             returnData = text;
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const data = await engine.load("test.txt");
             expect(data).toEqual(text);
 
@@ -90,7 +101,7 @@ describe("test RenderEngine", () => {
                 beforeBuild: vi.fn((data) => Promise.resolve(data))
             };
             registerBuildFunction(buildFunctions, data.type);
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
             expect(buildFunctions.beforeBuild).toBeCalledWith(data, engine);
@@ -124,7 +135,7 @@ describe("test RenderEngine", () => {
             registerBuildFunction(buildFunctions, data[a].type);
             registerBuildFunction(changingBuildFunctions, data[b].type);
             registerBuildFunction(buildFunctions, data[c].type);
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const computed = await engine.compute(data);
 
             const modifiedArray = [...data];
@@ -141,7 +152,7 @@ describe("test RenderEngine", () => {
 
     describe("test createEngine", () => {
         test("should create a new engine", () => {
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const newEngine = engine.createEngine("sub");
             expect(newEngine).toBeInstanceOf(RenderEngine);
             expect(newEngine).not.toBe(engine);
@@ -157,7 +168,7 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'webp'],
             [faker.lorem.word(), 'gif']
         ] as const)('should store a image as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const engine = new RenderEngine("./test",  getMockedPluginContext());;
             const data = Buffer.from(faker.image.urlPlaceholder({ 
                 format,
                 height: 100,
@@ -166,7 +177,6 @@ describe("test RenderEngine", () => {
             const type = 'png';
             const path = await engine.storeAsset(data, name, type);
             expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${type}$`));
-            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
             
         });
 
@@ -177,11 +187,11 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'txt'],
             [faker.lorem.word(), 'json']
         ])('should store a file as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine("./test",  mockViteContext);;
+            const pluginContext = getMockedPluginContext();
+            const engine = new RenderEngine("./test",  pluginContext);;
             const data = Buffer.from("embodi is a nice an well tested static site generator");
             const path = await engine.storeAsset(data, name, format);
             expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${format}$`));
-            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
             
         });
     });

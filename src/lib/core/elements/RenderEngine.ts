@@ -16,7 +16,6 @@ export default class RenderEngine implements RenderHelper {
 		context: PluginContext
 	) {
 		this.path = resolve(path);
-		console.log(this.path)
 		this.viteContext = context;
 	}
 
