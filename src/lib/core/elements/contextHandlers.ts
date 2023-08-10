@@ -11,7 +11,10 @@ export class ViteDevContext implements VitePluginContext {
     #files: Record<string, string | Uint8Array | undefined> = {};
     #resolveIds: Record<string, string> = {};
     
-    constructor(protected basePath: string) {}
+    constructor(
+        protected context: PluginContext,
+        protected basePath: string,
+    ) {}
 
     getFile(path: string) {
         return this.#files[path];
@@ -33,8 +36,14 @@ export class ViteDevContext implements VitePluginContext {
 
 export class ViteBuildContext implements VitePluginContext {
     constructor(
-        protected context: PluginContext
+        protected context: PluginContext,
     ) {}
+
+    watchFiles(...paths: string[]) {
+        paths.forEach(path => {
+            this.context.addWatchFile(path);
+        });
+    }
 
     emitFile(data: EmittedAsset) {
         return this.context.emitFile(data);

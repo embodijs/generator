@@ -111,7 +111,7 @@ interface JsonFilesystemConfigIntern extends FilesystemBaseOptions {
 	encoding: 'utf8';
 }
 
-export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements ContentManager {
+export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements ContentManager<T> {
 
 	config: JsonFilesystemConfigIntern;
 	modified: Date;
