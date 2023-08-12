@@ -1,19 +1,21 @@
-import { getBuildFuntion } from './register.js';
-import type { ElementData, JsonMap, RenderHelper, imagePath } from '$exports/types';
+import type { BuildHelper, BuildSetupHelper, ElementData, JsonMap, buildAction, imagePath } from '$exports/types';
 import { promises as fs, existsSync } from 'node:fs';
 import { resolve, basename, extname, dirname } from 'node:path';
-import { ElementNotFoundException } from '$exceptions/template.js';
 import { createHash } from 'node:crypto';
-import type { VitePluginContext } from './ContextHandlers.js';
+import type { VitePluginContext } from './contextHandlers.js';
 
-export default class RenderEngine implements RenderHelper {
+
+
+
+export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
+	protected actions: Map<string, buildAction> = new Map();
 
 	constructor(
 		path: string,
-		context: VitePluginContext
+		context: VitePluginContext,
 	) {
 		this.path = resolve(path);
 		this.viteContext = context;
@@ -24,7 +26,15 @@ export default class RenderEngine implements RenderHelper {
 	}
 
 	createEngine(path: string) {
-		return new RenderEngine(resolve(this.path, path), this.viteContext);
+		const engine = new BuildEngine(resolve(this.path, path), this.viteContext);
+		engine.actions = this.actions;
+		return engine;
+	}
+
+	registerAction(action: buildAction<ElementData, ElementData>, ...identifiers: string[]): void {
+		identifiers.forEach((identifier) => {
+			this.actions.set(identifier.toUpperCase(), action);
+		});
 	}
 
 	async load(path: imagePath): Promise<Buffer>;
@@ -39,21 +49,18 @@ export default class RenderEngine implements RenderHelper {
 		}
 	}
 
-	protected async computeHelper(data: ElementData): Promise<ElementData> {
-		try {
-			const element = getBuildFuntion(data.type);
-			if (element.beforeBuild) {
-				console.info(`Running beforeBuild for ${data.type}`);
-				return element.beforeBuild(data, this);
-			}
-		} catch (err) {
-			if (err instanceof ElementNotFoundException) {
-				console.info(err.message);
-			} else {
-				throw err;
-			}
-		}
+	protected getActionByName(name: string): buildAction | undefined {
+		const upperCaseName = name.toUpperCase();
+		return this.actions.get(upperCaseName);
 
+	}
+
+	protected async computeHelper(data: ElementData): Promise<ElementData> {
+
+		const action = this.getActionByName(data.type);
+		if (action) {
+			return action(data, this);
+		}
 		return data;
 	}
 
@@ -62,7 +69,7 @@ export default class RenderEngine implements RenderHelper {
 		if(!existsSync(folderPath)){
 			await fs.mkdir(folderPath, { recursive: true });
 		}
-	}	
+	}
 
 	async compute(data: ElementData): Promise<ElementData>;
 	async compute(data: ElementData[]): Promise<ElementData[]>;

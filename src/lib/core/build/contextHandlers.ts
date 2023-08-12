@@ -1,27 +1,48 @@
 import { nanoid } from "nanoid";
 import type { PluginContext, EmittedAsset } from "rollup";
+import { getConfig } from "./config.js";
 
-export interface VitePluginContext {
-    emitFile: (data: EmittedAsset) => string;
-    getFileName: PluginContext['getFileName'];
+
+export abstract class VitePluginContext implements VitePluginContext {
+    abstract emitFile: (data: EmittedAsset) => string;
+    abstract getFileName: PluginContext['getFileName'];
+    static instance: VitePluginContext | undefined;
+    static getInstance(context: PluginContext) {
+
+        const { isBuild } = getConfig();
+
+        if(VitePluginContext.instance == null) {
+            VitePluginContext.instance = isBuild === true ? new ViteBuildContext(context) : new ViteDevContext(context);
+        }
+        return VitePluginContext.instance;
+    }
 }
+
 
 export class ViteDevContext implements VitePluginContext {
     
     #files: Record<string, string | Uint8Array | undefined> = {};
     #resolveIds: Record<string, string> = {};
+    #basePath: string;
+    private static instance: ViteDevContext | undefined;
     
+
     constructor(
-        protected context: PluginContext,
-        protected basePath: string,
-    ) {}
+        protected context: PluginContext
+    ) {
+        this.#basePath = `/@embodi-${nanoid()}/`;
+    }
+
+    getBasePath() {
+        return this.#basePath;
+    }
 
     getFile(path: string) {
         return this.#files[path];
     }
 
     emitFile(data: EmittedAsset) {
-        const path = `${this.basePath}${data.fileName ?? data?.name ?? ""}`;
+        const path = `${this.#basePath}${data.fileName ?? data?.name ?? ""}`;
         const id = nanoid();
         this.#files[path] = data.source;
         this.#resolveIds[id] = path;
@@ -31,6 +52,7 @@ export class ViteDevContext implements VitePluginContext {
     getFileName(id: string) {
         return this.#resolveIds[id];
     }
+
 }
 
 

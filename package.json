@@ -25,9 +25,15 @@
 			"types": "./dist/exports/index.d.ts",
 			"default": "./dist/exports/index.js"
 		},
+		"./types": {
+			"types": "./dist/exports/types.d.ts"
+		},
 		"./vite": {
 			"types": "./dist/exports/vite/index.d.ts",
 			"default": "./dist/exports/vite/index.js"
+		},
+		"./vite/types": {
+			"types": "./dist/exports/vite/types.d.ts"
 		},
 		"./routes/+page.server": {
 			"types": "./dist/routes/+page.server.d.ts",

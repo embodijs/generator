@@ -1,12 +1,7 @@
-import type { EmbodiElement } from "$exports/types";
+import type { beforeAllFunc } from "$exports/types";
 
-
-export interface EmbodiViteElement extends EmbodiElement {
-    identifier: string | string[];
-}
-
-export interface ViteEmbodiConfig {
-    elements: EmbodiViteElement[];
-    pages: string;
-    content: string;
+export interface EmbodiBuildConfig {
+    elements: beforeAllFunc[];
+    pagesPath: string;
+    contentPath: string;
 }
