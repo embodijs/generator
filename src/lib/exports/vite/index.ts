@@ -24,6 +24,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             contextHandle = VitePluginContext.getInstance(this);
             const engine = new BuildEngine(contentPath, contextHandle);
+            console.info("Building pages");
             await Promise.all(init.elements.map((element) => element(engine)));
 
             await loadPages(pagesPath, contextHandle);
