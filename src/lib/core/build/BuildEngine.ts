@@ -131,6 +131,6 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 			source: content
 		});
 
-		return await `/${this.viteContext.getFileName(referenceId)}`;
+		return await `${this.viteContext.getFileName(referenceId)}`;
 	}
 }

@@ -31,7 +31,7 @@ export class ViteDevContext implements VitePluginContext {
     constructor(
         protected context: PluginContext
     ) {
-        this.#basePath = `/@embodi-${nanoid()}/`;
+        this.#basePath = `/__embodi-${nanoid()}/`;
     }
 
     getBasePath() {
