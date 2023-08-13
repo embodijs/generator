@@ -3,7 +3,7 @@ import type { Plugin, ResolvedConfig } from "vite";
 
 import type { EmbodiBuildConfig } from "./types";
 import { dirname, extname } from "node:path";
-import { ViteDevContext, VitePluginContext } from "$core/build/contextHandlers.js";
+import { ViteBuildContext, ViteDevContext, VitePluginContext } from "$core/build/contextHandlers.js";
 import { getPages, updatePage, loadPages } from "$core/build/pages.js";
 import { getConfig, initConfig } from "$core/build/config.js";
 import type { PageFile } from "$exports/types.d.ts";
@@ -20,13 +20,13 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
         },
         async buildStart() {
 
-            const {pagesPath, contentPath} = getConfig();
+            const {pagesPath, contentPath, isBuild} = getConfig();
 
-            contextHandle = VitePluginContext.getInstance(this);
+            contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);//VitePluginContext.getInstance(this);
             const engine = new BuildEngine(contentPath, contextHandle);
             console.info("Building pages");
             await Promise.all(init.elements.map((element) => element(engine)));
-
+            
             await loadPages(pagesPath, contextHandle);
 
             

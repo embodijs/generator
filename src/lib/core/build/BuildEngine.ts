@@ -124,12 +124,13 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 		const path = `files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
 		//static path for source from browser
-		const resolveId = this.viteContext.emitFile({
+		const referenceId = this.viteContext.emitFile({
 			type: 'asset',
 			fileName: path,
+			needsCodeReference: false,
 			source: content
 		});
 
-		return await this.viteContext.getFileName(resolveId);
+		return await `/${this.viteContext.getFileName(referenceId)}`;
 	}
 }
