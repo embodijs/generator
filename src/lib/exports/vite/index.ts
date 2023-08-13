@@ -15,7 +15,6 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
     const embodiPlugin: Plugin = {
         name: 'vite-plugin-embodi',
-
         async configResolved(resolvedConfig: ResolvedConfig) {
             initConfig(init, resolvedConfig);
         },
@@ -27,7 +26,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
             const engine = new BuildEngine(contentPath, contextHandle);
             await Promise.all(init.elements.map((element) => element(engine)));
 
-           await loadPages(pagesPath, contextHandle);
+            await loadPages(pagesPath, contextHandle);
 
             
         },
@@ -60,7 +59,6 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 const context = contextHandle as ViteDevContext;
                 const basePath = context.getBasePath();
                 if(req.url?.startsWith(basePath)) {
-                    console.log("Request for ", req.url);
                     const file = (context).getFile(req.url)
                     if(file != null) {
                         res.writeHead(200, {
@@ -73,7 +71,6 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 next();
             });
         }
-        
     }
 
     const virtualDataModuleId = "$_embodi/data";
@@ -83,13 +80,6 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
     const setupEmbodiVirtuals: Plugin = {
         name: "vite-plugin-embodi-setup",
-        enforce: "post",
-        async buildStart() {
-            this.resolve(virtualSetupModuleId, 'embodi');
-            this.load({
-                id: resolveVirtualSetupModuleId
-            })
-        },
         async resolveId(id ) {
             if(id === virtualDataModuleId){
                 return resolveVirtualDataModuleId;
@@ -99,7 +89,6 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
         },
         async load(id) {
             if(id === resolveVirtualDataModuleId){
-                
                 const {contentPath, pagesPath} = getConfig();
                 return `export const pages = ${JSON.stringify(getPages())};export const contentPath = "${contentPath}";export const pagePath = "${pagesPath}";`;
             }else if (id === resolveVirtualSetupModuleId) {
