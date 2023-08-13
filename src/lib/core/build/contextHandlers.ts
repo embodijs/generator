@@ -6,6 +6,7 @@ import { getConfig } from "./config.js";
 export abstract class VitePluginContext implements VitePluginContext {
     abstract emitFile: (data: EmittedAsset) => string;
     abstract getFileName: PluginContext['getFileName'];
+    abstract watchFiles: PluginContext['addWatchFile'];
     static instance: VitePluginContext | undefined;
     static getInstance(context: PluginContext) {
 
@@ -39,6 +40,12 @@ export class ViteDevContext implements VitePluginContext {
 
     getFile(path: string) {
         return this.#files[path];
+    }
+
+    watchFiles(...paths: string[]) {
+        paths.forEach(path => {
+            this.context.addWatchFile(path);
+        });
     }
 
     emitFile(data: EmittedAsset) {

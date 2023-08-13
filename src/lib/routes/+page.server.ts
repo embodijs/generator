@@ -8,7 +8,6 @@ setup();
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { page } = params.page === "" ? { page: "/" } : params;
-	
 	console.info('Start loading page data: ', page);
 	
 	try {

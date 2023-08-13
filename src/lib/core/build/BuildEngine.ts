@@ -123,8 +123,6 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 		//static path for source from browser
 
 		const path = `files_/${name.replaceAll(' ', '_')}-${queryHash}.${fileType}`;
-
-
 		//static path for source from browser
 		const resolveId = this.viteContext.emitFile({
 			type: 'asset',
