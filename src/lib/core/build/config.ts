@@ -12,7 +12,6 @@ export interface ViteEmbodiConfig {
 let _config: ViteEmbodiConfig;
 
 export function initConfig(e: EmbodiBuildConfig, v: ResolvedConfig ) {
-    console.log("initConfig", e, v.command);
     _config = {
         contentPath: resolve(e.contentPath),
         pagesPath: resolve(e.pagesPath),

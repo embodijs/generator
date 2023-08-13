@@ -2,8 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from '../../routes/[...page]/$types';
 import { LoadException, PageLoadException } from '$exceptions/load.js';
 
-import { pages } from 'virtual:embodi/data';
-
+import { pages } from '$_embodi/data';
+import setup from '$_embodi/setup';
+setup();
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { page } = params.page === "" ? { page: "/" } : params;

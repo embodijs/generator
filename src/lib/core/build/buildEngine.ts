@@ -11,7 +11,8 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
-	protected actions: Map<string, buildAction> = new Map();
+	protected static actions: Map<string, buildAction> = new Map();
+	protected static elementPaths: Map<string, string> = new Map();
 
 	constructor(
 		path: string,
@@ -27,14 +28,45 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 	createEngine(path: string) {
 		const engine = new BuildEngine(resolve(this.path, path), this.viteContext);
-		engine.actions = this.actions;
 		return engine;
 	}
 
-	registerAction(action: buildAction<ElementData, ElementData>, ...identifiers: string[]): void {
+	registerAction<T extends ElementData, U extends ElementData = T>(action: buildAction<T, U>, ...identifiers: string[]): void {
 		identifiers.forEach((identifier) => {
-			this.actions.set(identifier.toUpperCase(), action);
+			//TODO: think about type conversion and remove unknwon
+			BuildEngine.actions.set(identifier.toUpperCase(), <buildAction>(action as unknown));
 		});
+	}
+
+	includeElement(path: string, ...indetifiers: string[]): void {
+		const rPath = resolve(path);
+		indetifiers.forEach((identifier) => {
+			BuildEngine.elementPaths.set(identifier.toUpperCase(), rPath);
+		});
+	}
+
+	static generateSetup(): string {
+		const importTemapate = (path: string, name: string) => `import ${name} from '${path}';`;
+		const functionTemplate = (name: string) => `${name}('${name}')`;
+		const setupTemplate = (imports: string[], functions: string[]) => `
+		${imports.join('\n')}
+		import { setup } from '@embodi/generator';
+
+		export default () => setup({
+			elements: [${functions.join(',')}],
+		});
+		`;
+
+		const imports: string[] = [];
+		const functions: string[] = [];
+
+		BuildEngine.elementPaths.forEach((value, key) => {	
+			imports.push(importTemapate(value, key));
+			functions.push(functionTemplate(key));
+		})
+
+		return setupTemplate(imports, functions);
+
 	}
 
 	async load(path: imagePath): Promise<Buffer>;
@@ -51,7 +83,7 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 	protected getActionByName(name: string): buildAction | undefined {
 		const upperCaseName = name.toUpperCase();
-		return this.actions.get(upperCaseName);
+		return BuildEngine.actions.get(upperCaseName);
 
 	}
 

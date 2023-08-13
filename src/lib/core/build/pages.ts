@@ -24,7 +24,7 @@ const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: s
 export async function loadPages(path: string, context: VitePluginContext) {
     const pageManager = new JsonFilesystem<PageFile>(path);
     const raw =  await pageManager.listOfIdentifiers();
-    registerPage(...raw.map(prepareHandlePage(pageManager, path, context)));
+    await registerPage(...raw.map(prepareHandlePage(pageManager, path, context)));
 }
 
 export async function updatePage(...pages: Promise<PageFile>[] | PageFile[]) {
