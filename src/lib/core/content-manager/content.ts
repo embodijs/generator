@@ -1,6 +1,6 @@
-import { IdentifierAlreadyRegsiteredExcpetion } from './exceptions/identifierAlreadyRegisteredException';
-import { IdentifierNotFoundException } from './exceptions/identifiereNotFoundException';
-import type { ContentManager } from './contentManager';
+import { IdentifierAlreadyRegsiteredExcpetion } from './exceptions/identifierAlreadyRegisteredException.js';
+import { IdentifierNotFoundException } from './exceptions/identifiereNotFoundException.js';
+import type { ContentManager } from './contentManager.js';
 
 const handlers: Record<string, ContentManager> = {};
 

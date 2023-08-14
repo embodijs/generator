@@ -1,11 +1,11 @@
-import type { JsonMap } from '@embodi/types';
+import type { JsonMap } from '$exports/types';
 import fs from 'fs/promises';
-import fsSync from 'fs';
-import path from 'path';
-import { ContentNotFoundException } from '../exceptions/contentNotFoundException';
-import { ContentManager } from '../contentManager';
-import type { AbortException } from '../types';
-import { searchJsonByMongoQuery, type Query } from './filesystem.helper';
+import fsSync from 'node:fs';
+import path from 'node:path';
+import { ContentNotFoundException } from '../exceptions/contentNotFoundException.js';
+import { ContentManager } from '../contentManager.js';
+import type { AbortException } from '../types.js';
+import { searchJsonByMongoQuery, type Query } from './filesystem.helper.js';
 
 export type supportedContentTypes = 'JSON' | 'TEXT';
 
@@ -71,10 +71,10 @@ abstract class FilesystemBase extends ContentManager {
 		return files.flat();
 	}
 
-	async listOfIdentifiers(type?: string): Promise<string[]> {
+	async listOfIdentifiers(...ext: string[]): Promise<string[]> {
 		const files = await this.listDir(this.basePath);
 
-		return type == null ? files : files.filter((name) => name.endsWith(type));
+		return ext.length === 0 ? files : files.filter((name) => ext.includes(path.extname(name)));
 	}
 }
 
@@ -111,7 +111,7 @@ interface JsonFilesystemConfigIntern extends FilesystemBaseOptions {
 	encoding: 'utf8';
 }
 
-export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements ContentManager {
+export class JsonFilesystem<T extends JsonMap> extends FilesystemBase implements ContentManager<T> {
 
 	config: JsonFilesystemConfigIntern;
 	modified: Date;

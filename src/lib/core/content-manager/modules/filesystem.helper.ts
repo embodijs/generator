@@ -1,4 +1,4 @@
-import type { JsonMap } from '@embodi/types';
+import type { JsonMap } from '$exports/types';
 
 export function searchJsonByMongoQuery<T extends JsonMap>(query: Query<T>, data: T[]): T[] {
 	const keysOfQuery = Object.keys(query);

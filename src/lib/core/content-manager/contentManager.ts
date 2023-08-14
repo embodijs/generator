@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { JsonMap } from '@embodi/types';
+
+import type { JsonMap } from '$exports/types';
 import crypto from 'crypto';
 
-export abstract class ContentManager {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class ContentManager<T = any> {
 	protected basePath: string;
 	protected config: JsonMap;
 	protected static manager = new Map<string, ContentManager>();
@@ -27,8 +28,8 @@ export abstract class ContentManager {
 	}
 
 	abstract has(identifier: string): Promise<boolean>;
-	abstract load(identifier: string): Promise<any>;
-	abstract put(identifier: string, content: any): Promise<void>;
+	abstract load(identifier: string): Promise<T>;
+	abstract put(identifier: string, content: T): Promise<void>;
 	abstract delete(identifier: string): Promise<void>;
-	abstract listOfIdentifiers(type?: string): Promise<string[]>;
+	abstract listOfIdentifiers(...type: string[]): Promise<string[]>;
 }

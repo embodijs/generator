@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import RenderEngine from "./RenderEngine";
-import { registerBuildFunction } from "./register";
-import path, { resolve } from "node:path";
+import BuildEngine from "./BuildEngine";
+import path from "node:path";
+import type { PluginContext } from "rollup";
 
 let returnData: unknown;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,7 +17,24 @@ vi.mock("node:fs", async () => {
         }
 }});
 
+class MockPluginContext {
+
+    #filename: Record<string, string> = {};
+    getFileName = vi.fn((id: string) => `/${this.#filename[id]}`);
+    emitFile = vi.fn(({fileName}) => {
+        const id = faker.string.uuid();
+        this.#filename[id] = fileName;
+        return id;
+    });
+}
+
+function getMockedPluginContext (): PluginContext {
+    return new MockPluginContext() as unknown as PluginContext;
+}
+
 describe("test RenderEngine", () => {
+    
+   
 
     afterAll(() => {
         vi.restoreAllMocks();
@@ -36,7 +53,7 @@ describe("test RenderEngine", () => {
 
             returnData = JSON.stringify(testJson);
 
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
             const data = await engine.load("test.json");
             expect(data).toEqual(testJson);
 
@@ -56,7 +73,7 @@ describe("test RenderEngine", () => {
                 width: 100
             });
             returnData = Buffer.from(image);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
             const data = await engine.load(`ape.${ext}`);
             expect(data).toEqual(Buffer.from(image));
 
@@ -66,7 +83,7 @@ describe("test RenderEngine", () => {
         test("should load a text file", async () => {
             const text = faker.lorem.paragraph();
             returnData = text;
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
             const data = await engine.load("test.txt");
             expect(data).toEqual(text);
 
@@ -79,14 +96,14 @@ describe("test RenderEngine", () => {
                 type: faker.lorem.word(),
                 id: faker.lorem.word(),
             }
-            const buildFunctions = {
-                beforeBuild: vi.fn((data) => Promise.resolve(data))
-            };
-            registerBuildFunction(buildFunctions, data.type);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const buildFunctions = vi.fn((data) => Promise.resolve(data))
+         
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
+            engine.registerAction(buildFunctions, data.type);
+            
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
-            expect(buildFunctions.beforeBuild).toBeCalledWith(data, engine);
+            expect(buildFunctions).toBeCalledWith(data, engine);
         });
 
         test.each([
@@ -108,35 +125,34 @@ describe("test RenderEngine", () => {
 
             const addedData = {image: faker.image.url()};
 
-            const buildFunctions = {
-                beforeBuild: vi.fn((data) => Promise.resolve(data))
-            };
-            const changingBuildFunctions = {
-                beforeBuild: vi.fn((data) => Promise.resolve({...data, ...addedData}))
-            };
-            registerBuildFunction(buildFunctions, data[a].type);
-            registerBuildFunction(changingBuildFunctions, data[b].type);
-            registerBuildFunction(buildFunctions, data[c].type);
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const buildFunctions = vi.fn((data) => Promise.resolve(data))
+        
+            const changingBuildFunctions = vi.fn((data) => Promise.resolve({...data, ...addedData}))
+         
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
+            engine.registerAction(buildFunctions, data[a].type);
+            engine.registerAction(changingBuildFunctions, data[b].type);
+            engine.registerAction(buildFunctions, data[c].type);
+            
             const computed = await engine.compute(data);
 
             const modifiedArray = [...data];
             modifiedArray[b] = {...data[b], ...addedData};
 
             expect(computed).toEqual(modifiedArray);
-            expect(buildFunctions.beforeBuild).toBeCalledTimes(2);
-            expect(changingBuildFunctions.beforeBuild).toBeCalledTimes(1);
-            expect(buildFunctions.beforeBuild).toBeCalledWith(data[a], engine);
-            expect(changingBuildFunctions.beforeBuild).toBeCalledWith(data[b], engine);
-            expect(buildFunctions.beforeBuild).toBeCalledWith(data[c], engine);
+            expect(buildFunctions).toBeCalledTimes(2);
+            expect(changingBuildFunctions).toBeCalledTimes(1);
+            expect(buildFunctions).toBeCalledWith(data[a], engine);
+            expect(changingBuildFunctions).toBeCalledWith(data[b], engine);
+            expect(buildFunctions).toBeCalledWith(data[c], engine);
         });
     });
 
     describe("test createEngine", () => {
         test("should create a new engine", () => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
             const newEngine = engine.createEngine("sub");
-            expect(newEngine).toBeInstanceOf(RenderEngine);
+            expect(newEngine).toBeInstanceOf(BuildEngine);
             expect(newEngine).not.toBe(engine);
             expect(newEngine.getPath()).toEqual(path.resolve("./test/sub"));
         });
@@ -150,7 +166,7 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'webp'],
             [faker.lorem.word(), 'gif']
         ] as const)('should store a image as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
             const data = Buffer.from(faker.image.urlPlaceholder({ 
                 format,
                 height: 100,
@@ -159,7 +175,6 @@ describe("test RenderEngine", () => {
             const type = 'png';
             const path = await engine.storeAsset(data, name, type);
             expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${type}$`));
-            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
             
         });
 
@@ -170,11 +185,11 @@ describe("test RenderEngine", () => {
             [faker.lorem.word(), 'txt'],
             [faker.lorem.word(), 'json']
         ])('should store a file as asset with name "%s" and format "%s"', async (name, format) => {
-            const engine = new RenderEngine(vi.fn(), "./test");
+            const pluginContext = getMockedPluginContext();
+            const engine = new BuildEngine("./test",  pluginContext);;
             const data = Buffer.from("embodi is a nice an well tested static site generator");
             const path = await engine.storeAsset(data, name, format);
             expect(path).toMatch(new RegExp(`^/files_/${name}-[a-f0-9]+.${format}$`));
-            expect(writeFileFunction).toBeCalledWith(resolve('./static', `.${path}`), data);
             
         });
     });

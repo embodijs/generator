@@ -1,16 +1,20 @@
 <script context="module" lang="ts">
-	import type { PageFile } from '@embodi/types';
-	import { getComponentFor } from '$lib/elements/register';
+	import type { PageFile } from '$exports/types';
+	import '$_embodi/setup';
+	import ClientEgine from '$core/elements/ClientEngine';
+	const engine = new ClientEgine();
+
 </script>
 
 <script lang="ts">
 	
 	export let data: PageFile;
+	
 	let { content } = data;
 </script>
 
 <main class="relative">
 	{#each content as data}
-		<svelte:component this={getComponentFor(data.type)} {data} />
+		<svelte:component this={engine.getComponent(data.type)} {data} {engine} />
 	{/each}
 </main>
