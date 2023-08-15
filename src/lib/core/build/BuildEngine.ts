@@ -1,10 +1,11 @@
 import type { BuildHelper, BuildSetupHelper, ElementData, JsonMap, buildAction, imagePath } from '$exports/types';
-import { promises as fs, existsSync } from 'node:fs';
-import { resolve, basename, extname, dirname } from 'node:path';
+import { promises as fs } from 'node:fs';
+import { resolve, basename, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
+import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.js';
 
-export default class BuildEngine implements BuildHelper, BuildSetupHelper {
+export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
@@ -15,6 +16,7 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 		path: string,
 		context: VitePluginContext,
 	) {
+		super(path);
 		this.path = resolve(path);
 		this.viteContext = context;
 	}
@@ -91,13 +93,6 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 			return action(data, this);
 		}
 		return data;
-	}
-
-	protected async createPathIfNotExists(path: string) {
-		const folderPath = dirname(path);
-		if(!existsSync(folderPath)){
-			await fs.mkdir(folderPath, { recursive: true });
-		}
 	}
 
 	async compute(data: ElementData): Promise<ElementData>;

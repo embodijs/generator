@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import type { PageFile } from '$exports/types';
-	import '$_embodi/setup';
+	import '$__embodi/setup';
 	import ClientEgine from '$core/elements/ClientEngine';
 	const engine = new ClientEgine();
 

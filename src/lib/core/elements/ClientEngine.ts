@@ -1,9 +1,10 @@
 import { CompileException } from "$exceptions/compile";
-import type { ClientHelper, ElementData, EmbodiComponent } from "$exports";
+import type { ClientHelper, ElementData, EmbodiComponent, renderAction } from "$exports";
 
 export default class ClientEgine implements ClientHelper {
         
         protected static components: Map<string, EmbodiComponent> = new Map();
+        protected static beforeRenderActions = new Map<string, renderAction>()
     
     
         public static registerComponent<C extends ElementData>(component: EmbodiComponent<C>, ...identifier: string[]): void {
@@ -11,6 +12,13 @@ export default class ClientEgine implements ClientHelper {
                 const upperName = id.toUpperCase();
                 ClientEgine.components.set(upperName, <EmbodiComponent>component);
                 
+            });
+        }
+
+        static registerAction(action: renderAction, ...identifier: string[]): void {
+            identifier.forEach(id => {
+                const upperName = id.toUpperCase();
+                ClientEgine.beforeRenderActions.set(upperName, action);
             });
         }
 

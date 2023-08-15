@@ -74,9 +74,9 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
         }
     }
 
-    const virtualDataModuleId = "$_embodi/data";
+    const virtualDataModuleId = "$__embodi/data";
     const resolveVirtualDataModuleId = "\0" + virtualDataModuleId;
-    const virtualSetupModuleId = "$_embodi/setup";
+    const virtualSetupModuleId = "$__embodi/setup";
     const resolveVirtualSetupModuleId = "\0" + virtualSetupModuleId;
 
     const setupEmbodiVirtuals: Plugin = {

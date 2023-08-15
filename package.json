@@ -45,9 +45,6 @@
 		}
 	},
 	"files": [
-		"src",
-		"!src/**/*.test.*",
-		"!src/**/*.spec.*",
 		"dist",
 		"!dist/**/*.test.*",
 		"!dist/**/*.spec.*"
