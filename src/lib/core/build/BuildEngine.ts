@@ -68,18 +68,6 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 
 	}
 
-	async load(path: imagePath): Promise<Buffer>;
-	async load<T extends JsonMap = JsonMap>(path: string): Promise<T>;
-	async load(path: string): Promise<unknown> {
-		if (path.endsWith('.json')) {
-			return JSON.parse(await fs.readFile(resolve(this.path, path), 'utf-8'));
-		} else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(extname(path))) {
-			return fs.readFile(resolve(this.path, path));
-		} else {
-			return fs.readFile(resolve(this.path, path), 'utf-8');
-		}
-	}
-
 	protected getActionByName(name: string): buildAction | undefined {
 		const upperCaseName = name.toUpperCase();
 		return BuildEngine.actions.get(upperCaseName);
