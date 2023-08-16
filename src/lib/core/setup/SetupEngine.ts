@@ -1,6 +1,6 @@
 import ClientEgine from "$core/elements/ClientEngine";
-import LoadEngine from "$core/elements/LoadEngine";
-import ServerEngine from "$core/elements/ServerEngine";
+import LoadEngine from "$core/elements/LoadEngine.server";
+import ServerEngine from "$core/elements/ServerEngine.server";
 import type { ElementData, EmbodiComponent, EmbodiElement, SetupHelper, loadAction, renderAction, serverAction } from "$exports";
 
 

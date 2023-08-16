@@ -1,9 +1,10 @@
-import type { BuildHelper, BuildSetupHelper, ElementData, JsonMap, buildAction, imagePath } from '$exports/types';
+import type { BuildHelper, BuildSetupHelper, ElementData, buildAction } from '$exports/types';
 import { promises as fs } from 'node:fs';
-import { resolve, basename, extname } from 'node:path';
+import { resolve, basename, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
+import { CompileException } from '$exceptions/compile.js';
 
 export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
@@ -11,6 +12,10 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 	protected viteContext: VitePluginContext;
 	protected static actions: Map<string, buildAction> = new Map();
 	protected static elementPaths: Map<string, string> = new Map();
+	protected static componentPaths = new Set<string>();
+	static readonly importer: string = 'EmbodiBuildEngine';
+
+	protected static modulePaths = new Set<string>('EmbodiBuildEngine');
 
 	constructor(
 		path: string,
@@ -37,11 +42,30 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 		});
 	}
 
-	includeElement(path: string, ...indetifiers: string[]): void {
+	async includeElement(path: string, ...indetifiers: string[]): Promise<void> {
 		const rPath = resolve(path);
+		console.log(rPath);
+		const resolveId = await this.viteContext.resolve(rPath, BuildEngine.importer, { isEntry: true, })
+		if(resolveId == null) {
+			throw new CompileException(`Could not resolve path ${rPath}`)
+		}
+		//BuildEngine.modulePaths.add(resolveId.id);
+		this.viteContext.load({
+			id: resolveId.id,
+			resolveDependencies: true
+		});
 		indetifiers.forEach((identifier) => {
 			BuildEngine.elementPaths.set(identifier.toUpperCase(), rPath);
 		});
+	}
+
+	static includeComponent(path: string): void {
+		BuildEngine.componentPaths.add(resolve(this.path, path));
+	}
+
+	static generateComponentImport(): string {
+		const importTemapate = (path: string) => `import '${path}';`;
+		return Array.from(BuildEngine.componentPaths).map((path) => importTemapate(path)).join('\n');
 	}
 
 	static generateSetup(): string {

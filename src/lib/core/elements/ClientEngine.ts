@@ -1,5 +1,5 @@
 import { CompileException } from "$exceptions/compile";
-import type { ClientHelper, ElementData, EmbodiComponent, renderAction } from "$exports";
+import type { ClientHelper, ElementData, EmbodiComponent, renderAction } from "$exports/types";
 
 export default class ClientEgine implements ClientHelper {
         
