@@ -7,6 +7,7 @@ import { ViteBuildContext, ViteDevContext, VitePluginContext } from "$core/build
 import { getPages, updatePage, loadPages } from "$core/build/pages.js";
 import { getConfig, initConfig } from "$core/build/config.js";
 import type { PageFile } from "$exports/types.d.ts";
+import ResolveElementComponents from "$core/build/ResolveElementComponents.js";
 export type { EmbodiBuildConfig };
 
 export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
@@ -22,7 +23,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             const {pagesPath, contentPath, isBuild} = getConfig();
 
-            contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);//VitePluginContext.getInstance(this);
+            contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);
             const engine = new BuildEngine(contentPath, contextHandle);
             console.info("Building pages");
             await Promise.all(init.elements.map((element) => element(engine)));
@@ -31,7 +32,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             
         },
-        
+    
         
         async handleHotUpdate({file, server, read}) {
             const {pagesPath} = getConfig();
@@ -74,10 +75,12 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
         }
     }
 
-    const virtualDataModuleId = "$_embodi/data";
+    const virtualDataModuleId = "$__embodi/data";
     const resolveVirtualDataModuleId = "\0" + virtualDataModuleId;
-    const virtualSetupModuleId = "$_embodi/setup";
+    const virtualSetupModuleId = "$__embodi/setup";
     const resolveVirtualSetupModuleId = "\0" + virtualSetupModuleId;
+    const virtualComponentModuleId = "$__embodi/components";
+    const resolveVirtualComponentModuleId = "\0" + virtualComponentModuleId;
 
     const setupEmbodiVirtuals: Plugin = {
         name: "vite-plugin-embodi-setup",
@@ -86,6 +89,8 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 return resolveVirtualDataModuleId;
             } else if (id === virtualSetupModuleId) {
                 return resolveVirtualSetupModuleId;
+            } else if (id === virtualComponentModuleId) {
+                return resolveVirtualComponentModuleId;
             }
         },
         async load(id) {
@@ -95,9 +100,28 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
             }else if (id === resolveVirtualSetupModuleId) {
                 console.info("LOAD", id)
                 return await BuildEngine.generateSetup();
+            } else if (id === resolveVirtualComponentModuleId) {
+                console.info("Load Embodi Components")
+                return BuildEngine.generateComponentImport();
             }
         },
     }
 
-    return [embodiPlugin, setupEmbodiVirtuals]
+    let resolver: ResolveElementComponents;
+
+    const resolveElementComponents: Plugin = {
+        name: "vite-plugin-embodi-components",
+        enforce: "pre",
+        configResolved() {
+            resolver = new ResolveElementComponents();
+        },
+            
+        async resolveId(source, importer) {
+            if(await resolver.partOfElement(source, importer)) {
+                console.log("RESOLVE", source, importer);
+            }
+        }
+    }
+
+    return [resolveElementComponents, embodiPlugin, setupEmbodiVirtuals]
 }

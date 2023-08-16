@@ -1,20 +1,27 @@
-import type { BuildHelper, BuildSetupHelper, ElementData, JsonMap, buildAction, imagePath } from '$exports/types';
-import { promises as fs, existsSync } from 'node:fs';
-import { resolve, basename, extname, dirname } from 'node:path';
+import type { BuildHelper, BuildSetupHelper, ElementData, buildAction } from '$exports/types';
+import { promises as fs } from 'node:fs';
+import { resolve, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
+import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
+import { CompileException } from '$exceptions/compile.js';
 
-export default class BuildEngine implements BuildHelper, BuildSetupHelper {
+export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
 	protected static actions: Map<string, buildAction> = new Map();
 	protected static elementPaths: Map<string, string> = new Map();
+	protected static componentPaths = new Set<string>();
+	static readonly importer: string = 'EmbodiBuildEngine';
+
+	protected static modulePaths = new Set<string>('EmbodiBuildEngine');
 
 	constructor(
 		path: string,
 		context: VitePluginContext,
 	) {
+		super(path);
 		this.path = resolve(path);
 		this.viteContext = context;
 	}
@@ -35,11 +42,33 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 		});
 	}
 
-	includeElement(path: string, ...indetifiers: string[]): void {
-		const rPath = resolve(path);
-		indetifiers.forEach((identifier) => {
-			BuildEngine.elementPaths.set(identifier.toUpperCase(), rPath);
+	protected async resolveElement(_path: string): Promise<string> {
+		const path = resolve(_path);
+		const resolveId = await this.viteContext.resolve(path, BuildEngine.importer, { isEntry: true, })
+		if(resolveId == null) {
+			throw new CompileException(`Could not resolve path ${path}`)
+		}
+		this.viteContext.load({
+			id: resolveId.id,
+			resolveDependencies: true
 		});
+		return path;
+	}
+
+	async includeElement(_path: string, ...indetifiers: string[]): Promise<void> {
+		const path = await this.resolveElement(_path);
+		indetifiers.forEach((identifier) => {
+			BuildEngine.elementPaths.set(identifier.toUpperCase(), path);
+		});
+	}
+
+	static includeComponent(path: string): void {
+		BuildEngine.componentPaths.add(path);
+	}
+
+	static generateComponentImport(): string {
+		const importTemapate = (path: string) => `import '${path}';`;
+		return Array.from(BuildEngine.componentPaths).map((path) => importTemapate(path)).join('\n');
 	}
 
 	static generateSetup(): string {
@@ -49,7 +78,7 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 		${imports.join('\n')}
 		import { setup } from '@embodi/generator';
 
-		export default () => setup({
+		export default async () => setup({
 			elements: [${functions.join(',')}],
 		});
 		`;
@@ -66,18 +95,6 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 
 	}
 
-	async load(path: imagePath): Promise<Buffer>;
-	async load<T extends JsonMap = JsonMap>(path: string): Promise<T>;
-	async load(path: string): Promise<unknown> {
-		if (path.endsWith('.json')) {
-			return JSON.parse(await fs.readFile(resolve(this.path, path), 'utf-8'));
-		} else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(extname(path))) {
-			return fs.readFile(resolve(this.path, path));
-		} else {
-			return fs.readFile(resolve(this.path, path), 'utf-8');
-		}
-	}
-
 	protected getActionByName(name: string): buildAction | undefined {
 		const upperCaseName = name.toUpperCase();
 		return BuildEngine.actions.get(upperCaseName);
@@ -91,13 +108,6 @@ export default class BuildEngine implements BuildHelper, BuildSetupHelper {
 			return action(data, this);
 		}
 		return data;
-	}
-
-	protected async createPathIfNotExists(path: string) {
-		const folderPath = dirname(path);
-		if(!existsSync(folderPath)){
-			await fs.mkdir(folderPath, { recursive: true });
-		}
 	}
 
 	async compute(data: ElementData): Promise<ElementData>;

@@ -1,4 +1,3 @@
-
 import type { SvelteComponent } from "svelte";
 
 /************
@@ -78,8 +77,8 @@ export interface EmbodiElement
 	<F extends ElementData = ElementData, B = F,  C = B>  
 {
 	identifier: string[];
-	afterLoad?: (data: F) => Promise<B>
-	beforeRender?: (data: B) => Promise<C>
+	loadAction?: (data: F) => Promise<B>
+	renderAction?: (data: B) => Promise<C>
 	component: EmbodiComponent<C>
 }
 
@@ -87,35 +86,45 @@ export interface ServerHelper {
 	load(path: imagePath): Promise<Buffer>
 	load<T extends JsonMap = JsonMap>(path: jsonFile): Promise<T>
 	load(path: string): Promise<unknown>
+	setHeaders(headers: Record<string, string>): void
+	fetch(path: string, init?: RequestInit): Promise<Response>
 }
+
+export interface LoadHelper {
+	createEngine(path: string): LoadHelper
+	load(path: imagePath): Promise<Buffer>
+	load<T extends JsonMap = JsonMap>(path: jsonFile): Promise<T>
+	load(path: string): Promise<unknown>
+	compute(data: ElementData[]): Promise<ElementData[]>
+	compute(data: ElementData): Promise<ElementData>
+	fetch(path: string, init?: RequestInit): Promise<Response>
+	getRawContent(): ElementData[]
+	getMeta(): Omit<PageFile, 'content'>
+}
+	
 
 export interface ClientHelper {
 	getComponent<C extends ElementData>(id: string): EmbodiComponent<C>
 }
 
-export interface beforeLoadFunc<T = void> {
-	(helper: ServerHelper): Promise<T> | T
+export interface serverAction<T = void> {
+	(slug: string, url: URL, helper: ServerHelper): Promise<T> | T
 }
 
-export interface afterLoadFunc<T extends ElementData = ElementData, U extends ElementData = T> {
-	(data: T, helper: ServerHelper): Promise<U> | U
+export interface loadAction<T extends ElementData = ElementData, U extends ElementData = T> {
+	(data: T, helper: LoadHelperHelper): Promise<U> | U
 }
 
-export interface beforeRenderFunc<T extends ElementData = ElementData, U extends ElementData = T> {
+export interface renderAction<T extends ElementData = ElementData, U extends ElementData = T> {
 	(data: T, helper: ClientHelper): Promise<U> | U
 }
-
-// TODO: Think about hot loading of componnts
-// TODO: Think about defining the server funtction (not possible in component
-// IDEA: Define in config and add to load add build time (embodi.setup.ts)
-
 
 export interface SetupHelper { 
 	registerElement(element: EmbodiElement, ...identifier: string[]): void
 	registerComponent<C extends ElementData>(component: EmbodiComponent<C>, ...identifier: string[]): void
-	// registerBeforeLoad<T>(func: beforeLoadFunc<T>, ...identifier: string[]): void
-	// registerAfterLoad<T, U>(func: afterLoadFunc<T, U>, ...identifier: string[]): void
-	// registerBeforeRende<T, U>(func: beforeRenderFunc<T, U>, ...identifier: string[]): void
+	registerServerAction<T>(func: serverAction<T>): void
+	registerLoadAction<T extends ElementData, U extends ElementData = T>(func: loadAction<T, U>, ...identifier: string[]): void
+	registerRendeAction<T extends ElementData, U extends ElementData = T>(func: renderAction<T, U>, ...identifier: string[]): void
 }
 
 export interface PluginSetupFunc {

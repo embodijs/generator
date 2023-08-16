@@ -6,6 +6,8 @@ import { getConfig } from "./config.js";
 export abstract class VitePluginContext implements VitePluginContext {
     abstract emitFile: (data: EmittedAsset) => string;
     abstract getFileName: PluginContext['getFileName'];
+    abstract resolve: PluginContext['resolve'];
+    abstract load: PluginContext['load'];
     abstract watchFiles: PluginContext['addWatchFile'];
     static instance: VitePluginContext | undefined;
     static getInstance(context: PluginContext) {
@@ -48,6 +50,14 @@ export class ViteDevContext implements VitePluginContext {
         });
     }
 
+    load(...args: Parameters<PluginContext['load']>) {
+        return this.context.load(...args);
+    }
+
+    resolve(...args: Parameters<PluginContext['resolve']>) {
+        return this.context.resolve(...args);
+    }
+
     emitFile(data: EmittedAsset) {
         const path = `${this.#basePath}${data.fileName ?? data?.name ?? ""}`;
         const id = nanoid();
@@ -72,6 +82,14 @@ export class ViteBuildContext implements VitePluginContext {
         paths.forEach(path => {
             this.context.addWatchFile(path);
         });
+    }
+
+    load(...args: Parameters<PluginContext['load']>) {
+        return this.context.load(...args);
+    }
+
+    resolve(...args: Parameters<PluginContext['resolve']>) {
+        return this.context.resolve(...args);
     }
 
     emitFile(data: EmittedAsset) {
