@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from '../../routes/[...page]/$types';
 import { LoadException, PageLoadException } from '$exceptions/load.js';
-import ServerEngine from '$core/elements/ServerEngine';
+import ServerEngine from '$core/elements/ServerEngine.server';
 import type { PageFile } from '$exports';
-import LoadEngine from '$core/elements/LoadEngine';
+import LoadEngine from '$core/elements/LoadEngine.server';
 
 import { pages, contentPath } from '$__embodi/data';
 import setup from '$__embodi/setup';

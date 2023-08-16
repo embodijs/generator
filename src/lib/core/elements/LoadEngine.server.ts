@@ -1,5 +1,5 @@
 import type { ElementData, LoadHelper, PageFile, loadAction } from "$exports";
-import { AbstractBaseEngine } from "./AbstractBaseEngine";
+import { AbstractBaseEngine } from "./AbstractBaseEngine.server";
 
 export default class LoadEngine extends AbstractBaseEngine implements LoadHelper {
 

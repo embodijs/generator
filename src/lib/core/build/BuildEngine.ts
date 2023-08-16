@@ -3,7 +3,7 @@ import { promises as fs } from 'node:fs';
 import { resolve, basename, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
-import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.js';
+import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
 
 export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 

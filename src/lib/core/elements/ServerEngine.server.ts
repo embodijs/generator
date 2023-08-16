@@ -1,6 +1,6 @@
 import type { ServerHelper, serverAction } from "$exports/types";
 import type { RequestEvent } from "@sveltejs/kit";
-import { AbstractBaseEngine } from "./AbstractBaseEngine";
+import { AbstractBaseEngine } from "./AbstractBaseEngine.server";
 
 
 export default class ServerEngine extends AbstractBaseEngine implements ServerHelper{
