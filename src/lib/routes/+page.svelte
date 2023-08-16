@@ -9,7 +9,6 @@
 <script lang="ts">
 	
 	export let data: PageFile;
-	
 	let { content } = data;
 </script>
 

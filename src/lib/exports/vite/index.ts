@@ -23,7 +23,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             const {pagesPath, contentPath, isBuild} = getConfig();
 
-            contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);//VitePluginContext.getInstance(this);
+            contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);
             const engine = new BuildEngine(contentPath, contextHandle);
             console.info("Building pages");
             await Promise.all(init.elements.map((element) => element(engine)));
@@ -32,7 +32,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             
         },
-        
+    
         
         async handleHotUpdate({file, server, read}) {
             const {pagesPath} = getConfig();
@@ -101,7 +101,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 console.info("LOAD", id)
                 return await BuildEngine.generateSetup();
             } else if (id === resolveVirtualComponentModuleId) {
-                console.log(BuildEngine.generateComponentImport())
+                console.info("Load Embodi Components")
                 return BuildEngine.generateComponentImport();
             }
         },

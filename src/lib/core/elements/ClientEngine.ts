@@ -6,7 +6,6 @@ export default class ClientEgine implements ClientHelper {
         protected static components: Map<string, EmbodiComponent> = new Map();
         protected static beforeRenderActions = new Map<string, renderAction>()
     
-    
         public static registerComponent<C extends ElementData>(component: EmbodiComponent<C>, ...identifier: string[]): void {
             identifier.forEach(id => {
                 const upperName = id.toUpperCase();
@@ -24,7 +23,7 @@ export default class ClientEgine implements ClientHelper {
 
         getComponent<C extends ElementData>(id: string): EmbodiComponent<C> {
             const name = id.toUpperCase();
-            
+            console.log(name, ClientEgine.components.has(name));
             if(ClientEgine.components.has(name)){
                 return <EmbodiComponent<C>>ClientEgine.components.get(name);
             }

@@ -7,8 +7,7 @@ import LoadEngine from '$core/elements/LoadEngine.server';
 
 import { pages, contentPath } from '$__embodi/data';
 import setup from '$__embodi/setup';
-
-setup();
+await setup();
 
 class ServerActionReturnException {
 	constructor(public readonly data: unknown) {}

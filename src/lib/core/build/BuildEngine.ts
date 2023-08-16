@@ -1,6 +1,6 @@
 import type { BuildHelper, BuildSetupHelper, ElementData, buildAction } from '$exports/types';
 import { promises as fs } from 'node:fs';
-import { resolve, basename, dirname } from 'node:path';
+import { resolve, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
@@ -42,25 +42,28 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 		});
 	}
 
-	async includeElement(path: string, ...indetifiers: string[]): Promise<void> {
-		const rPath = resolve(path);
-		console.log(rPath);
-		const resolveId = await this.viteContext.resolve(rPath, BuildEngine.importer, { isEntry: true, })
+	protected async resolveElement(_path: string): Promise<string> {
+		const path = resolve(_path);
+		const resolveId = await this.viteContext.resolve(path, BuildEngine.importer, { isEntry: true, })
 		if(resolveId == null) {
-			throw new CompileException(`Could not resolve path ${rPath}`)
+			throw new CompileException(`Could not resolve path ${path}`)
 		}
-		//BuildEngine.modulePaths.add(resolveId.id);
 		this.viteContext.load({
 			id: resolveId.id,
 			resolveDependencies: true
 		});
+		return path;
+	}
+
+	async includeElement(_path: string, ...indetifiers: string[]): Promise<void> {
+		const path = await this.resolveElement(_path);
 		indetifiers.forEach((identifier) => {
-			BuildEngine.elementPaths.set(identifier.toUpperCase(), rPath);
+			BuildEngine.elementPaths.set(identifier.toUpperCase(), path);
 		});
 	}
 
 	static includeComponent(path: string): void {
-		BuildEngine.componentPaths.add(resolve(this.path, path));
+		BuildEngine.componentPaths.add(path);
 	}
 
 	static generateComponentImport(): string {
@@ -75,7 +78,7 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 		${imports.join('\n')}
 		import { setup } from '@embodi/generator';
 
-		export default () => setup({
+		export default async () => setup({
 			elements: [${functions.join(',')}],
 		});
 		`;
