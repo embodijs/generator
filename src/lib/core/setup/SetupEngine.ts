@@ -1,14 +1,10 @@
 import ClientEgine from "$core/elements/ClientEngine";
 import LoadEngine from "$core/elements/LoadEngine.server";
 import ServerEngine from "$core/elements/ServerEngine.server";
-import type { ElementData, EmbodiComponent, EmbodiElement, SetupHelper, loadAction, renderAction, serverAction } from "$exports";
+import type { ClientSetupHelper, ElementData, EmbodiComponent, ServerSetupHelper, loadAction, renderAction, serverAction } from "$exports";
 
 
-export default class SetupEngine implements SetupHelper {
-
-    public registerElement(element: EmbodiElement<ElementData, ElementData, ElementData>, ...identifier: string[]): void {
-        this.registerComponent(element.component, ...identifier);
-    }
+export default class SetupEngine implements ServerSetupHelper, ClientSetupHelper {
 
     public registerComponent<C extends ElementData>(component: EmbodiComponent<C>, ...identifier: string[]): void {
         ClientEgine.registerComponent(component, ...identifier);

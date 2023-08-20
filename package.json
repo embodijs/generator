@@ -35,13 +35,25 @@
 		"./vite/types": {
 			"types": "./dist/exports/vite/types.d.ts"
 		},
+		"./client/setup": {
+			"types": "./dist/exports/setup/client.d.ts",
+			"default": "./dist/exports/setup/client.js"
+		},
+		"./server/setup": {
+			"types": "./dist/exports/setup/server.d.ts",
+			"default": "./dist/exports/setup/server.js"
+		},
+		"./renderComponent.svelte": {
+			"types": "./dist/exports/renderComponent.svelte.d.ts",
+			"svelte": "./dist/exports/renderComponent.svelte"
+		},
 		"./routes/+page.server": {
-			"types": "./dist/routes/+page.server.d.ts",
-			"default": "./dist/routes/+page.server.js"
+			"types": "./dist/exports/routes/+page.server.d.ts",
+			"default": "./dist/exports/routes/+page.server.js"
 		},
 		"./routes/+page.svelte": {
-			"types": "./dist/routes/+page.svelte.d.ts",
-			"svelte": "./dist/routes/+page.svelte"
+			"types": "./dist/exports/routes/+page.svelte.d.ts",
+			"svelte": "./dist/exports/routes/+page.svelte"
 		}
 	},
 	"files": [

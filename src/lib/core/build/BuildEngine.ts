@@ -5,17 +5,19 @@ import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
 import { CompileException } from '$exceptions/compile.js';
+import { customAlphabet } from 'nanoid';
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10);
 
 export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
 	protected static actions: Map<string, buildAction> = new Map();
-	protected static elementPaths: Map<string, string> = new Map();
-	protected static componentPaths = new Set<string>();
+	protected static serverActionsPaths: Map<string, string> = new Map();
+	protected static clientActionsPaths: Map<string, string> = new Map();
+	protected static componentPaths = new Map<string, string>();
 	static readonly importer: string = 'EmbodiBuildEngine';
 
-	protected static modulePaths = new Set<string>('EmbodiBuildEngine');
 
 	constructor(
 		path: string,
@@ -44,54 +46,97 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 
 	protected async resolveElement(_path: string): Promise<string> {
 		const path = resolve(_path);
-		const resolveId = await this.viteContext.resolve(path, BuildEngine.importer, { isEntry: true, })
+		const resolveId = await this.viteContext.resolve(path, BuildEngine.importer, { isEntry: true })
 		if(resolveId == null) {
 			throw new CompileException(`Could not resolve path ${path}`)
 		}
-		this.viteContext.load({
+		await this.viteContext.load({
 			id: resolveId.id,
 			resolveDependencies: true
 		});
 		return path;
 	}
 
-	async includeElement(_path: string, ...indetifiers: string[]): Promise<void> {
+	async resolveComponent(_path: string, ...identifiers: string[]): Promise<void> {
 		const path = await this.resolveElement(_path);
-		indetifiers.forEach((identifier) => {
-			BuildEngine.elementPaths.set(identifier.toUpperCase(), path);
+		identifiers.forEach((identifier) => {
+			BuildEngine.componentPaths.set(identifier.toUpperCase(), path);
 		});
 	}
 
-	static includeComponent(path: string): void {
-		BuildEngine.componentPaths.add(path);
+	async resolveServerActions(_path: string, ...identifiers: string[]): Promise<void> {
+		const path = await this.resolveElement(_path);
+		identifiers.forEach((identifier) => {
+			BuildEngine.serverActionsPaths.set(identifier.toUpperCase(), path);
+		});
 	}
 
-	static generateComponentImport(): string {
-		const importTemapate = (path: string) => `import '${path}';`;
-		return Array.from(BuildEngine.componentPaths).map((path) => importTemapate(path)).join('\n');
+	async resolveClientActions(_path: string, ...identifiers: string[]): Promise<void> {
+		const path = await this.resolveElement(_path);
+		identifiers.forEach((identifier) => {
+			BuildEngine.clientActionsPaths.set(identifier.toUpperCase(), path);
+		});
 	}
 
-	static generateSetup(): string {
-		const importTemapate = (path: string, name: string) => `import ${name} from '${path}';`;
-		const functionTemplate = (name: string) => `${name}('${name}')`;
-		const setupTemplate = (imports: string[], functions: string[]) => `
+	protected static generateSetupHelper(paths: Map<string, string>, directImport = false): [string[], string[]] {
+		const importDefaultTemapate = (path: string, ident: string) => `import * as ${ident} from '${path}';`;
+		const importDirectTemapate = (path: string, ident: string) => `import ${ident} from '${path}';`;
+		const elementTemplate = (ident: string, imp: string) => `['${ident}', ${imp}]`;
+		const imports = new Map<string, string>();
+		const actions = new Map<string, string>();
+
+		const importTemapate = directImport ? importDirectTemapate : importDefaultTemapate;
+
+
+		paths.forEach((value, key) => {	
+			if(!imports.has(value)) {
+				imports.set(value, nanoid());
+			}
+
+			actions.set(key, imports.get(value) as string);
+		})
+
+		const importStrings = Array.from(imports.entries()).map(([path, ident]) => importTemapate(path, ident));
+		const elementStrings = Array.from(actions.entries()).map(([ident, imp]) => elementTemplate(ident, imp));
+		
+		return [importStrings, elementStrings];
+	}
+
+	static generateClientSetup(): string {
+
+		const setupTemplate = (imports: string[], actions: string[], components: string[]) => `
 		${imports.join('\n')}
-		import { setup } from '@embodi/generator';
+		import clientSetup from '@embodi/generator/client/setup';
 
-		export default async () => setup({
-			elements: [${functions.join(',')}],
+		export default clientSetup({
+			actions: [${actions.join(',')}],
+			components: [${components.join(',')}],
 		});
 		`;
 
-		const imports: string[] = [];
-		const functions: string[] = [];
+		const [actionImportStrings, actionStrings] = BuildEngine.generateSetupHelper(BuildEngine.clientActionsPaths);
+		const [componentImportStrings, componentStrings] = BuildEngine.generateSetupHelper(BuildEngine.componentPaths, true);
 
-		BuildEngine.elementPaths.forEach((value, key) => {	
-			imports.push(importTemapate(value, key));
-			functions.push(functionTemplate(key));
-		})
+		const importStrings = [...actionImportStrings, ...componentImportStrings];
 
-		return setupTemplate(imports, functions);
+		return setupTemplate(importStrings, actionStrings, componentStrings);
+
+	}
+
+	static generateServerSetup(): string {
+
+		const setupTemplate = (imports: string[], actions: string[]) => `
+		${imports.join('\n')}
+		import serverSetup from '@embodi/generator/server/setup';
+
+		export default await serverSetup({
+			actions: [${actions.join(',')}],
+		});
+		`;
+
+		const [importStrings, elementStrings] = BuildEngine.generateSetupHelper(BuildEngine.serverActionsPaths);
+
+		return setupTemplate(importStrings, elementStrings);
 
 	}
 

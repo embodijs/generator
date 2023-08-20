@@ -77,9 +77,9 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
     const virtualDataModuleId = "$__embodi/data";
     const resolveVirtualDataModuleId = "\0" + virtualDataModuleId;
-    const virtualSetupModuleId = "$__embodi/setup";
+    const virtualSetupModuleId = "$__embodi/server/setup";
     const resolveVirtualSetupModuleId = "\0" + virtualSetupModuleId;
-    const virtualComponentModuleId = "$__embodi/components";
+    const virtualComponentModuleId = "$__embodi/client/setup";
     const resolveVirtualComponentModuleId = "\0" + virtualComponentModuleId;
 
     const setupEmbodiVirtuals: Plugin = {
@@ -98,11 +98,11 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 const {contentPath, pagesPath} = getConfig();
                 return `export const pages = ${JSON.stringify(getPages())};export const contentPath = "${contentPath}";export const pagePath = "${pagesPath}";`;
             }else if (id === resolveVirtualSetupModuleId) {
-                console.info("LOAD", id)
-                return await BuildEngine.generateSetup();
+                console.info("Load Embodi Server Setup");
+                return await BuildEngine.generateServerSetup();
             } else if (id === resolveVirtualComponentModuleId) {
-                console.info("Load Embodi Components")
-                return BuildEngine.generateComponentImport();
+                console.info("Load Embodi Client Setup")
+                return BuildEngine.generateClientSetup();
             }
         },
     }
@@ -123,5 +123,5 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
         }
     }
 
-    return [resolveElementComponents, embodiPlugin, setupEmbodiVirtuals]
+    return [embodiPlugin, setupEmbodiVirtuals]
 }

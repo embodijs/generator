@@ -1,42 +1,45 @@
-import type { ServerHelper, serverAction } from "$exports/types";
+import type { PageFile, ServerHelper, serverAction } from "$exports/types";
 import type { RequestEvent } from "@sveltejs/kit";
 import { AbstractBaseEngine } from "./AbstractBaseEngine.server";
-
+import LoadEngine from "./LoadEngine.server";
 
 export default class ServerEngine extends AbstractBaseEngine implements ServerHelper{
 
-	protected static actions = new Set<serverAction>();
-
     constructor(
         protected path: string,
-        protected svelteRequestEvent: Pick<RequestEvent<{page: string}, null>, 'setHeaders' | 'fetch' | 'params' | 'url'>
+		protected pages: PageFile[],
+        protected svelteRequestEvent: Pick<RequestEvent<{slug: string}, null>, 'setHeaders' | 'fetch' | 'params' | 'url'>
     ) {
 		super(path);
 	}
 
-	static registerAction(action: serverAction) {
-		ServerEngine.actions.add(action);
-	}
-
-	static hasActions(): boolean {
-		return ServerEngine.actions.size !== 0;
-	}
-
-	async compute(): Promise<unknown> {
-		if(ServerEngine.actions.size === 0) {
-			return;
+	async getPageBySlug (slug: string) {
+		const data = this.pages.find(({slug: s}) => s === slug);
+		
+		if(data == null){ 
+			throw new Error(`No page with slug ${slug} found`);
 		}
 
-		const iter = ServerEngine.actions.values();
-		const {params, url} = this.svelteRequestEvent
-		
-		let done: boolean | undefined;
-		let value: serverAction;
-		do {
-			({value, done} = iter.next());
-			const ret = await value(params.page, url, this);
-			if(ret != null) return ret;
-		} while (done !== true);
+		return data;
+	}
+
+	/**
+	 * Laod page and execute load actions if exists
+	 * 
+	 * @param slug - Slug of the page to load
+	 * @returns {Promise<PageFile>} - Computed page data
+	 */
+	async compute(slug: string): Promise<PageFile> {
+		const data = await this.getPageBySlug(slug);
+		if(LoadEngine.hasActions()) {
+			const loadEngine = new LoadEngine(this.path, this.svelteRequestEvent.fetch, data);
+			return {
+				...data,
+				content: await loadEngine.compute(data.content)
+			}
+		}
+
+		return data;
 	}
 
 	setHeaders(headers: Record<string, string>): void {

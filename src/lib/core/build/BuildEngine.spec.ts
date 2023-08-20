@@ -1,7 +1,9 @@
 import { faker } from "@faker-js/faker";
 import BuildEngine from "./BuildEngine";
 import path from "node:path";
-import type { PluginContext } from "rollup";
+import type { ResolvedId, PluginContext, ModuleInfo } from "rollup"
+import type { VitePluginContext } from "./contextHandlers";
+import { nanoid } from "nanoid";
 
 let returnData: unknown;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,9 +19,15 @@ vi.mock("node:fs", async () => {
         }
 }});
 
-class MockPluginContext {
+class MockPluginContext implements VitePluginContext {
 
     #filename: Record<string, string> = {};
+    watchFiles = () => {return;};
+    resolve = <PluginContext['resolve']>vi.fn(async (): Promise<Partial<ResolvedId>> => ({
+        id: nanoid(),
+        external: false,
+    }));
+    load = <PluginContext['load']>vi.fn(async (): Promise<Partial<ModuleInfo>> => ({}));
     getFileName = vi.fn((id: string) => `/${this.#filename[id]}`);
     emitFile = vi.fn(({fileName}) => {
         const id = faker.string.uuid();
@@ -28,8 +36,8 @@ class MockPluginContext {
     });
 }
 
-function getMockedPluginContext (): PluginContext {
-    return new MockPluginContext() as unknown as PluginContext;
+function getMockedPluginContext (): VitePluginContext {
+    return new MockPluginContext() as unknown as VitePluginContext;
 }
 
 describe("test RenderEngine", () => {
@@ -99,7 +107,7 @@ describe("test RenderEngine", () => {
             const buildFunctions = vi.fn((data) => Promise.resolve(data))
          
             const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            engine.registerAction(buildFunctions, data.type);
+            engine.registerBuildAction(buildFunctions, data.type);
             
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
@@ -130,9 +138,9 @@ describe("test RenderEngine", () => {
             const changingBuildFunctions = vi.fn((data) => Promise.resolve({...data, ...addedData}))
          
             const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            engine.registerAction(buildFunctions, data[a].type);
-            engine.registerAction(changingBuildFunctions, data[b].type);
-            engine.registerAction(buildFunctions, data[c].type);
+            engine.registerBuildAction(buildFunctions, data[a].type);
+            engine.registerBuildAction(changingBuildFunctions, data[b].type);
+            engine.registerBuildAction(buildFunctions, data[c].type);
             
             const computed = await engine.compute(data);
 
