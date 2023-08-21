@@ -107,7 +107,7 @@ describe("test RenderEngine", () => {
             const buildFunctions = vi.fn((data) => Promise.resolve(data))
          
             const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            engine.registerBuildAction(buildFunctions, data.type);
+            engine.registerAction(buildFunctions, data.type);
             
             const computed = await engine.compute(data);
             expect(computed).toEqual(data);
@@ -138,9 +138,9 @@ describe("test RenderEngine", () => {
             const changingBuildFunctions = vi.fn((data) => Promise.resolve({...data, ...addedData}))
          
             const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            engine.registerBuildAction(buildFunctions, data[a].type);
-            engine.registerBuildAction(changingBuildFunctions, data[b].type);
-            engine.registerBuildAction(buildFunctions, data[c].type);
+            engine.registerAction(buildFunctions, data[a].type);
+            engine.registerAction(changingBuildFunctions, data[b].type);
+            engine.registerAction(buildFunctions, data[c].type);
             
             const computed = await engine.compute(data);
 
