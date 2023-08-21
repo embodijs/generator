@@ -72,20 +72,11 @@ export interface EmbodiComponentProps<T = ElementData> {
 
 export type EmbodiComponent<T = ElementData> = typeof SvelteComponent<EmbodiComponentProps<T>>
 
-
-export interface EmbodiElement
-	<F extends ElementData = ElementData, B = F,  C = B>  
-{
-	identifier: string[];
-	loadAction?: (data: F) => Promise<B>
-	renderAction?: (data: B) => Promise<C>
-	component: EmbodiComponent<C>
-}
-
 export interface ServerHelper {
 	load(path: imagePath): Promise<Buffer>
 	load<T extends JsonMap = JsonMap>(path: jsonFile): Promise<T>
 	load(path: string): Promise<unknown>
+	compute(slug: string): Promise<PageFile>
 	setHeaders(headers: Record<string, string>): void
 	fetch(path: string, init?: RequestInit): Promise<Response>
 }
@@ -104,11 +95,11 @@ export interface LoadHelper {
 	
 
 export interface ClientHelper {
-	getComponent<C extends ElementData>(id: string): EmbodiComponent<C>
+	getComponent<C extends ElementData>(data: C): EmbodiComponent<C>
 }
 
-export interface serverAction<T = void> {
-	(slug: string, url: URL, helper: ServerHelper): Promise<T> | T
+export interface serverAction {
+	(slug: string, url: URL, helper: ServerHelper): Promise<PageFile> | PageFile
 }
 
 export interface loadAction<T extends ElementData = ElementData, U extends ElementData = T> {
@@ -116,15 +107,21 @@ export interface loadAction<T extends ElementData = ElementData, U extends Eleme
 }
 
 export interface renderAction<T extends ElementData = ElementData, U extends ElementData = T> {
-	(data: T, helper: ClientHelper): Promise<U> | U
+	(data: T, helper: ClientHelper): U
 }
 
-export interface SetupHelper { 
-	registerElement(element: EmbodiElement, ...identifier: string[]): void
-	registerComponent<C extends ElementData>(component: EmbodiComponent<C>, ...identifier: string[]): void
-	registerServerAction<T>(func: serverAction<T>): void
-	registerLoadAction<T extends ElementData, U extends ElementData = T>(func: loadAction<T, U>, ...identifier: string[]): void
-	registerRendeAction<T extends ElementData, U extends ElementData = T>(func: renderAction<T, U>, ...identifier: string[]): void
+export interface getComponentAction<T extends ElementData = ElementData> {
+	(data: T): EmbodiComponent<T>
+}
+
+export interface ClientActions {
+	getComponent: getComponentAction;
+	renderAction: renderAction;
+} 
+
+export interface ServerActions {
+	loadAction: loadAction;
+	serverAction: serverAction;
 }
 
 export interface PluginSetupFunc {
@@ -154,13 +151,14 @@ export interface BuildHelperBase {
 	load(path: imagePath): Promise<Buffer>
 	load<T extends JsonMap = JsonMap>(path: jsonFile): Promise<T>
 	load(path: string): Promise<unknown>
-	copyAsset (path: string, folder: string): Promise<string>
 	storeAsset (content: Buffer, name: string, fileType: string): Promise<string>
 }
 
 export interface BuildSetupHelper extends BuildHelperBase {
 	registerAction<T extends ElementData, U extends ElementData>(action: buildAction<T,U>, ...identifiers: string[]): void
-	includeElement(path: string, ...indetifiers: string[]): void
+	resolveComponent(path: string, ...identifiers: string[]): Promise<void>
+	resolveServerActions(path: string, ...identifiers: string[]): Promise<void>
+	resolveClientActions(path: string, ...identifiers: string[]): Promise<void>
 }
 
 export interface BuildHelper extends BuildHelperBase {

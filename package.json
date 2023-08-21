@@ -35,13 +35,25 @@
 		"./vite/types": {
 			"types": "./dist/exports/vite/types.d.ts"
 		},
+		"./client/setup": {
+			"types": "./dist/exports/setup/client.d.ts",
+			"default": "./dist/exports/setup/client.js"
+		},
+		"./server/setup": {
+			"types": "./dist/exports/setup/server.d.ts",
+			"default": "./dist/exports/setup/server.js"
+		},
+		"./renderComponent.svelte": {
+			"types": "./dist/exports/renderComponent.svelte.d.ts",
+			"svelte": "./dist/exports/renderComponent.svelte"
+		},
 		"./routes/+page.server": {
-			"types": "./dist/routes/+page.server.d.ts",
-			"default": "./dist/routes/+page.server.js"
+			"types": "./dist/exports/routes/+page.server.d.ts",
+			"default": "./dist/exports/routes/+page.server.js"
 		},
 		"./routes/+page.svelte": {
-			"types": "./dist/routes/+page.svelte.d.ts",
-			"svelte": "./dist/routes/+page.svelte"
+			"types": "./dist/exports/routes/+page.svelte.d.ts",
+			"svelte": "./dist/exports/routes/+page.svelte"
 		}
 	},
 	"files": [
@@ -62,7 +74,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"eslint": "^8.28.0",
-		"eslint-config-prettier": "^8.5.0",
+		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-svelte": "^2.30.0",
 		"prettier": "^3.0.0",
 		"prettier-plugin-svelte": "^3.0.0",
@@ -71,7 +83,7 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"vite": "^4.3.6",
-		"vitest": "^0.33.0"
+		"vitest": "^0.34.0"
 	},
 	"dependencies": {
 		"nanoid": "^4.0.2"

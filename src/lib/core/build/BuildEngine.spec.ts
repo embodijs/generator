@@ -1,7 +1,9 @@
 import { faker } from "@faker-js/faker";
 import BuildEngine from "./BuildEngine";
-import path from "node:path";
-import type { PluginContext } from "rollup";
+import path, { resolve } from "node:path";
+import type { ResolvedId, PluginContext, ModuleInfo } from "rollup"
+import type { VitePluginContext } from "./contextHandlers";
+import { nanoid } from "nanoid";
 
 let returnData: unknown;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17,9 +19,15 @@ vi.mock("node:fs", async () => {
         }
 }});
 
-class MockPluginContext {
+class MockPluginContext implements VitePluginContext {
 
     #filename: Record<string, string> = {};
+    watchFiles = () => {return;};
+    resolve = <PluginContext['resolve']>vi.fn(async (): Promise<Partial<ResolvedId>> => ({
+        id: nanoid(),
+        external: false,
+    }));
+    load = <PluginContext['load']>vi.fn(async (): Promise<Partial<ModuleInfo>> => ({}));
     getFileName = vi.fn((id: string) => `/${this.#filename[id]}`);
     emitFile = vi.fn(({fileName}) => {
         const id = faker.string.uuid();
@@ -28,11 +36,11 @@ class MockPluginContext {
     });
 }
 
-function getMockedPluginContext (): PluginContext {
-    return new MockPluginContext() as unknown as PluginContext;
+function getMockedPluginContext (): VitePluginContext {
+    return new MockPluginContext() as unknown as VitePluginContext;
 }
 
-describe("test RenderEngine", () => {
+describe.sequential("test RenderEngine", () => {
     
    
 
@@ -90,6 +98,115 @@ describe("test RenderEngine", () => {
         });
     });
 
+    describe.sequential("test setup scripts", () => {
+
+        const prepareFillCase = (ref: 'resolveComponent' | 'resolveClientActions' | 'resolveServerActions') => async (component: string, ...identifier: string[]) => {
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
+            await engine[ref](component, ...identifier);
+        };
+
+        const prepareTestCase = (script: string, directImport = false) => {
+
+            const loadAsDefault = directImport ? ' ' : ' \\* as ';
+
+            return async (component: string, ...identifier: string[]) => {
+
+                const path = resolve(component).replace('.', '\\.');
+                const importRegex = new RegExp(`import${loadAsDefault}[a-zA-Z0-9-_]+ from ['"]${path}['"];`, 'gm')
+
+                expect(script).toMatch(importRegex);
+                expect(importRegex.test(script)).toBeFalsy();
+
+                const importVariableRegex = new RegExp(`import${loadAsDefault}([a-zA-Z0-9_-]+) from ['"]${path}['"];`, 'gm')
+                const [,variable] = importVariableRegex.exec(script) ?? [];
+
+                identifier.forEach((id) => {
+                    const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
+                    expect(regex.exec(script)?.length).toBe(1);
+                });
+            }
+        };
+
+        class MockBuildEngine extends BuildEngine {
+            public static resetStatic () {
+                BuildEngine.componentPaths = new Map();
+                BuildEngine.clientActionsPaths = new Map();
+                BuildEngine.serverActionsPaths = new Map();
+            }
+        }
+
+        afterEach(() => {
+            MockBuildEngine.resetStatic();
+        });
+
+        test.each([
+            ['ident1.svelte', faker.lorem.word() ],
+            ['ident2.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident3.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident5.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ])("should generate a client setup script with components (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
+            await prepareFillCase('resolveComponent')(component, ...identifier);
+            const script = await BuildEngine.generateClientSetup();
+
+            await prepareTestCase(script, true)(component, ...identifier);
+        });
+
+        test.each([
+            ['ident1.ts', faker.lorem.word() ],
+            ['ident2.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident3.ts', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ])("should generate a client setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
+            await prepareFillCase('resolveClientActions')(component, ...identifier);
+            const script = await BuildEngine.generateClientSetup();
+
+            await prepareTestCase(script)(component, ...identifier);
+        });
+
+        test.each([
+            [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ]],
+            [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word(), faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ]],
+            [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ], ['test4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
+        ])("should generate a client setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
+            await Promise.all(data.map(async (data) => await prepareFillCase('resolveComponent')(data[0], ...data.slice(1))));
+
+            const script = await BuildEngine.generateClientSetup();
+            console.log(script);
+
+            await Promise.all(data.map(async (data) => prepareTestCase(script, true)(data[0], ...data.slice(1))));
+        });
+
+        test.each([
+            ['ident1.ts', faker.lorem.word() ],
+            ['ident2.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident3.ts', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+            ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ])("should generate a server setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
+            await prepareFillCase('resolveServerActions')(component, ...identifier);
+            
+            const script = await BuildEngine.generateServerSetup();
+
+            await prepareTestCase(script)(component, ...identifier);
+        });
+
+        test.each([
+            [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ]],
+            [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word(), faker.lorem.word() ], ['test3.js', faker.lorem.word() ]],
+            [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ], ['test3.ts', faker.lorem.word() ], ['test4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
+        ])("should generate a server setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
+            await Promise.all(data.map(async (data) => await prepareFillCase('resolveServerActions')(data[0], ...data.slice(1))));
+
+            const script = await BuildEngine.generateServerSetup();
+
+            await Promise.all(data.map(async (data) => prepareTestCase(script)(data[0], ...data.slice(1))));
+        });
+
+        
+    });
+
     describe("test compute", () => {
         test("should compute a single element", async () => {
             const data = {
@@ -139,7 +256,7 @@ describe("test RenderEngine", () => {
             const modifiedArray = [...data];
             modifiedArray[b] = {...data[b], ...addedData};
 
-            expect(computed).toEqual(modifiedArray);
+            expect(modifiedArray).toEqual(computed);
             expect(buildFunctions).toBeCalledTimes(2);
             expect(changingBuildFunctions).toBeCalledTimes(1);
             expect(buildFunctions).toBeCalledWith(data[a], engine);
