@@ -126,6 +126,7 @@ describe("test RenderEngine", () => {
 
             const importRegex = new RegExp(`import [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
 
+            expect(script).toMatch(importRegex);
             expect(importRegex.exec(script)?.length).toBe(1);
 
             const importVariableRegex = new RegExp(`import ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
@@ -150,6 +151,7 @@ describe("test RenderEngine", () => {
 
             const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
 
+            expect(script).toMatch(importRegex);
             expect(importRegex.exec(script)?.length).toBe(1);
 
             const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
@@ -174,6 +176,7 @@ describe("test RenderEngine", () => {
 
                 const importRegex = new RegExp(`import [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
 
+                expect(script).toMatch(importRegex);
                 expect(importRegex.exec(script)?.length).toBe(1);
 
                 const importVariableRegex = new RegExp(`import ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
@@ -199,6 +202,7 @@ describe("test RenderEngine", () => {
 
             const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
 
+            expect(script).toMatch(importRegex);
             expect(importRegex.exec(script)?.length).toBe(1);
 
             const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
@@ -228,6 +232,7 @@ describe("test RenderEngine", () => {
 
                 const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
 
+                expect(script).toMatch(importRegex);
                 expect(importRegex.exec(script)?.length).toBe(1);
 
                 const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
