@@ -4,8 +4,8 @@ import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
 import { CompileException } from '$exceptions/compile.js';
-import { customAlphabet } from 'nanoid';
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10);
+import { nanoid } from 'nanoid';
+
 
 export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
@@ -89,7 +89,7 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 
 		paths.forEach((value, key) => {	
 			if(!imports.has(value)) {
-				imports.set(value, nanoid());
+				imports.set(value, `i${nanoid()}`);
 			}
 
 			actions.set(key, imports.get(value) as string);

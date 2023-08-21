@@ -40,7 +40,7 @@ function getMockedPluginContext (): VitePluginContext {
     return new MockPluginContext() as unknown as VitePluginContext;
 }
 
-describe("test RenderEngine", () => {
+describe.sequential("test RenderEngine", () => {
     
    
 
@@ -98,7 +98,7 @@ describe("test RenderEngine", () => {
         });
     });
 
-    describe("test setup scripts", () => {
+    describe.sequential("test setup scripts", () => {
 
         const prepareFillCase = (ref: 'resolveComponent' | 'resolveClientActions' | 'resolveServerActions') => async (component: string, ...identifier: string[]) => {
             const engine = new BuildEngine("./test",  getMockedPluginContext());;
@@ -112,12 +112,12 @@ describe("test RenderEngine", () => {
             return async (component: string, ...identifier: string[]) => {
 
                 const path = resolve(component).replace('.', '\\.');
-                const importRegex = new RegExp(`import${loadAsDefault}[a-zA-Z]+ from ['"]${path}['"];`, 'gm')
+                const importRegex = new RegExp(`import${loadAsDefault}[a-zA-Z0-9-_]+ from ['"]${path}['"];`, 'gm')
 
                 expect(script).toMatch(importRegex);
                 expect(importRegex.test(script)).toBeFalsy();
 
-                const importVariableRegex = new RegExp(`import${loadAsDefault}([a-zA-Z]+) from ['"]${path}['"];`, 'gm')
+                const importVariableRegex = new RegExp(`import${loadAsDefault}([a-zA-Z0-9_-]+) from ['"]${path}['"];`, 'gm')
                 const [,variable] = importVariableRegex.exec(script) ?? [];
 
                 identifier.forEach((id) => {
@@ -135,7 +135,7 @@ describe("test RenderEngine", () => {
             }
         }
 
-        beforeEach(() => {
+        afterEach(() => {
             MockBuildEngine.resetStatic();
         });
 
@@ -170,9 +170,10 @@ describe("test RenderEngine", () => {
             [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word(), faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ]],
             [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ], ['test4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
         ])("should generate a client setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
-            await Promise.all(data.map(async (data) => prepareFillCase('resolveComponent')(data[0], ...data.slice(1))));
+            await Promise.all(data.map(async (data) => await prepareFillCase('resolveComponent')(data[0], ...data.slice(1))));
 
             const script = await BuildEngine.generateClientSetup();
+            console.log(script);
 
             await Promise.all(data.map(async (data) => prepareTestCase(script, true)(data[0], ...data.slice(1))));
         });
@@ -196,7 +197,7 @@ describe("test RenderEngine", () => {
             [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word(), faker.lorem.word() ], ['test3.js', faker.lorem.word() ]],
             [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ], ['test3.ts', faker.lorem.word() ], ['test4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
         ])("should generate a server setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
-            await Promise.all(data.map(async (data) => prepareFillCase('resolveServerActions')(data[0], ...data.slice(1))));
+            await Promise.all(data.map(async (data) => await prepareFillCase('resolveServerActions')(data[0], ...data.slice(1))));
 
             const script = await BuildEngine.generateServerSetup();
 
