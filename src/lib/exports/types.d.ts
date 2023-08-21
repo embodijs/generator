@@ -151,7 +151,6 @@ export interface BuildHelperBase {
 	load(path: imagePath): Promise<Buffer>
 	load<T extends JsonMap = JsonMap>(path: jsonFile): Promise<T>
 	load(path: string): Promise<unknown>
-	copyAsset (path: string, folder: string): Promise<string>
 	storeAsset (content: Buffer, name: string, fileType: string): Promise<string>
 }
 

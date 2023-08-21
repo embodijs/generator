@@ -1,6 +1,5 @@
 import type { BuildHelper, BuildSetupHelper, ElementData, buildAction } from '$exports/types';
-import { promises as fs } from 'node:fs';
-import { resolve, basename } from 'node:path';
+import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
@@ -163,13 +162,6 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 		} else {
 			return this.computeHelper(data);
 		}
-	}
-
-	async copyAsset(path: string, folder: string): Promise<string> {
-		const source = resolve(this.path, path);
-		const destination = resolve('./static', `.${folder}`, basename(path));
-		await fs.copyFile(source, destination);
-		return destination;
 	}
 
 	async storeAsset(content: Buffer | string, name: string, fileType: string): Promise<string> {
