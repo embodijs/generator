@@ -4,7 +4,6 @@ import path, { resolve } from "node:path";
 import type { ResolvedId, PluginContext, ModuleInfo } from "rollup"
 import type { VitePluginContext } from "./contextHandlers";
 import { nanoid } from "nanoid";
-import type { buildAction } from "$exports";
 
 let returnData: unknown;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -101,6 +100,33 @@ describe("test RenderEngine", () => {
 
     describe("test setup scripts", () => {
 
+        const prepareFillCase = (ref: 'resolveComponent' | 'resolveClientActions' | 'resolveServerActions') => async (component: string, ...identifier: string[]) => {
+            const engine = new BuildEngine("./test",  getMockedPluginContext());;
+            await engine[ref](component, ...identifier);
+        };
+
+        const prepareTestCase = (script: string, directImport = false) => {
+
+            const loadAsDefault = directImport ? ' ' : ' \\* as ';
+
+            return async (component: string, ...identifier: string[]) => {
+
+                const path = resolve(component).replace('.', '\\.');
+                const importRegex = new RegExp(`import${loadAsDefault}[a-zA-Z]+ from ['"]${path}['"];`, 'gm')
+
+                expect(script).toMatch(importRegex);
+                expect(importRegex.test(script)).toBeFalsy();
+
+                const importVariableRegex = new RegExp(`import${loadAsDefault}([a-zA-Z]+) from ['"]${path}['"];`, 'gm')
+                const [,variable] = importVariableRegex.exec(script) ?? [];
+
+                identifier.forEach((id) => {
+                    const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
+                    expect(regex.exec(script)?.length).toBe(1);
+                });
+            }
+        };
+
         class MockBuildEngine extends BuildEngine {
             public static resetStatic () {
                 BuildEngine.componentPaths = new Map();
@@ -120,22 +146,10 @@ describe("test RenderEngine", () => {
             ['ident4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
             ['ident5.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
         ])("should generate a client setup script with components (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
-            const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            await engine.resolveComponent(component, ...identifier);
+            await prepareFillCase('resolveComponent')(component, ...identifier);
             const script = await BuildEngine.generateClientSetup();
 
-            const importRegex = new RegExp(`import [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
-
-            expect(script).toMatch(importRegex);
-            expect(importRegex.exec(script)?.length).toBe(1);
-
-            const importVariableRegex = new RegExp(`import ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
-            const [,variable] = importVariableRegex.exec(script) ?? [];
-
-            identifier.forEach((id) => {
-                const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
-                expect(regex.exec(script)?.length).toBe(1);
-            });
+            await prepareTestCase(script, true)(component, ...identifier);
         });
 
         test.each([
@@ -145,22 +159,10 @@ describe("test RenderEngine", () => {
             ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
             ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
         ])("should generate a client setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
-            const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            await engine.resolveClientActions(component, ...identifier);
+            await prepareFillCase('resolveClientActions')(component, ...identifier);
             const script = await BuildEngine.generateClientSetup();
 
-            const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
-
-            expect(script).toMatch(importRegex);
-            expect(importRegex.exec(script)?.length).toBe(1);
-
-            const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
-            const [,variable] = importVariableRegex.exec(script) ?? [];
-
-            identifier.forEach((id) => {
-                const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
-                expect(regex.exec(script)?.length).toBe(1);
-            });
+            await prepareTestCase(script)(component, ...identifier);
         });
 
         test.each([
@@ -168,25 +170,11 @@ describe("test RenderEngine", () => {
             [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word(), faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ]],
             [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ], ['test4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
         ])("should generate a client setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
-            await Promise.all(data.map(async ([component, ...identifier]) => {
+            await Promise.all(data.map(async (data) => prepareFillCase('resolveComponent')(data[0], ...data.slice(1))));
 
-                const engine = new BuildEngine("./test",  getMockedPluginContext());;
-                await engine.resolveComponent(component, ...identifier);
-                const script = await BuildEngine.generateClientSetup();
+            const script = await BuildEngine.generateClientSetup();
 
-                const importRegex = new RegExp(`import [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
-
-                expect(script).toMatch(importRegex);
-                expect(importRegex.exec(script)?.length).toBe(1);
-
-                const importVariableRegex = new RegExp(`import ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
-                const [,variable] = importVariableRegex.exec(script) ?? [];
-
-                identifier.forEach((id) => {
-                    const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
-                    expect(regex.exec(script)?.length).toBe(1);
-                });
-            }));
+            await Promise.all(data.map(async (data) => prepareTestCase(script, true)(data[0], ...data.slice(1))));
         });
 
         test.each([
@@ -196,22 +184,11 @@ describe("test RenderEngine", () => {
             ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
             ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
         ])("should generate a server setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
-            const engine = new BuildEngine("./test",  getMockedPluginContext());;
-            await engine.resolveServerActions(component, ...identifier);
+            await prepareFillCase('resolveServerActions')(component, ...identifier);
+            
             const script = await BuildEngine.generateServerSetup();
 
-            const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
-
-            expect(script).toMatch(importRegex);
-            expect(importRegex.exec(script)?.length).toBe(1);
-
-            const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
-            const [,variable] = importVariableRegex.exec(script) ?? [];
-
-            identifier.forEach((id) => {
-                const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
-                expect(regex.exec(script)?.length).toBe(1);
-            });
+            await prepareTestCase(script)(component, ...identifier);
         });
 
         test.each([
@@ -219,31 +196,11 @@ describe("test RenderEngine", () => {
             [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word(), faker.lorem.word() ], ['test3.js', faker.lorem.word() ]],
             [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ], ['test3.ts', faker.lorem.word() ], ['test4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
         ])("should generate a server setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
-            await Promise.all(data.map(async ([component, ...identifier]) => {
-
-                const engine = new BuildEngine("./test",  getMockedPluginContext());;
-                await engine.resolveServerActions(component, ...identifier);
-                
-            }));
+            await Promise.all(data.map(async (data) => prepareFillCase('resolveServerActions')(data[0], ...data.slice(1))));
 
             const script = await BuildEngine.generateServerSetup();
 
-            await Promise.all(data.map(async ([component, ...identifier]) => {
-
-                const importRegex = new RegExp(`import \\* as [a-zA-Z]+ from ['"]${resolve(component)}['"];`)
-
-                expect(script).toMatch(importRegex);
-                expect(importRegex.exec(script)?.length).toBe(1);
-
-                const importVariableRegex = new RegExp(`import \\* as ([a-zA-Z]+) from ['"]${resolve(component)}['"];`)
-                const [,variable] = importVariableRegex.exec(script) ?? [];
-
-                identifier.forEach((id) => {
-                    const regex = new RegExp(`\\[\\s?['"]${id.toUpperCase()}['"],\\s?${variable}\\s?\\]`)
-                    expect(regex.exec(script)?.length).toBe(1);
-                });
-
-            }));
+            await Promise.all(data.map(async (data) => prepareTestCase(script)(data[0], ...data.slice(1))));
         });
 
         
