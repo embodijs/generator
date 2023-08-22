@@ -1,8 +1,15 @@
 import { resolve } from "node:path";
 import SetupGenerator from "./SetupGenerator";
-import { faker } from "@faker-js/faker";
+import { UnicRandom } from "$tests/utils/random";
 
 describe("test setup scripts", () => {
+
+    const unic = new UnicRandom();
+
+    afterEach(() => {
+        unic.reset();
+    });
+
 
     const prepareTestCases = (script: string, directImport = false) => {
 
@@ -27,11 +34,11 @@ describe("test setup scripts", () => {
     };
 
     test.each([
-        ['ident1.svelte', faker.lorem.word() ],
-        ['ident2.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident3.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident5.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ['ident1.svelte', unic.getWord() ],
+        ['ident2.svelte', unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident3.svelte', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident4.svelte', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident5.svelte', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
     ])("should generate a client setup script with components (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
         
         const setupGenerator = new SetupGenerator();
@@ -43,11 +50,11 @@ describe("test setup scripts", () => {
     });
 
     test.each([
-        ['ident1.ts', faker.lorem.word() ],
-        ['ident2.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident3.ts', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ['ident1.ts', unic.getWord() ],
+        ['ident2.js', unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident3.ts', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident4.js', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident5.tsx', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
     ])("should generate a client setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
         const setupGenerator = new SetupGenerator();
         setupGenerator.resolveClientActions(component, ...identifier);
@@ -58,9 +65,9 @@ describe("test setup scripts", () => {
     });
 
     test.each([
-        [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ]],
-        [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word(), faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ]],
-        [['test.svelte', faker.lorem.word() ], ['test2.svelte', faker.lorem.word() ], ['test3.svelte', faker.lorem.word() ], ['test4.svelte', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
+        [['test.svelte', 'hello' ], ['test2.svelte', 'world' ]],
+        [['test.svelte', 'embodi_group' ], ['test2.svelte', 'cat', unic.getWord() ], ['test3.svelte', 'static' ]],
+        [['test.svelte', 'apple' ], ['test2.svelte', 'ape' ], ['test3.svelte', unic.getWord() ], ['test4.svelte', 'miso', unic.getWord(), unic.getWord() ]],
     ])("should generate a client setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
         const setupGenerator = new SetupGenerator();
 
@@ -72,11 +79,11 @@ describe("test setup scripts", () => {
     });
 
     test.each([
-        ['ident1.ts', faker.lorem.word() ],
-        ['ident2.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident3.ts', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
-        ['ident5.tsx', faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
+        ['ident1.ts', 'embodi' ],
+        ['ident2.js', 'embodi', unic.getWord(), unic.getWord()],
+        ['ident3.ts', 'embodi', unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident4.js', 'embodi', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
+        ['ident5.tsx', 'embodi', unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord(), unic.getWord()],
     ])("should generate a server setup script with action reference (%s) and mulitple identifier", async (component, ...identifier: string[]) => {
         const setupGenerator = new SetupGenerator();
         setupGenerator.resolveServerActions(component, ...identifier);
@@ -87,9 +94,9 @@ describe("test setup scripts", () => {
     });
 
     test.each([
-        [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ]],
-        [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word(), faker.lorem.word() ], ['test3.js', faker.lorem.word() ]],
-        [['test.ts', faker.lorem.word() ], ['test2.ts', faker.lorem.word() ], ['test3.ts', faker.lorem.word() ], ['test4.js', faker.lorem.word(), faker.lorem.word(), faker.lorem.word() ]],
+        [['test.ts', unic.getWord() ], ['test2.ts', unic.getWord() ]],
+        [['test.ts', unic.getWord() ], ['test2.ts', unic.getWord(), unic.getWord() ], ['test3.js', unic.getWord() ]],
+        [['test.ts', unic.getWord() ], ['test2.ts', unic.getWord() ], ['test3.ts', unic.getWord() ], ['test4.js', unic.getWord(), unic.getWord(), unic.getWord() ]],
     ])("should generate a server setup script with multiple components and identifiers (test: %#)", async (...data: string[][]) => {
         const setupGenerator = new SetupGenerator();
         data.forEach((data) => setupGenerator.resolveServerActions(data[0], ...data.slice(1)));
