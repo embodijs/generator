@@ -60,3 +60,24 @@ export const createRandomJson = () => {
     }
     return obj;
 }
+
+export class UnicRandom {
+    protected unic: Set<unknown> = new Set();
+
+    constructor() {
+        this.unic = new Set();
+    }
+
+    reset() {
+        this.unic = new Set();
+    }
+
+    getWord () {
+        let word = faker.lorem.word();
+        while(this.unic.has(word)) {
+            word = faker.lorem.word();
+        }
+        this.unic.add(word);
+        return word;
+    }
+}

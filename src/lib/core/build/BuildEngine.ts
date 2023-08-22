@@ -4,27 +4,26 @@ import { createHash } from 'node:crypto';
 import type { VitePluginContext } from './contextHandlers.js';
 import { AbstractBaseEngine } from '$core/elements/AbstractBaseEngine.server.js';
 import { CompileException } from '$exceptions/compile.js';
-import { nanoid } from 'nanoid';
-
+import type SetupGenerator from './SetupGenerator.js';
 
 export default class BuildEngine extends AbstractBaseEngine implements BuildHelper, BuildSetupHelper {
 
 	protected path: string;
 	protected viteContext: VitePluginContext;
-	protected static actions: Map<string, buildAction> = new Map();
-	protected static serverActionsPaths: Map<string, string> = new Map();
-	protected static clientActionsPaths: Map<string, string> = new Map();
-	protected static componentPaths = new Map<string, string>();
+	protected setupGenerator: SetupGenerator;
+	protected actions: Map<string, buildAction> = new Map();
 	static readonly importer: string = 'EmbodiBuildEngine';
 
 
 	constructor(
 		path: string,
 		context: VitePluginContext,
+		setupGenerator: SetupGenerator
 	) {
 		super(path);
 		this.path = resolve(path);
 		this.viteContext = context;
+		this.setupGenerator = setupGenerator;
 	}
 
 	getPath() {
@@ -32,14 +31,15 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 	}
 
 	createEngine(path: string) {
-		const engine = new BuildEngine(resolve(this.path, path), this.viteContext);
+		const engine = new BuildEngine(resolve(this.path, path), this.viteContext, this.setupGenerator);
+		engine.actions = this.actions;
 		return engine;
 	}
 
 	registerAction<T extends ElementData, U extends ElementData = T>(action: buildAction<T, U>, ...identifiers: string[]): void {
 		identifiers.forEach((identifier) => {
 			//TODO: think about type conversion and remove unknwon
-			BuildEngine.actions.set(identifier.toUpperCase(), <buildAction>(action as unknown));
+			this.actions.set(identifier.toUpperCase(), <buildAction>(action as unknown));
 		});
 	}
 
@@ -58,90 +58,22 @@ export default class BuildEngine extends AbstractBaseEngine implements BuildHelp
 
 	async resolveComponent(_path: string, ...identifiers: string[]): Promise<void> {
 		const path = await this.resolveElement(_path);
-		identifiers.forEach((identifier) => {
-			BuildEngine.componentPaths.set(identifier.toUpperCase(), path);
-		});
+		this.setupGenerator.resolveComponent(path, ...identifiers);
 	}
 
 	async resolveServerActions(_path: string, ...identifiers: string[]): Promise<void> {
 		const path = await this.resolveElement(_path);
-		identifiers.forEach((identifier) => {
-			BuildEngine.serverActionsPaths.set(identifier.toUpperCase(), path);
-		});
+		this.setupGenerator.resolveServerActions(path, ...identifiers);
 	}
 
 	async resolveClientActions(_path: string, ...identifiers: string[]): Promise<void> {
 		const path = await this.resolveElement(_path);
-		identifiers.forEach((identifier) => {
-			BuildEngine.clientActionsPaths.set(identifier.toUpperCase(), path);
-		});
-	}
-
-	protected static generateSetupHelper(paths: Map<string, string>, directImport = false): [string[], string[]] {
-		const importDefaultTemapate = (path: string, ident: string) => `import * as ${ident} from '${path}';`;
-		const importDirectTemapate = (path: string, ident: string) => `import ${ident} from '${path}';`;
-		const elementTemplate = (ident: string, imp: string) => `['${ident}', ${imp}]`;
-		const imports = new Map<string, string>();
-		const actions = new Map<string, string>();
-
-		const importTemapate = directImport ? importDirectTemapate : importDefaultTemapate;
-
-
-		paths.forEach((value, key) => {	
-			if(!imports.has(value)) {
-				imports.set(value, `i${nanoid()}`);
-			}
-
-			actions.set(key, imports.get(value) as string);
-		})
-
-		const importStrings = Array.from(imports.entries()).map(([path, ident]) => importTemapate(path, ident));
-		const elementStrings = Array.from(actions.entries()).map(([ident, imp]) => elementTemplate(ident, imp));
-		
-		return [importStrings, elementStrings];
-	}
-
-	static generateClientSetup(): string {
-
-		const setupTemplate = (imports: string[], actions: string[], components: string[]) => `
-		${imports.join('\n')}
-		import clientSetup from '@embodi/generator/client/setup';
-
-		export default clientSetup({
-			actions: [${actions.join(',')}],
-			components: [${components.join(',')}],
-		});
-		`;
-
-		const [actionImportStrings, actionStrings] = BuildEngine.generateSetupHelper(BuildEngine.clientActionsPaths);
-		const [componentImportStrings, componentStrings] = BuildEngine.generateSetupHelper(BuildEngine.componentPaths, true);
-
-		const importStrings = [...actionImportStrings, ...componentImportStrings];
-
-		return setupTemplate(importStrings, actionStrings, componentStrings);
-
-	}
-
-	static generateServerSetup(): string {
-
-		const setupTemplate = (imports: string[], actions: string[]) => `
-		${imports.join('\n')}
-		import serverSetup from '@embodi/generator/server/setup';
-
-		export default await serverSetup({
-			actions: [${actions.join(',')}],
-		});
-		`;
-
-		const [importStrings, elementStrings] = BuildEngine.generateSetupHelper(BuildEngine.serverActionsPaths);
-
-		return setupTemplate(importStrings, elementStrings);
-
+		this.setupGenerator.resolveClientActions(path, ...identifiers);
 	}
 
 	protected getActionByName(name: string): buildAction | undefined {
 		const upperCaseName = name.toUpperCase();
-		return BuildEngine.actions.get(upperCaseName);
+		return this.actions.get(upperCaseName);
 
 	}
 

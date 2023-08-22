@@ -7,12 +7,13 @@ import { ViteBuildContext, ViteDevContext, VitePluginContext } from "$core/build
 import { getPages, updatePage, loadPages } from "$core/build/pages.js";
 import { getConfig, initConfig } from "$core/build/config.js";
 import type { PageFile } from "$exports/types.d.ts";
-import ResolveElementComponents from "$core/build/ResolveElementComponents.js";
+import SetupGenerator from "$core/build/SetupGenerator.js";
 export type { EmbodiBuildConfig };
 
 export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
     let contextHandle: VitePluginContext;
+    let engine: BuildEngine;
 
     const embodiPlugin: Plugin = {
         name: 'vite-plugin-embodi',
@@ -24,11 +25,12 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
             const {pagesPath, contentPath, isBuild} = getConfig();
 
             contextHandle = isBuild === true ? new ViteBuildContext(this) : new ViteDevContext(this);
-            const engine = new BuildEngine(contentPath, contextHandle);
+            const setupGenerator = SetupGenerator.getInstance();
+            engine = new BuildEngine(contentPath, contextHandle, setupGenerator);
             console.info("Building pages");
             await Promise.all(init.elements.map((element) => element(engine)));
             
-            await loadPages(pagesPath, contextHandle);
+            await loadPages(pagesPath, contextHandle, engine);
 
             
         },
@@ -41,7 +43,7 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
 
             const {content, ...meta} = <PageFile>JSON.parse(pageString);
             if(meta.type.toLowerCase() !== "page") return;
-            const helper = new BuildEngine(dirname(file), contextHandle);
+            const helper = engine.createEngine(dirname(file));
             await updatePage({
                 ...meta,
                 content: await helper.compute(content)
@@ -99,28 +101,12 @@ export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {
                 return `export const pages = ${JSON.stringify(getPages())};export const contentPath = "${contentPath}";export const pagePath = "${pagesPath}";`;
             }else if (id === resolveVirtualSetupModuleId) {
                 console.info("Load Embodi Server Setup");
-                return await BuildEngine.generateServerSetup();
+                return await SetupGenerator.getInstance().generateServerSetup();
             } else if (id === resolveVirtualComponentModuleId) {
                 console.info("Load Embodi Client Setup")
-                return BuildEngine.generateClientSetup();
+                return SetupGenerator.getInstance().generateClientSetup();
             }
         },
-    }
-
-    let resolver: ResolveElementComponents;
-
-    const resolveElementComponents: Plugin = {
-        name: "vite-plugin-embodi-components",
-        enforce: "pre",
-        configResolved() {
-            resolver = new ResolveElementComponents();
-        },
-            
-        async resolveId(source, importer) {
-            if(await resolver.partOfElement(source, importer)) {
-                console.log("RESOLVE", source, importer);
-            }
-        }
     }
 
     return [embodiPlugin, setupEmbodiVirtuals]
