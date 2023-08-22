@@ -167,6 +167,6 @@ export interface BuildHelper extends BuildHelperBase {
 	createEngine(path: string): BuildHelper
 }
 
-export interface beforeAllFunc {
+export interface buildSetupAction {
 	(helper: BuildSetupHelper): Promise<void>,
 }
