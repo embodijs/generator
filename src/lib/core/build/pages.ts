@@ -2,7 +2,7 @@ import { JsonFilesystem, type ContentManager } from "$core/content-manager/index
 import type { PageFile } from "$exports/types";
 import { dirname, resolve } from "node:path";
 import type { VitePluginContext } from "./contextHandlers.js";
-import BuildEngine from "./BuildEngine.js";
+import type BuildEngine from "./BuildEngine.js";
 
 const _pages: PageFile[] = [];
 
@@ -11,9 +11,9 @@ export async function registerPage(...pages: Promise<PageFile>[] | PageFile[]) {
     _pages.push(...p);
 }
 
-const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: string, rollupContext: VitePluginContext) => async (path: string): Promise<PageFile> => {
+const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: string, rollupContext: VitePluginContext, buildEngine: BuildEngine) => async (path: string): Promise<PageFile> => {
     const { content, ...meta} = await contentManager.load(path);
-    const helper = new BuildEngine(dirname(resolve(basePath, path)), rollupContext);
+    const helper = buildEngine.createEngine(dirname(resolve(basePath, path)));
 
     return {
         ...meta,
@@ -21,10 +21,10 @@ const prepareHandlePage = (contentManager: ContentManager<PageFile>, basePath: s
     }
 };
 
-export async function loadPages(path: string, context: VitePluginContext) {
+export async function loadPages(path: string, context: VitePluginContext, buildEngine: BuildEngine) {
     const pageManager = new JsonFilesystem<PageFile>(path);
     const raw =  await pageManager.listOfIdentifiers();
-    await registerPage(...raw.map(prepareHandlePage(pageManager, path, context)));
+    await registerPage(...raw.map(prepareHandlePage(pageManager, path, context, buildEngine)));
 }
 
 export async function updatePage(...pages: Promise<PageFile>[] | PageFile[]) {
