@@ -7,7 +7,7 @@ import { ViteBuildContext, ViteDevContext, VitePluginContext } from "$core/build
 import { getPages, updatePage, loadPages } from "$core/build/pages.js";
 import { getConfig, initConfig } from "$core/build/config.js";
 import type { PageFile } from "$exports/types.d.ts";
-import SetupGenerator from "$core/build/SetupGenerator";
+import SetupGenerator from "$core/build/SetupGenerator.js";
 export type { EmbodiBuildConfig };
 
 export const embodi = async (init: EmbodiBuildConfig): Promise<Plugin[]> => {

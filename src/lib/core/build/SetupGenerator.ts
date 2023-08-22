@@ -1,5 +1,6 @@
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 import { resolve } from "node:path";
+const nanoid = customAlphabet('abcdefghijklmnopqstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ', 10);
 
 
 export default class SetupGenerator {
