@@ -1,15 +1,26 @@
 # Embodi - static site generator
 
-Embodi will help you to build and edit your sites easily. The main elements of embodi are components, client, server, and build actions. All of them could be combined in a plugin.
+Embodi will assist you in easily creating and modifying the content for your static website. You can insert your own plugins or load them from the web. These Elements come in various types including actions and components.
 
+- `buildSetupAction` is the entry point to your own Element and registers all other parts.
+- `buildAction' can be registered in the build setup action with `helper.registerAction' and will be called when the content is rendered. This allows, for example, to register files as assets in the PageFile.
+- `ServerActions` must be exported by a file that can be registered in the build setup with `helper.resolveServerActions'.
+- `ClientActions` need to be browser compatible because they are called on server side rendering or client side rendering. Same as `ServerActions` you need a file that exports them to register the file with `helper.resolveClientActions`.
+- `EmbodiComponent` are the most important part, because they give your site the beauty it deserves. Components need to be written in svelte and could be added with `helper.resolveComponents`.
 
-## config
+At minimum, you can add components that are registered in the build setup action. Currently, you need to write the JSON describing your page yourself, but we are working on an editing tool to make it more user-friendly.
 
-You need to setup a svletekit project to use embodi. You can use the same comands as in svelte to run or develop the project and you still able to build routes beside embodi routes.
+So, the goal of Embodi is to provide you with an easy way to create and edit your own website, as well as the ability to create custom elements. This gives you complete control over the design of your site.
 
-### extend vite config
-You need to add embodi to your vite config and register the plugins.
-The paths you set for pages and content are needed to load the data. We recomand to put the pages folder inside the content folder, but it is also possible to seperate them.
+You will find types and interfaces in [src/lib/exports/types.d.ts](https://github.com/embodijs/generator/blob/main/src/lib/exports/types.d.ts)
+
+## Config
+
+To use Embodi, you need to set up a SvelteKit project. You can use the same commands as in SvelteKit to run or develop the project, and you can still build routes in addition to Embodi routes.
+
+### Extend Vite Config
+
+You need to add Embodi to your Vite config and register the plugins. The paths you set for pages and content are necessary to load the data. We recommend placing the pages folder within the content folder, although it is also feasible to separate them.
 
 This in an example from [embodi-content-template](https://github.com/CordlessWool/embodi-content-template/)
 ```TS
@@ -44,12 +55,12 @@ export default defineConfig({
 });
 ```
 
-### set routes
-Embodi delivers you a complete ready route file, but currently svelte to not allow to insert them outomaticly you need to create them by your own in your routes folder.
-For doing this you need to create a `+page.server.ts` / `+page.server.js` and a `+page.svelte` file unter the path `[...slug]`. [EXAMPLE](https://github.com/embodijs/generator/tree/main/src/routes)
+### Setting up Embodi routes
+
+Embodi delivers you a complete ready routes file, but currently svelte to not allow to insert them outomatic, you need to create them by yourself in your routes folder. You need to create a `+page.server.ts` / `+page.server.js` and a `+page.svelte` file under the path `[...slug]` and insert the following code. [EXAMPLE](https://github.com/embodijs/generator/tree/main/src/routes)
 
 ```TS
-//+pages.sverver.ts
+//[...slug]/+pages.sverver.ts
 import type { EntryGenerator } from './$types.js';
 
 export const entries = (() => {
@@ -62,7 +73,7 @@ export * from '@embodi/generator/routes/+page.server';
 ```
 
 ```TS
-//+pages.svelte
+//[...slug]/+pages.svelte
 <script lang="ts" context="module">
 
     export * from "@embodi/generator/routes/+page.svelte";
@@ -77,23 +88,20 @@ export * from '@embodi/generator/routes/+page.server';
 
 ```
 
+## Writing an Element
 
+A plugin has multiple parts that must be registered in a build setup function to load it.
 
+You can find some examples of elements in [embodi-content-template](https://github.com/CordlessWool/embodi-content-template/tree/main/template/src/lib/elements)
 
-## writing a plugin
+Each function that you can register gets a helper engine that provides you with some features to make your life easier. You can find definitions of public helper functions [here](https://github.com/embodijs/generator/blob/main/src/lib/exports/types.d.ts)
 
-A plugin has multiple parts, which need to be registerd in a build setup function, which could be loaded via plugins. Plugins are called elements in embodi
+### Build Actions
 
-You will find some examples for elements in [embodi-content-template](https://github.com/CordlessWool/embodi-content-template/tree/main/template/src/lib/elements)
+Build actions are the main entry point where you register all the files and functions you need to run your item at runtime.
 
-Each function you can register will get an helper engine, which offers you some functions to do what you need. You will find definitions of public helper functions [here](https://github.com/embodijs/generator/blob/main/src/lib/exports/types.d.ts) 
-
-### build actions
-
-Build actions are the main entry point where you register all the files and functions you need at runtime to run you element.
-
-In this example regsiters a build action and link a svelte component. You can also register a file with client and server actions that will run at runtime.
-> Important: You have to set a file which exports the allowed functions by name for server and client actions and a svelte component file for components. It is not possible to load them in before here, because this script will be run in vite and not all functionality is avalible at this point, but they will be called with the identifier (referenced by the `type` Attribute in ElementData).
+The following example registers a build action and associates a lightweight component. You can also register a file with client and server actions that run at runtime.
+> Important: You must specify a file that exports the allowed functions by name for server and client actions, and a svelte component file for components. It is not possible to load them beforehand because this script is run in vite and not all functionality is avaliable at this point, but they will be called with the identifier (referenced by the `type` attribute in ElementData).
 
 ```TS
 import type { GroupElementData } from './types.js';
@@ -147,27 +155,29 @@ export interface BuildHelper extends BuildHelperBase {
 }
 ```
 
-### component
+### EmbodiComponent
 
-This need to be a regular svlete component which get the data via a `PageFile` (see json file). Data a piped as `data` to the component, so your component needs to export it.
+This must be a regular svlete component that gets the data via a `PageFile` (see json file). Data is piped as `data` to the component, so your component needs to export it.
 
-A Component is defined by:
+A component is defined by
 ```TS
 export interface EmbodiComponentProps<T = ElementData> {
 	data: T;
+	engine?: ClientHelper;
 }
+
+export type EmbodiComponent<T = ElementData> = typeof SvelteComponent<EmbodiComponentProps<T>>
 ```
 
 
-## json file
+## JSON files
 
-All data are stored in JSON file and each page will be a JSON file. Depending on the type of file they have different attraibute, but mainly there are having the same structur.
+All data is stored in JSON files, with each page being a separate JSON file. Different file types have different attributes, but all generally follow the same structure.
 
-### PageFile
+### Page Files
 
-Each page file need to be discribeable by the following interfache.
-`ElementData` will discribe the base structure of you plugin data. The type is the same parameter your registerd your plugins and identifies them.
-Put your page files in the pages folder you set in the configuraton and they will automatily read at build time. The `load` function in the sever and build actions are loading data relative to the current readed page file. So you do not have to set paths absolute. [EXAMPLE](https://github.com/CordlessWool/embodi-content-template/tree/main/content/pages)
+Each page file needs to adhere to the following interface.
+The "ElementData" describes the base structure of your plugin data. The type parameter should be the same as the one with which you registered your plugins to identify them. Put your page files in the pages folder that you have specified in the configuration, and they will be automatically read during the build time. The `load` function in the server and build actions reads data relative to the currently read page file, so you do not need to set absolute paths. Check out this [example](https://github.com/CordlessWool/embodi-content-template/tree/main/content/pages).
 
 ```TS
 interface PageFile {
