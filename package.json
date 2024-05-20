@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "test": "vitest",
-    "start": "node dist/exports/lib.js"
   },
   "keywords": [
     "@embodi",
