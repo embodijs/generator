@@ -1,7 +1,5 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
-import * as fs from 'node:fs'
-import { resolve } from 'node:path';
 import markdownIt from 'markdown-it';
 
 interface PageData {

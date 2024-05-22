@@ -1,5 +1,7 @@
 {
-  "name": "@embodi/compiler",
+  "name": "@embodi/generator",
+  "version": "0.4.0",
+  "license": "Apache-2.0",
   "module": "dist/exports/lib.ts",
   "main": "dist/exports/lib.js",
   "types": "dist/exports/lib.d.ts",
@@ -14,7 +16,7 @@
     "@embodi",
     "svelte",
     "vite",
-    "compiler",
+    "generator",
     "typescript",
     "bundler"
   ],

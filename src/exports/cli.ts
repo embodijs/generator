@@ -1,11 +1,12 @@
 import minimist from 'minimist';
 import { createLogger } from 'vite';
 import { createDevServer, createPreviewServer } from './lib.js';
+import packageJson from '../../package.json' assert { type: "json" };
 import { generate } from './lib.js';
 const argv: any = minimist(process.argv.slice(2));
 
 const logVersion = (logger = createLogger()) => {
-  logger.info(`\n Welcome to embodi`, {
+  logger.info(`\nWelcome to embodi ${packageJson.version}`, {
     clear: !logger.hasWarned
   })
 }
@@ -30,10 +31,7 @@ if (command === 'dev') {
   await server.listen(5173);
   server.printUrls()
   server.bindCLIShortcuts({ print: true })
-  toDestroy.push(() => {
-    server.close();
-    console.log('Server stopped');
-  });
+  toDestroy.push(server.close.bind(server));
 }
 
 if (command === 'generate') {
@@ -44,10 +42,7 @@ if (command === 'generate') {
 if(command === 'preview') {
   logVersion();
   const server = await createPreviewServer();
-  toDestroy.push(() => {
-    server.close();
-    console.log('Server stopped');
-  });
+  toDestroy.push(server.close.bind(server));
 }
 
 process.on('SIGINT', handleExit);

@@ -47,7 +47,6 @@ export async function render(url: string, manifest?: Manifest) {
   // @ts-ignore
   const data = app.Component?.render({ data: app.data, content: app.content });
   if(!data) return;
-  console.log('data', data.css);
   return {
     head: `${data.head ?? ''}\n${head}${entryHead}`,
     css: data.css.code === '' ? undefined : `<style>${data.css.code}</style>`,

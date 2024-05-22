@@ -1,5 +1,5 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { configPlugin, virtualPlugin } from "./vite/embodi.js";
+import { configPlugin, prerenderPlugin, virtualPlugin } from "./vite/embodi.js";
 import { embodiFrontMatter } from "./vite/front-matter.js";
 import { build as viteBuild, defineConfig, type Plugin } from "vite";
 import { prerender } from "./app/prerender.js";
@@ -34,12 +34,17 @@ export const generate = async () => {
 	console.info('build server scripts...');
 	await viteBuild({
 		...config,
+		plugins: [
+			...config.plugins!,
+			prerenderPlugin()
+
+		],
 		build: {
 			...config.build,
 			ssr: true
 		}
 	});
-	console.info('prerendering...');
-	prerender();
+	// console.info('prerendering...');
+	// prerender();
 
 }

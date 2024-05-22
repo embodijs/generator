@@ -1,10 +1,10 @@
-
-
-
-
 import path from 'node:path'
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter'
 import type { LoomFile } from '@loom-io/core';
+
+export interface PrerenderOptions {
+	statics: string;
+}
 
 const fs = new FilesystemAdapter();
 
@@ -25,12 +25,13 @@ const getRoutesToPrerender = async () => {
   })
 }
 
-export const prerender = async () => {
+export const prerender = async ({ statics }: PrerenderOptions) => {
 
 	const manifest = JSON.parse(
 		await fs.file('/dist/static/.vite/manifest.json').text('utf-8')
 	)
-	const template = await fs.file('/app.html').text('utf-8')
+	const staticDir = await fs.dir(statics);
+	const template = await staticDir.file('app.html').text('utf-8')
 
 	const { render } = await import(toAbsolute('dist/server/entry-server.js'))
 
