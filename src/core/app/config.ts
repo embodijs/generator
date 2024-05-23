@@ -10,7 +10,8 @@ export const defineConfig = (config: EmbodiConfig): EmbodiConfig => {
 		source: config.source ? config.source : "",
 		build: {
 			plugins: config.build?.plugins ?? []
-		}
+		},
+		templatePrefix: config.templatePrefix ? config.templatePrefix : "./__layout",
 	};
 
 	return mixedConfig;

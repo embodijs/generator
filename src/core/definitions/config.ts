@@ -9,5 +9,6 @@ export interface EmbodiConfig {
 	base: string;
 	dist: string;
 	source: string;
+	templatePrefix: string;
 	build: EmbodiBuildConfig;
 }
