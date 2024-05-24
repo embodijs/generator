@@ -27,24 +27,19 @@ export function embodiFrontMatter () {
 			embodiConfig = await loadConfig(cwd);
 			return config;
 		},
-		async resolveId(id) {
-			if (id.startsWith('$template')) {
-				const { templatePrefix } = embodiConfig;
-				if(isRelativePath(templatePrefix)){
-					return id.replace('$template', resolve(templatePrefix));
-				}
-				return id.replace('$template', templatePrefix);
-			}
-		},
-
 		async transform(code, id) {
 			if(id.endsWith('.md')) {
 				//@ts-ignore
 				const { attributes, body } = fm<PageData>(code);
+				const { templatePrefix } = embodiConfig;
+
 				const {layout} = attributes;
 				let result = `export const data = ${JSON.stringify(attributes)}; export const content = ${JSON.stringify(markdownIt().render(body))};`
 				if(layout ) {
-					result = `import Component from '${`$template/${layout}.svelte`}'; export { Component }; \n` + result;
+					if(isRelativePath(templatePrefix))
+						result = `import Component from '${`${resolve(templatePrefix, `${layout}.svelte`)}`}'; export { Component }; \n` + result;
+					else
+						result = `import Component from '${`${templatePrefix}/${layout}.svelte`}'; export { Component }; \n` + result;
 				}
 
 
