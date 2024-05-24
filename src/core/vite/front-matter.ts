@@ -36,10 +36,11 @@ export function embodiFrontMatter () {
 				const {layout} = attributes;
 				let result = `export const data = ${JSON.stringify(attributes)}; export const content = ${JSON.stringify(markdownIt().render(body))};`
 				if(layout ) {
-					if(isRelativePath(templatePrefix))
+					if(isRelativePath(templatePrefix)) {
 						result = `import Component from '${`${resolve(templatePrefix, `${layout}.svelte`)}`}'; export { Component }; \n` + result;
-					else
+					} else {
 						result = `import Component from '${`${templatePrefix}/${layout}.svelte`}'; export { Component }; \n` + result;
+					}
 				}
 
 
