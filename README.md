@@ -1,4 +1,4 @@
-# @embodi/compiler
+# @embodi/generator
 
 This project is a static site generator build on [vite]() and [svelte]() in earlier version it tried to use also sveltekit, but seem to be easier to concentrate on svelte.
 

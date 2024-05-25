@@ -1,3 +1,4 @@
+import type { SvelteComponent } from "svelte";
 
 
 export const createRouter = () => {
@@ -14,9 +15,14 @@ export const createRouter = () => {
 		const pages = pagesPromise;
 		const path = convertUrlToPath(url);
 		if (pages[path]) {
-			return pages[path]();
+			return pages[path]() as Promise<{
+					data: Record<string, unknown>,
+					content: string,
+					Component?: SvelteComponent['default']
+				}>
 		}
 	};
+
 
 	return {
 		load: loadPage,

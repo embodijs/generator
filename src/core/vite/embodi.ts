@@ -1,4 +1,4 @@
-import type { Plugin, UserConfig } from "vite";
+import { type ModuleNode, type Plugin, type UserConfig } from "vite";
 import * as fs from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from "node:url";
@@ -96,11 +96,39 @@ export const configPlugin = () => ({
 
 	export const devServerPlugin = () => ({
 		name: "embodi-dev-server-plugin",
+
+		config(config) {
+			return {
+				...config,
+				server: {
+					...config.server,
+					hmr: true
+				}
+			}
+		},
+		async handleHotUpdate({ server, modules, timestamp, file, read }) {
+			console.log('hot update', file);
+			if(!file.endsWith('.md')) {
+				return;
+			}
+			const path = file.slice(cwd.length);
+
+
+			const module = await server.moduleGraph.getModuleByUrl(path);
+			if(module == null) {
+					return;
+			}
+			server.hot.send({
+				type: 'full-reload',
+			})
+
+			return [module];
+		},
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
 				const template = await fs.readFile("app.html", "utf-8");
-				const linkToClient = `<script type="module" src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
+				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
 				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
 
 				const rendered = await render(req.originalUrl);
@@ -109,8 +137,8 @@ export const configPlugin = () => ({
 				}
 
 				const html = template
-					.replace(`<!--app-head-->`, rendered.head ?? '')
-					.replace(`<!--app-html-->`, (rendered.html ?? '') + linkToClient)
+					.replace(`<!--app-head-->`, (rendered.head ?? '') + linkToClient)
+					.replace(`<!--app-html-->`, rendered.html ?? '')
 				res.writeHead(200, {
 					"Content-Type": "text/html",
 					'Content-Length': html.length
