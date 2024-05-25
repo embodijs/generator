@@ -100,8 +100,8 @@ export const configPlugin = () => ({
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
 				const template = await fs.readFile("app.html", "utf-8");
-				const linkToClient = `<script type="module" src="/node_modules/@embodi/generator/dist/core/app/entry-client.js"></script>`;
-				const { render } = await server.ssrLoadModule("/node_modules/@embodi/generator/dist/core/app/entry-server.js");
+				const linkToClient = `<script type="module" src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
+				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
 
 				const rendered = await render(req.originalUrl);
 				if(!rendered) {
