@@ -2,10 +2,10 @@ import type { Plugin, UserConfig } from "vite";
 import * as fs from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from "node:url";
-import { FilesystemAdapter } from "@loom-io/node-filesystem-adapter";
 import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
+import packageJson from "../../../package.json"  assert { type: "json" };
 
 
 const cwd = process.cwd();
@@ -100,8 +100,8 @@ export const configPlugin = () => ({
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
 				const template = await fs.readFile("app.html", "utf-8");
-				const linkToClient = `<script type="module" src="/node_modules/@embodi/compiler/dist/core/app/entry-client.js"></script>`;
-				const { render } = await server.ssrLoadModule("/node_modules/@embodi/compiler/dist/core/app/entry-server.js");
+				const linkToClient = `<script type="module" src="/node_modules/@embodi/generator/dist/core/app/entry-client.js"></script>`;
+				const { render } = await server.ssrLoadModule("/node_modules/@embodi/generator/dist/core/app/entry-server.js");
 
 				const rendered = await render(req.originalUrl);
 				if(!rendered) {
