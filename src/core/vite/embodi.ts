@@ -106,24 +106,6 @@ export const configPlugin = () => ({
 				}
 			}
 		},
-		async handleHotUpdate({ server, modules, timestamp, file, read }) {
-			console.log('hot update', file);
-			if(!file.endsWith('.md')) {
-				return;
-			}
-			const path = file.slice(cwd.length);
-
-
-			const module = await server.moduleGraph.getModuleByUrl(path);
-			if(module == null) {
-					return;
-			}
-			server.hot.send({
-				type: 'full-reload',
-			})
-
-			return [module];
-		},
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
