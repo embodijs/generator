@@ -1,4 +1,4 @@
-import { type ModuleNode, type Plugin, type UserConfig } from "vite";
+import { type Plugin, type UserConfig } from "vite";
 import * as fs from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from "node:url";
