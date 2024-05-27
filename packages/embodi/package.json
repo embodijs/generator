@@ -1,6 +1,6 @@
 {
   "name": "embodi",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "Apache-2.0",
   "module": "dist/exports/lib.ts",
   "main": "dist/exports/lib.js",
@@ -27,8 +27,7 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@loom-io/core": "^0.10.1",
-    "@loom-io/node-filesystem-adapter": "^0.10.1",
+
     "@types/markdown-it": "^14.1.1",
     "@types/minimist": "^1.2.5"
   },
@@ -42,6 +41,8 @@
     "front-matter": "^4.0.2",
     "markdown-it": "^14.1.0",
     "minimist": "^1.2.8",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "@loom-io/core": "^0.11.0",
+    "@loom-io/node-filesystem-adapter": "^0.11.0"
   }
 }

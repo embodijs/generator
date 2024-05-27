@@ -10,6 +10,12 @@ importers:
 
   packages/embodi:
     dependencies:
+      '@loom-io/core':
+        specifier: ^0.11.0
+        version: 0.11.0
+      '@loom-io/node-filesystem-adapter':
+        specifier: ^0.11.0
+        version: 0.11.0(@loom-io/core@0.11.0)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.0
         version: 3.1.0(svelte@4.2.17)(vite@5.2.11(@types/node@20.12.12))
@@ -35,12 +41,6 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.12.12)
     devDependencies:
-      '@loom-io/core':
-        specifier: ^0.10.1
-        version: 0.10.1
-      '@loom-io/node-filesystem-adapter':
-        specifier: ^0.10.1
-        version: 0.10.1(@loom-io/core@0.10.1)
       '@types/markdown-it':
         specifier: ^14.1.1
         version: 14.1.1
@@ -220,13 +220,13 @@ packages:
   '@loom-io/common@1.0.2':
     resolution: {integrity: sha512-4VuPRHB0LnTSebcO51+/sssAyOgdRv0Z0Zhr6Cix1lqr19tjGS+xVMWczhevlD5uDaPCRFKPXL2XQCNl2Y5VOg==}
 
-  '@loom-io/core@0.10.1':
-    resolution: {integrity: sha512-pIcxUaG1hLc/KCoYXyOhflv/JV14ETBxwbM1mnKdUfeNEBPrAyW3u71llGs5fxRFGbZQ5l0x2+7ksd7cKNoNCw==}
+  '@loom-io/core@0.11.0':
+    resolution: {integrity: sha512-ru6b87LSkaQZvkddfsuSUST1QIp3nAjnph9u1dMCTgP+UrDHKvJbo5JbNkaqX+Ddo/LY1B5NBts5GT41MwPvhg==}
 
-  '@loom-io/node-filesystem-adapter@0.10.1':
-    resolution: {integrity: sha512-NH3QMvZGBTmFZQwcXfGSww1pl8Ok/RYFwwIsQiJLFzEouWoCwl+kqxXiO4mZE8niQUD13XhSmJOxdFELY4f+vQ==}
+  '@loom-io/node-filesystem-adapter@0.11.0':
+    resolution: {integrity: sha512-Dr8QtJojDHi/YkRAEB71viLzhQWFcXy7MRo6AzrHOxHurM/CFtlSb2tLLJJiwPo90AUS8kc6+niFmIxOSQUgdg==}
     peerDependencies:
-      '@loom-io/core': ^0.10.1
+      '@loom-io/core': ^0.11.0
 
   '@rollup/rollup-android-arm-eabi@4.18.0':
     resolution: {integrity: sha512-Tya6xypR10giZV1XzxmH5wr25VcZSncG0pZIjfePT0OVBvqNEurzValetGNarVrGiq66EBVAFn15iYX4w6FKgQ==}
@@ -853,14 +853,14 @@ snapshots:
 
   '@loom-io/common@1.0.2': {}
 
-  '@loom-io/core@0.10.1':
+  '@loom-io/core@0.11.0':
     dependencies:
       '@loom-io/common': 1.0.2
 
-  '@loom-io/node-filesystem-adapter@0.10.1(@loom-io/core@0.10.1)':
+  '@loom-io/node-filesystem-adapter@0.11.0(@loom-io/core@0.11.0)':
     dependencies:
       '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.10.1
+      '@loom-io/core': 0.11.0
 
   '@rollup/rollup-android-arm-eabi@4.18.0':
     optional: true
