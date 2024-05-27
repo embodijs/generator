@@ -1,7 +1,10 @@
 {
-	"name": "embodi",
 	"scripts": {
 		"dev": "pnpm run --recursive dev",
-		"build": "pnpm run --recursive build"
+		"build": "pnpm run --recursive build",
+		"prepublishOnly": "pnpm run --recursive prepublishOnly && publint"
+	},
+	"devDependencies": {
+		"publint": "^0.2.8"
 	}
 }
