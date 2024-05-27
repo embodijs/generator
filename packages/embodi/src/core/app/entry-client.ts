@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import '/app.css'
 //import App from './App.svelte'
 import { createRouter } from './router.js';
