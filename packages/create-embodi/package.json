@@ -1,0 +1,20 @@
+{
+	"name": "create-embodi",
+	"version": "0.1.0",
+	"description": "",
+	"main": "index.js",
+	"bin": "./bin.js",
+	"scripts": {
+		"dev": "node ./bin.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"type": "module",
+	"keywords": [],
+	"author": "",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"@clack/prompts": "^0.7.0",
+		"@loom-io/core": "^0.11.0",
+		"@loom-io/node-filesystem-adapter": "^0.11.0"
+	}
+}
