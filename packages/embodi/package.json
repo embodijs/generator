@@ -2,8 +2,7 @@
   "name": "embodi",
   "version": "0.4.1",
   "license": "Apache-2.0",
-  "module": "dist/exports/lib.ts",
-  "main": "dist/exports/lib.js",
+  "module": "dist/exports/lib.js",
   "types": "dist/exports/lib.d.ts",
   "bin": {
     "embodi": "bin/embodi.js"
@@ -11,11 +10,12 @@
   "files": [
     "dist"
   ],
+
   "scripts": {
     "dev": "tsc --project tsconfig.json --watch",
     "build": "tsc --project tsconfig.json",
     "test": "vitest",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build && publint"
   },
   "keywords": [
     "@embodi",
@@ -25,6 +25,12 @@
     "typescript",
     "bundler"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/exports/lib.d.ts",
+      "import": "./dist/exports/lib.js"
+    }
+  },
   "type": "module",
   "devDependencies": {
     "@types/node": "^20.0.0",

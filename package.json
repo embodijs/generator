@@ -2,7 +2,7 @@
 	"scripts": {
 		"dev": "pnpm run --recursive dev",
 		"build": "pnpm run --recursive build",
-		"prepublishOnly": "pnpm run --recursive prepublishOnly && publint"
+		"prepublishOnly": "pnpm run --recursive prepublishOnly"
 	},
 	"devDependencies": {
 		"publint": "^0.2.8"
