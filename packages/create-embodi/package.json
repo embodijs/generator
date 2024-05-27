@@ -11,7 +11,7 @@
 	"type": "module",
 	"keywords": [],
 	"author": "",
-	"license": "ISC",
+	"license": "Apache-2.0",
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
 		"@loom-io/core": "^0.11.0",
