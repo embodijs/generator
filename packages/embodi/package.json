@@ -51,5 +51,9 @@
     "vitest": "^1.6.0",
     "@loom-io/core": "^0.11.0",
     "@loom-io/node-filesystem-adapter": "^0.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/embodijs/generator/tree/main/packages/embodi"
   }
 }
