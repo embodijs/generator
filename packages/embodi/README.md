@@ -50,5 +50,3 @@ and link to use it in local projects
 ```bash
 pnpm link --global
 ```
-
-

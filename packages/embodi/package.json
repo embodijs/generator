@@ -1,59 +1,57 @@
 {
-  "name": "embodi",
-  "version": "0.4.2",
-  "license": "Apache-2.0",
-  "module": "dist/exports/lib.js",
-  "types": "dist/exports/lib.d.ts",
-  "bin": {
-    "embodi": "bin/embodi.js"
-  },
-  "files": [
-    "dist"
-  ],
-
-  "scripts": {
-    "dev": "tsc --project tsconfig.json --watch",
-    "build": "tsc --project tsconfig.json",
-    "test": "vitest",
-    "prepublishOnly": "npm run build && publint"
-  },
-  "keywords": [
-    "@embodi",
-    "svelte",
-    "vite",
-    "generator",
-    "typescript",
-    "bundler"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/exports/lib.d.ts",
-      "import": "./dist/exports/lib.js"
-    }
-  },
-  "type": "module",
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-
-    "@types/markdown-it": "^14.1.1",
-    "@types/minimist": "^1.2.5"
-  },
-  "peerDependencies": {
-    "svelte": "^4.2.17",
-    "typescript": "^5.0.0",
-    "vite": "^5.2.11"
-  },
-  "dependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
-    "front-matter": "^4.0.2",
-    "markdown-it": "^14.1.0",
-    "minimist": "^1.2.8",
-    "vitest": "^1.6.0",
-    "@loom-io/core": "^0.11.0",
-    "@loom-io/node-filesystem-adapter": "^0.11.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/embodijs/generator/tree/main/packages/embodi"
-  }
+	"name": "embodi",
+	"version": "0.4.2",
+	"license": "Apache-2.0",
+	"module": "dist/exports/lib.js",
+	"types": "dist/exports/lib.d.ts",
+	"bin": {
+		"embodi": "bin/embodi.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"dev": "tsc --project tsconfig.json --watch",
+		"build": "tsc --project tsconfig.json",
+		"test": "vitest",
+		"prepublishOnly": "npm run build && publint"
+	},
+	"keywords": [
+		"@embodi",
+		"svelte",
+		"vite",
+		"generator",
+		"typescript",
+		"bundler"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/exports/lib.d.ts",
+			"import": "./dist/exports/lib.js"
+		}
+	},
+	"type": "module",
+	"devDependencies": {
+		"@types/markdown-it": "^14.1.1",
+		"@types/minimist": "^1.2.5",
+		"@types/node": "^20.0.0"
+	},
+	"peerDependencies": {
+		"svelte": "^4.2.17",
+		"typescript": "^5.0.0",
+		"vite": "^5.2.11"
+	},
+	"dependencies": {
+		"@loom-io/core": "^0.11.0",
+		"@loom-io/node-filesystem-adapter": "^0.11.0",
+		"@sveltejs/vite-plugin-svelte": "^3.1.0",
+		"front-matter": "^4.0.2",
+		"markdown-it": "^14.1.0",
+		"minimist": "^1.2.8",
+		"vitest": "^1.6.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/embodijs/generator/tree/main/packages/embodi"
+	}
 }
