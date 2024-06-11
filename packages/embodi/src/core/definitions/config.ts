@@ -1,14 +1,10 @@
-import type { Plugin } from "vite";
-
-
-export interface EmbodiBuildConfig {
-	plugins: Array<Plugin[] | Plugin>;
-}
+import type { Plugin as VitePlugin } from "vite";
 export interface EmbodiConfig {
 	statics: string;
 	base: string;
 	dist: string;
 	source: string;
 	templatePrefix: string;
-	build: EmbodiBuildConfig;
+	publicDir: string;
+	plugins: VitePlugin[];
 }

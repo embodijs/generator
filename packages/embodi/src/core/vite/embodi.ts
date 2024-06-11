@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
-import packageJson from "../../../package.json"  assert { type: "json" };
+import packageJson from "../../../package.json"  with { type: "json" };
 
 
 const cwd = process.cwd();
@@ -29,7 +29,7 @@ export const configPlugin = () => ({
 				},
 				plugins: [
 					...config.plugins ?? [],
-					...projectConfig.build?.plugins ?? []
+					...projectConfig.plugins ?? []
 				],
 				resolve: {
 					alias: {
