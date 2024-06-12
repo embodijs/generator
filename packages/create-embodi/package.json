@@ -1,12 +1,12 @@
 {
 	"name": "create-embodi",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "",
 	"main": "index.js",
 	"bin": "./bin.js",
 	"scripts": {
 		"dev": "node ./bin.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "playwright test"
 	},
 	"type": "module",
 	"keywords": [],
@@ -15,6 +15,12 @@
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
 		"@loom-io/core": "^0.11.0",
-		"@loom-io/node-filesystem-adapter": "^0.11.0"
+		"@loom-io/node-filesystem-adapter": "^0.11.0",
+		"kleur": "^4.1.5"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.44.1",
+		"@types/node": "^20.0.0",
+		"playwright": "^1.44.1"
 	}
 }
