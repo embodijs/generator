@@ -1,10 +1,12 @@
 {
 	"scripts": {
 		"dev": "pnpm run --recursive dev",
+		"test": "pnpm run --recursive test",
 		"build": "pnpm run --recursive build",
 		"prepublishOnly": "pnpm run --recursive prepublishOnly"
 	},
 	"devDependencies": {
+		"@types/node": "^20.14.2",
 		"publint": "^0.2.8"
 	}
 }
