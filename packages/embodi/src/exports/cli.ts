@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import { createLogger } from 'vite';
 import { createDevServer, createPreviewServer } from './lib.js';
-import packageJson from '../../package.json' assert { type: "json" };
+import packageJson from '../../package.json' with { type: "json" };
 import { generate } from './lib.js';
 const argv: any = minimist(process.argv.slice(2));
 
