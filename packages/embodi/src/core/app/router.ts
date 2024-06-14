@@ -1,28 +1,25 @@
-import type { SvelteComponent } from "svelte";
+const convertUrlToPath = (source: string, url: string) => {
+	return ["", "/"].includes(url)
+		? `${source}/index.md`
+		: `${source}${url}.md`;
+};
 
+const getPageFromUrl = async (url: string) => {
+	const {pages, source} = await import('$embodi/pages');
+	const path = convertUrlToPath(source, url);
+
+	const page = pages[path];
+	if(page) {
+		return page();
+	}
+}
 
 export const createRouter = () => {
-	// @ts-ignore
-	const pagesPromise = import.meta.glob("/**/*.md")
-
-	const convertUrlToPath = (url: string) => {
-		return ["", "/"].includes(url)
-			? "/index.md"
-			: `${url}.md`;
-	};
 
 	const loadPage = async (url: string) => {
-		const pages = pagesPromise;
-		const path = convertUrlToPath(url);
-		if (pages[path]) {
-			return pages[path]() as Promise<{
-					data: Record<string, unknown>,
-					content: string,
-					Component?: SvelteComponent['default']
-				}>
-		}
+		const page = getPageFromUrl(url);
+		return page;
 	};
-
 
 	return {
 		load: loadPage,

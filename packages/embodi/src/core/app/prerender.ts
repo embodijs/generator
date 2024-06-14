@@ -1,9 +1,11 @@
 import path from 'node:path'
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter'
 import type { LoomFile } from '@loom-io/core';
+import { loadConfig } from './config.js';
 
 export interface PrerenderOptions {
 	statics: string;
+	source: `/${string}`;
 }
 
 const fs = new FilesystemAdapter();
@@ -13,20 +15,19 @@ const toAbsolute = (p: string) => {
 }
 
 // determine routes to pre-render from src/pages
-const getRoutesToPrerender = async () => {
+const getRoutesToPrerender = async (source: string) => {
 
-	const dir = fs.dir('/');
+	const dir = fs.dir(source);
 	const files = (await dir.files(true)).filter<LoomFile>((file) => (file.name.endsWith('.md') && !file.path.startsWith('/node_modules')))
 	return files
 	.asArray()
   .map((file) => {
-    const name = file.path.replace(/\.md$/, '')
+    const name = file.path.slice(source.length).replace(/\.md$/, '')
     return name === '/index' ? `/` : `${name}`
   })
 }
 
-export const prerender = async ({ statics }: PrerenderOptions) => {
-
+export const prerender = async ({ statics, source }: PrerenderOptions) => {
 	const manifest = JSON.parse(
 		await fs.file('/dist/static/.vite/manifest.json').text('utf-8')
 	)
@@ -36,9 +37,9 @@ export const prerender = async ({ statics }: PrerenderOptions) => {
 	const { render } = await import(toAbsolute('dist/server/entry-server.js'))
 
   // pre-render each route...
-	const routesToPrerender = await getRoutesToPrerender()
+	const routesToPrerender = await getRoutesToPrerender(source)
   for (const url of routesToPrerender) {
-		const rendered = await render(url, manifest)
+		const rendered = await render(source, url, manifest)
 		if(!rendered) continue;
 		const { html: appHtml, css, head} = rendered;
     const html = template

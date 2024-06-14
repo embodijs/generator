@@ -17,9 +17,6 @@ export const configPlugin = () => ({
 			const projectConfig = await loadConfig(cwd);
 			const ssr = env.isSsrBuild;
 			const distBase = projectConfig.dist ?? "dist";
-
-
-			console.log('ssr', ssr);
 			const newConfig: UserConfig = {
 				...config,
 				base: projectConfig.base,
@@ -62,7 +59,8 @@ export const configPlugin = () => ({
 		},
 		async load(id) {
 			if(id === '\0$embodi/pages') {
-				return `const pages = import.meta.glob("/**/*.md"); export { pages }`
+				const { source } = await loadConfig(cwd);
+				return `const pages = import.meta.glob("/${source}/**/*.md"); export { pages }; export const source = "${source}";`
 			} else if(id === '\0$embodi/paths') {
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
 				const projectConfig = await loadConfig(cwd);
@@ -86,9 +84,10 @@ export const configPlugin = () => ({
 				if(!isSsr) {
 					return;
 				}
-				const projectConfig = await loadConfig(cwd);
+				const {source, statics} = await loadConfig(cwd);
 				await prerender({
-					statics: projectConfig.statics
+					source,
+					statics
 				});
 			}
 		}) satisfies Plugin;
@@ -109,11 +108,12 @@ export const configPlugin = () => ({
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
+				const {source} = await loadConfig(cwd);
 				const template = await fs.readFile("app.html", "utf-8");
 				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
 				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
 
-				const rendered = await render(req.originalUrl);
+				const rendered = await render(source, req.originalUrl);
 				if(!rendered) {
 					return next();
 				}
