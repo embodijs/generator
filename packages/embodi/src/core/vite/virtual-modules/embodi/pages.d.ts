@@ -1,7 +1,5 @@
-import type { SvelteComponent } from "svelte";
-
+/// <reference types="svelte" />
 declare module '$embodi/pages' {
-	export const content: string;
-	export const data: Record<string, any>;
-	export const Component: SvelteComponent
+	export const pages: Record<string, () => Promise<{ Component: svelte.SvelteComponent, data: Record<string, any>, content: string }>>;
+	export const source: string;
 }

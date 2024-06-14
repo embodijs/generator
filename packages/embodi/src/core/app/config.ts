@@ -8,7 +8,7 @@ export const defineConfig = (config: EmbodiConfig): EmbodiConfig => {
 		statics: config.statics ? config.statics : "",
 		base: config.base ? config.base : "/",
 		dist: config.dist ? config.dist : "dist",
-		source: config.source ? config.source : "",
+		source: config.source ? config.source : "/",
 		templatePrefix: config.templatePrefix ? config.templatePrefix : "./__layout",
 	};
 
