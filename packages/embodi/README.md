@@ -81,9 +81,9 @@ Output directory of build sources. Copy the content of the static folder of dist
 #### source
 
 - Type: `string`
-- Default: `./`
+- Default: `/`
 
-Source folder to read markdown files from.
+Source folder to read markdown files from. String have to start `/`
 
 #### static
 
