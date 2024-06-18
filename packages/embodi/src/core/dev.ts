@@ -1,7 +1,7 @@
 import { createViteRuntime, createServer, preview , build, defineConfig, type Plugin } from 'vite';
 import { configPlugin, devServerPlugin, virtualPlugin } from './vite/embodi.js';
 import { embodiFrontMatter } from './vite/front-matter.js';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 
 export const createConfig = () => {
@@ -10,6 +10,7 @@ export const createConfig = () => {
 		virtualPlugin(),
 		embodiFrontMatter(),
 		svelte({
+			preprocess: vitePreprocess(),
 			compilerOptions: {
 				hydratable: true
 			}
