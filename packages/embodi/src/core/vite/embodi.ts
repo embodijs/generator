@@ -60,7 +60,7 @@ export const configPlugin = () => ({
 		async load(id) {
 			if(id === '\0$embodi/pages') {
 				const { source } = await loadConfig(cwd);
-				return `const pages = import.meta.glob("/${source}/**/*.md"); export { pages }; export const source = "${source}";`
+				return `const pages = import.meta.glob("${source === "/" ? "" : source}/**/*.md"); export { pages }; export const source = "${source}";`
 			} else if(id === '\0$embodi/paths') {
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
 				const projectConfig = await loadConfig(cwd);

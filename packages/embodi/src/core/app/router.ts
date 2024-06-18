@@ -1,4 +1,5 @@
 const convertUrlToPath = (source: string, url: string) => {
+	source  = source === "/" ? "" : source;
 	return ["", "/"].includes(url)
 		? `${source}/index.md`
 		: `${source}${url}.md`;
