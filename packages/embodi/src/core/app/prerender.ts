@@ -16,13 +16,13 @@ const toAbsolute = (p: string) => {
 
 // determine routes to pre-render from src/pages
 const getRoutesToPrerender = async (source: string) => {
-
+	const sourceLength = source === '/' ? 0 : source.length;
 	const dir = fs.dir(source);
 	const files = (await dir.files(true)).filter<LoomFile>((file) => (file.name.endsWith('.md') && !file.path.startsWith('/node_modules')))
 	return files
 	.asArray()
   .map((file) => {
-    const name = file.path.slice(source.length).replace(/\.md$/, '')
+    const name = file.path.slice(sourceLength).replace(/\.md$/, '')
     return name === '/index' ? `/` : `${name}`
   })
 }
