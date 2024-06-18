@@ -34,12 +34,12 @@ export function embodiFrontMatter () {
 				const { templatePrefix } = embodiConfig;
 
 				const {layout} = attributes;
-				let result = `export const data = ${JSON.stringify(attributes)}; export const content = ${JSON.stringify(markdownIt().render(body))};`
+				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(markdownIt().render(body))};`
 				if(layout ) {
 					if(isRelativePath(templatePrefix)) {
-						result = `import Component from '${`${resolve(templatePrefix, `${layout}.svelte`)}`}'; export { Component }; \n` + result;
+						result = `import Layout from '${`${resolve(templatePrefix, `${layout}.svelte`)}`}'; export { Layout }; \n` + result;
 					} else {
-						result = `import Component from '${`${templatePrefix}/${layout}.svelte`}'; export { Component }; \n` + result;
+						result = `import Layout from '${`${templatePrefix}/${layout}.svelte`}'; export { Layout }; \n` + result;
 					}
 				}
 

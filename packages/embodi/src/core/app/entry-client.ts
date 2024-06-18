@@ -1,6 +1,7 @@
 import '/app.css'
 //import App from './App.svelte'
 import { createRouter } from './router.js';
+import SvelteRoot from './Root.svelte';
 
 const currentUrl = new URL(window.location.href).pathname;
 
@@ -12,17 +13,21 @@ createRouter()
     }
     return pageData;
   })
-  .then(({Component, data, content}) => {
-    if(Component === undefined) {
+  .then(({html, Component, Layout, data}) => {
+    if(Layout === undefined) {
       throw new Error("Component not found");
     }
 
-    new Component({
+
+
+    new SvelteRoot({
       props: {
+        Layout,
         data,
-        content
+        html,
+        Component
       },
-      target: document.getElementById('app'),
+      target: document.getElementById('app')!,
       hydrate: true
     });
 
