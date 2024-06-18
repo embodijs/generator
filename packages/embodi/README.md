@@ -15,10 +15,7 @@ This will guide you through some steps and create a basic structure.
 ## Structure
 
 Embodi will read any Markdown file in your project structure and convert it to a page if you set the `layout` property in the front-matter part at the beginning of each file.
-The name is a reference to a Svelte file in the `__layout` folder. The called layout component is given two parameters:
-- `data` is the front-matter part of your markdown file, converted to json.
-- `content` is the HTML rendered Markdown.
-In layout components you can do everything you normally do with Svelte.
+The name is a reference to a Svelte file in the `__layout` folder. The component gets the property data, which contain the front-matter data. The rendered markdown part is given into a slot. So each layout should display rendered content needs to have a slot. In layout components you can do everything you normally do with Svelte.
 
 ### Public files and images
 

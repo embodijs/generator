@@ -1,6 +1,6 @@
 import { createRouter } from "./router.js";
-//@ts-ignore
 import { entryClient } from "$embodi/paths";
+import SvelteRoot from "./Root.svelte";
 import type { Manifest } from "vite";
 
 
@@ -46,7 +46,7 @@ export async function render(source: string, url: string, manifest?: Manifest) {
   const app = await router.load(url);
   if(!app) return;
   // @ts-ignore
-  const data = app.Component?.render({ data: app.data, content: app.content });
+  const data = SvelteRoot.render(app);
   if(!data) return;
   return {
     head: `${data.head ?? ''}\n${head}${entryHead}`,
