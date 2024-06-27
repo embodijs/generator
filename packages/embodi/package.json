@@ -12,6 +12,7 @@
 	],
 	"scripts": {
 		"dev": "svelte-package -i src --watch",
+		"test:unit": "vitest",
 		"build": "svelte-package -i src",
 		"prepublishOnly": "npm run build && publint"
 	},

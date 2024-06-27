@@ -6,8 +6,9 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
+import { isValidLoadId, validateResolveId } from "./utils.js";
 
-
+const LIBRARY_NAME = "embodi";
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
 
@@ -51,17 +52,13 @@ export const configPlugin = () => ({
 	export const virtualPlugin = () => ({
 		name: "embodi-virtual-plugin",
 		async resolveId(id) {
-			if(id === '$embodi/pages') {
-				return `\0${id}`;
-			} else if(id === '$embodi/paths') {
-				return `\0${id}`;
-			}
+			return validateResolveId(id, "pages", "paths", "data");
 		},
 		async load(id) {
-			if(id === '\0$embodi/pages') {
+			if(isValidLoadId(id, "pages")) {
 				const { source } = await loadConfig(cwd);
 				return `const pages = import.meta.glob("${source === "/" ? "" : source}/**/*.md"); export { pages }; export const source = "${source}";`
-			} else if(id === '\0$embodi/paths') {
+			} else if(isValidLoadId(id, "paths")) {
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
 				const projectConfig = await loadConfig(cwd);
 
