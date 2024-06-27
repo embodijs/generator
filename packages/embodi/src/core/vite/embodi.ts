@@ -6,7 +6,7 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-import { isValidLoadId, validateResolveId } from "./utils.js";
+import { isValidLoadId, validateResolveId } from "./utils/validations.js";
 
 const LIBRARY_NAME = "embodi";
 const cwd = process.cwd();
