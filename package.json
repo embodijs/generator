@@ -6,8 +6,8 @@
 		"prepublishOnly": "pnpm run --recursive prepublishOnly"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.44.1",
-		"@types/node": "^20.14.2",
+		"@playwright/test": "^1.45.0",
+		"@types/node": "^20.14.9",
 		"publint": "^0.2.8"
 	}
 }

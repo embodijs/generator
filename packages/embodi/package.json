@@ -41,8 +41,11 @@
 		"vite": "^5.2.11"
 	},
 	"dependencies": {
-		"@loom-io/core": "^0.11.0",
-		"@loom-io/node-filesystem-adapter": "^0.11.0",
+		"@loom-io/core": "^0.12.0",
+		"@loom-io/node-filesystem-adapter": "^0.12.0",
+		"@loom-io/converter": "0.12.0",
+		"@loom-io/yaml-converter": "0.12.0",
+		"@loom-io/json-converter": "0.12.0",
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
