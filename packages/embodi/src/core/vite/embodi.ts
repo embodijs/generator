@@ -7,8 +7,8 @@ import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
 import { isValidLoadId, validateResolveId } from "./utils/validations.js";
+import { loadData } from "./utils/load-data.js";
 
-const LIBRARY_NAME = "embodi";
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
 
@@ -63,6 +63,9 @@ export const configPlugin = () => ({
 				const projectConfig = await loadConfig(cwd);
 
 				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${projectConfig.statics}";`
+			} else if(isValidLoadId(id, "data")) {
+				const data = await loadData("__data");
+				return `export const data = ${JSON.stringify(data)};`;
 			}
 		}
 	}) satisfies Plugin;

@@ -1,5 +1,4 @@
 import '/app.css'
-//import App from './App.svelte'
 import { createRouter } from './router.js';
 import SvelteRoot from './Root.svelte';
 
@@ -17,8 +16,6 @@ createRouter()
     if(Layout === undefined) {
       throw new Error("Component not found");
     }
-
-
 
     new SvelteRoot({
       props: {

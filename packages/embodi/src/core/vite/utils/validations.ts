@@ -9,6 +9,5 @@ export function validateResolveId(id: string, ...types: string[]) {
 }
 
 export function isValidLoadId(id: string, ...types: string[]) {
-	console.log(id, types);
 	return id.startsWith(VIRTUAL_MODULE_ID) && types.includes(id.slice(VIRTUAL_MODULE_ID.length+1));
 }

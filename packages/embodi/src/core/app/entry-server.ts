@@ -17,7 +17,6 @@ const createStyleTag = (url: string) => {
 
 
 const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
-  console.log(manifest, entry)
   const current = manifest[entry];
   const heads = [];
   heads.push(createScriptTag(current.file));
