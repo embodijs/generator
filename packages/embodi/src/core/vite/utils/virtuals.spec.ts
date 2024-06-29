@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { validateResolveId, isValidLoadId, VIRTUAL_MODULE_PREFIX } from './validations.js';
+import { validateResolveId, isValidLoadId, VIRTUAL_MODULE_PREFIX } from './virtuals.js';
 import { faker } from '@faker-js/faker';
 
 describe('validations', () => {

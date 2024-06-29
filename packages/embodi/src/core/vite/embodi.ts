@@ -6,7 +6,7 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-import { isValidLoadId, validateResolveId } from "./utils/validations.js";
+import { invalidateModule, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
 import { loadData } from "./utils/load-data.js";
 
 const cwd = process.cwd();
@@ -21,10 +21,7 @@ export const configPlugin = () => ({
 			const newConfig: UserConfig = {
 				...config,
 				base: projectConfig.base,
-				root: process.cwd(),
-				optimizeDeps: {
-					entries: ['content/**/*.md']
-				},
+				root: cwd,
 				plugins: [
 					...config.plugins ?? [],
 					...projectConfig.plugins ?? []
@@ -67,6 +64,15 @@ export const configPlugin = () => ({
 				const data = await loadData("__data");
 				return `export const data = ${JSON.stringify(data)};`;
 			}
+		},
+		handleHotUpdate({server, file, timestamp}) {
+			if(file.startsWith(resolve(cwd, '__data'))) {
+				invalidateModule(server, "data");
+				server.ws.send({
+					type: 'full-reload'
+				})
+			}
+
 		}
 	}) satisfies Plugin;
 
@@ -127,6 +133,7 @@ export const configPlugin = () => ({
 				})
 				return res.end(html);
 			})
-		}
+		},
+
 	}) satisfies Plugin;
 
