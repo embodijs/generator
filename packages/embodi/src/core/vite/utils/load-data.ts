@@ -1,11 +1,7 @@
-import { FilesystemAdapter } from "@loom-io/node-filesystem-adapter";
-import { createCombinedConverter } from "@loom-io/converter";
-import { createJsonConverter } from "@loom-io/json-converter";
-import { createYamlConverter } from "@loom-io/yaml-converter";
 import type { Directory } from "@loom-io/core";
+import { adapter, converter } from "./project-adapter.js";
 
-const adapter = new FilesystemAdapter();
-const converter = createCombinedConverter([createJsonConverter(), createYamlConverter()]);
+
 
 export function addToObjectRecursively(path: string[], object: Record<string, unknown>, value: unknown) {
 	if (path.length === 1) {
