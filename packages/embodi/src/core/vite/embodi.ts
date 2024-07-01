@@ -1,5 +1,4 @@
 import { type Plugin, type UserConfig } from "vite";
-import * as fs from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from "node:url";
 import { relative } from "node:path";
@@ -7,7 +6,7 @@ import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
 import { invalidateModule, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
-import { loadData } from "./utils/load-data.js";
+import { loadAppHtml, loadData } from "./utils/load-data.js";
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -121,8 +120,9 @@ export const configPlugin = () => ({
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
-				const {source} = await loadConfig(cwd);
-				const template = await fs.readFile("app.html", "utf-8");
+				const {source, statics} = await loadConfig(cwd);
+
+				const template = await loadAppHtml(statics);
 				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
 				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
 

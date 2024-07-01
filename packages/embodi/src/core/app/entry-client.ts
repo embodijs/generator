@@ -1,4 +1,3 @@
-import '/app.css'
 import { createRouter } from './router.js';
 import SvelteRoot from './Root.svelte';
 
