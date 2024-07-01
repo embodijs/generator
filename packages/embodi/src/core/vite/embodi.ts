@@ -6,7 +6,8 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-
+import { invalidateModule, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
+import { loadData } from "./utils/load-data.js";
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -20,10 +21,7 @@ export const configPlugin = () => ({
 			const newConfig: UserConfig = {
 				...config,
 				base: projectConfig.base,
-				root: process.cwd(),
-				optimizeDeps: {
-					entries: ['content/**/*.md']
-				},
+				root: cwd,
 				plugins: [
 					...config.plugins ?? [],
 					...projectConfig.plugins ?? []
@@ -51,22 +49,37 @@ export const configPlugin = () => ({
 	export const virtualPlugin = () => ({
 		name: "embodi-virtual-plugin",
 		async resolveId(id) {
-			if(id === '$embodi/pages') {
-				return `\0${id}`;
-			} else if(id === '$embodi/paths') {
-				return `\0${id}`;
-			}
+			return validateResolveId(id, "pages", "paths", "data");
 		},
 		async load(id) {
-			if(id === '\0$embodi/pages') {
-				const { source } = await loadConfig(cwd);
+
+			if(isValidLoadId(id, "pages")) {
+				const {source} = await loadConfig(cwd);
 				return `const pages = import.meta.glob("${source === "/" ? "" : source}/**/*.md"); export { pages }; export const source = "${source}";`
-			} else if(id === '\0$embodi/paths') {
+			} else if(isValidLoadId(id, "paths")) {
+				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
+
+				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${statics}";`
+			} else if(isValidLoadId(id, "data")) {
 				const projectConfig = await loadConfig(cwd);
 
-				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${projectConfig.statics}";`
+				const dataDirectoryPath = projectConfig.dataDir;
+				const data = await loadData(dataDirectoryPath);
+				return `export const data = ${JSON.stringify(data)};`;
 			}
+		},
+		async handleHotUpdate({server, file, timestamp}) {
+			const projectConfig = await loadConfig(cwd);
+
+			if(file.startsWith(resolve(cwd, projectConfig.dataDir))) {
+
+				invalidateModule(server, "data");
+				server.ws.send({
+					type: 'full-reload'
+				})
+			}
+
 		}
 	}) satisfies Plugin;
 
@@ -127,6 +140,7 @@ export const configPlugin = () => ({
 				})
 				return res.end(html);
 			})
-		}
+		},
+
 	}) satisfies Plugin;
 

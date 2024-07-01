@@ -7,12 +7,18 @@ const convertUrlToPath = (source: string, url: string) => {
 
 const getPageFromUrl = async (url: string) => {
 	const {pages, source} = await import('$embodi/pages');
+	const { data } = await import('$embodi/data');
 	const path = convertUrlToPath(source, url);
 
-	const page = pages[path];
-	if(page) {
-		return page();
-	}
+	const pageImportFu = pages[path];
+	if(!pageImportFu) return;
+
+	const page = await pageImportFu();
+	return { ...page, data: {
+		...data,
+		...page.data
+	}};
+
 }
 
 export const createRouter = () => {
