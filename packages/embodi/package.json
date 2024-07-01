@@ -1,6 +1,6 @@
 {
 	"name": "embodi",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"license": "Apache-2.0",
 	"module": "dist/exports/lib.js",
 	"types": "dist/exports/lib.d.ts",
@@ -43,7 +43,7 @@
 		"vite": "^5.2.11"
 	},
 	"dependencies": {
-		"@loom-io/converter": "0.12.0",
+		"@loom-io/converter": "0.12.1",
 		"@loom-io/core": "^0.12.1",
 		"@loom-io/json-converter": "0.12.0",
 		"@loom-io/node-filesystem-adapter": "^0.12.1",

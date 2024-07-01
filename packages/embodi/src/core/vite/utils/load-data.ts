@@ -35,12 +35,16 @@ export async function loadDataFromLoomDir(source: Directory) {
 
 export async function loadData(source: string) {
 	const dataDir = adapter.dir(source);
-	console.log(dataDir.path);
-	console.log(await dataDir.exists());
 	// TODO: handle not exist exception
 	if(await dataDir.exists()) {
 		return loadDataFromLoomDir(dataDir);
 	} else {
 		return {};
 	}
+}
+
+export async function loadAppHtml(statics: string) {
+	const staticDir = adapter.dir(statics);
+	const file = staticDir.file("app.html");
+	return file.text();
 }
