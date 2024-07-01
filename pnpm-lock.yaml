@@ -61,8 +61,8 @@ importers:
         specifier: ^0.12.1
         version: 0.12.1(@loom-io/core@0.12.1)
       '@loom-io/yaml-converter':
-        specifier: 0.12.0
-        version: 0.12.0(@loom-io/converter@0.12.0(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)
+        specifier: 0.12.1
+        version: 0.12.1(@loom-io/converter@0.12.0(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.1
         version: 3.1.1(svelte@4.2.18)(vite@5.3.2(@types/node@20.14.9))
@@ -319,11 +319,11 @@ packages:
     peerDependencies:
       '@loom-io/core': ^0.12.1
 
-  '@loom-io/yaml-converter@0.12.0':
-    resolution: {integrity: sha512-KFSumpl9fnthRifxBE4xdgjt+DxHmz6ZzBhehE1FtzqNnJTRp+k2ENI/hlpGYXY6wSL6OfGaepx67qvEOXU0dg==}
+  '@loom-io/yaml-converter@0.12.1':
+    resolution: {integrity: sha512-UBQKiSyMF5JpjmuEehDvOZBqZsojKMWvc+eboVhOXXGQYKEVyLkKIi8QuZyBAIuZbTL7W51LoRZ/ovceaB4saQ==}
     peerDependencies:
-      '@loom-io/converter': ^0.12.0
-      '@loom-io/core': ^0.12.0
+      '@loom-io/converter': ^0.12.1
+      '@loom-io/core': ^0.12.1
     peerDependenciesMeta:
       '@loom-io/converter':
         optional: true
@@ -1178,7 +1178,7 @@ snapshots:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.1
 
-  '@loom-io/yaml-converter@0.12.0(@loom-io/converter@0.12.0(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)':
+  '@loom-io/yaml-converter@0.12.1(@loom-io/converter@0.12.0(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)':
     dependencies:
       yaml: 2.4.5
     optionalDependencies:
