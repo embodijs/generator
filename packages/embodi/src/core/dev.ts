@@ -1,4 +1,4 @@
-import { createViteRuntime, createServer, preview , build, defineConfig, type Plugin } from 'vite';
+import { createServer, preview, defineConfig, type Plugin } from 'vite';
 import { configPlugin, devServerPlugin, virtualPlugin } from './vite/embodi.js';
 import { embodiFrontMatter } from './vite/front-matter.js';
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';

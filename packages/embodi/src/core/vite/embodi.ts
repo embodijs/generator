@@ -64,7 +64,7 @@ export const configPlugin = () => ({
 			} else if(isValidLoadId(id, "data")) {
 				const projectConfig = await loadConfig(cwd);
 
-				const dataDirectoryPath = projectConfig.data;
+				const dataDirectoryPath = projectConfig.dataDir;
 				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
 			}
@@ -72,7 +72,7 @@ export const configPlugin = () => ({
 		async handleHotUpdate({server, file, timestamp}) {
 			const projectConfig = await loadConfig(cwd);
 
-			if(file.startsWith(resolve(cwd, projectConfig.data))) {
+			if(file.startsWith(resolve(cwd, projectConfig.dataDir))) {
 
 				invalidateModule(server, "data");
 				server.ws.send({
