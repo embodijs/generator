@@ -82,13 +82,6 @@ Output directory of build sources. Copy the content of the static folder of dist
 
 Source folder to read markdown files from. String have to start `/`
 
-#### static
-
-- Type: `string`
-- Default: `./`
-
-Source to read the base `app.html` and `app.css` file from.
-
 ## Support
 
 **Support is welcome!!!** Tell us what you miss, report bugs or open pull requests.

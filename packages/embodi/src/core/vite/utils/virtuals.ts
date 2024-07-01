@@ -1,7 +1,10 @@
 import type { ViteDevServer } from "vite";
+import { FilesystemAdapter } from "@loom-io/node-filesystem-adapter";
 
 export const VIRTUAL_MODULE_PREFIX = "$embodi";
 const VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_PREFIX}`;
+
+const projectAdapter = new FilesystemAdapter();
 
 export function validateResolveId(id: string, ...modules: string[]) {
 	if (id.startsWith(VIRTUAL_MODULE_PREFIX) && modules.includes(id.slice(VIRTUAL_MODULE_PREFIX.length+1))) {
