@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "embodi dev",
+		"build": "embodi generate",
 		"generate": "embodi generate",
 		"preview": "embodi preview"
 	},

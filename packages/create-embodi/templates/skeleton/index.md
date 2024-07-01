@@ -20,3 +20,7 @@ At the top in the front-matter part (starts and ends with `---`) and the markdow
 Files in the public folder are generally public. For example, you can use them to reference images
 
 ![Some example image](/example.webp)
+
+## Global data
+
+To define global or default data, add a file to __data that can be accessed by its filename. The content for a file named nav.yml and an example content of `title: test` could be accessed as `nav.title`.
