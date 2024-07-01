@@ -1,18 +1,8 @@
 ---
 ---
 
-# compiler-test
+# Embodi skeleton project
 
-To install dependencies:
+This project was created with `embodi` a static site generator.
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.8. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Run `npm run dev` to start developing and `npm run generate`to build a production ready version.

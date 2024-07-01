@@ -53,6 +53,13 @@ Embodi use [Vite](https://vitejs.dev) under the hood, so most options from vite 
 
 Base public path when served in development or production.
 
+#### dataDir
+
+- Type: `string`
+- Default `__data`
+
+Relative path to global data files. Folder may contain `yaml` or `json` files, and the filename is used as the attribute name. Data will be merged with front matter data and may be overwritten.
+
 #### publicDir
 
 - Type: `string | false`
