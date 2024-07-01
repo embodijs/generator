@@ -3,6 +3,7 @@ export interface EmbodiConfig {
 	statics: string;
 	base: string;
 	dist: string;
+	data: string;
 	source: `/${string}`;
 	templatePrefix: string;
 	publicDir: string;

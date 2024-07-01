@@ -1,7 +1,6 @@
 import { describe, test, expect, beforeAll } from "vitest";
 import { loadDataFromLoomDir, addToObjectRecursively } from "./load-data.js";
 import { MemoryAdapter } from "@loom-io/in-memory-adapter";
-import { base, faker } from "@faker-js/faker";
 import { dirname, basename} from "path";
 
 

@@ -52,21 +52,28 @@ export const configPlugin = () => ({
 			return validateResolveId(id, "pages", "paths", "data");
 		},
 		async load(id) {
+
 			if(isValidLoadId(id, "pages")) {
-				const { source } = await loadConfig(cwd);
+				const {source} = await loadConfig(cwd);
 				return `const pages = import.meta.glob("${source === "/" ? "" : source}/**/*.md"); export { pages }; export const source = "${source}";`
 			} else if(isValidLoadId(id, "paths")) {
+				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
+
+				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${statics}";`
+			} else if(isValidLoadId(id, "data")) {
 				const projectConfig = await loadConfig(cwd);
 
-				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${projectConfig.statics}";`
-			} else if(isValidLoadId(id, "data")) {
-				const data = await loadData("__data");
+				const dataDirectoryPath = projectConfig.data;
+				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
 			}
 		},
-		handleHotUpdate({server, file, timestamp}) {
-			if(file.startsWith(resolve(cwd, '__data'))) {
+		async handleHotUpdate({server, file, timestamp}) {
+			const projectConfig = await loadConfig(cwd);
+
+			if(file.startsWith(resolve(cwd, projectConfig.data))) {
+
 				invalidateModule(server, "data");
 				server.ws.send({
 					type: 'full-reload'

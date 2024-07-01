@@ -5,6 +5,7 @@ export const defineConfig = (config: EmbodiConfig): EmbodiConfig => {
 
 	const mixedConfig = {
     ...config,
+		data: config.data ?? "__data",
 		statics: config.statics ? config.statics : "",
 		base: config.base ? config.base : "/",
 		dist: config.dist ? config.dist : "dist",
