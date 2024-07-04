@@ -7,6 +7,7 @@ import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
 import { invalidateModule, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
 import { loadAppHtml, loadData } from "./utils/load-data.js";
+import { generatePageImportCode } from "./utils/load-content.js";
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -54,7 +55,8 @@ export const configPlugin = () => ({
 
 			if(isValidLoadId(id, "pages")) {
 				const {source} = await loadConfig(cwd);
-				return `const pages = import.meta.glob("${source === "/" ? "" : source}/**/*.md"); export { pages }; export const source = "${source}";`
+				const pagesString = await generatePageImportCode(source);
+				return `${pagesString}\nexport const source = "${source}";`
 			} else if(isValidLoadId(id, "paths")) {
 				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));

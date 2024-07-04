@@ -23,7 +23,7 @@ export function embodiFrontMatter () {
 	return ({
 		name: 'vite-embodi-front-matter',
 
-		async config(config, env) {
+		async config(config) {
 			embodiConfig = await loadConfig(cwd);
 			return config;
 		},
