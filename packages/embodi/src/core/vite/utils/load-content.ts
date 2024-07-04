@@ -15,7 +15,7 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 	return relativePath.slice(0, -extension.length);
 }
 
-const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${path}')`;
+const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${path}.embodi')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (imports: string) => `export const pages = ${imports}`;
 
