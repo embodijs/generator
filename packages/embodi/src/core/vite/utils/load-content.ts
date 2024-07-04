@@ -9,15 +9,15 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 		throw new Error(`File ${file.path} has no extension`);
 	}
 	if(file.getNameWithoutExtension() === 'index') {
-		return dir.relativePath(file.dir) ?? '';
+		return dir.relativePath(file.dir) ?? '/';
 	}
 	const relativePath = dir.relativePath(file)!;
-	return relativePath.slice(0, -(extension.length+1));
+	return `/${relativePath.slice(0, -(extension.length+1))}`;
 }
 
 const wrapperPath = (path: string) => `${path}.embodi`;
-const wrapperUrlPath = (name: string, path: string) => `"/${name}": "${wrapperPath(path)}"`;
-const wrapperImportFunctionString = (name: string, path: string) => `"/${name}": () => import('${wrapperPath(path)}')`;
+const wrapperUrlPath = (name: string, path: string) => `"${name}": "${wrapperPath(path)}"`;
+const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${wrapperPath(path)}')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
@@ -42,4 +42,8 @@ export const generateRoutesCode = async (contentPath: string) => {
 		return wrapperUrlPath(url, adapter.getFullPath(file));
 	});
 	return wrapperExport('routes', wrapperObject(importFunctions));
+}
+
+export const getRoutesToPrerender = async (contentPath: string) => {
+	return getAllFiles(contentPath).map((file, dir) => transformPathToUrl(dir, file));
 }
