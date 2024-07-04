@@ -1,12 +1,11 @@
-const convertUrlToPath = (source: string, url: string) => {
-	source  = source === "/" ? "" : source;
-	return ["", "/"].includes(url)
-		? `${source}/index.md`
-		: `${source}${url}.md`;
+const convertUrlToPath = async (url: string) => {
+	const { routes } = await import('$embodi/pages');
+
+	return routes[url];
 };
 
 const getPageFromUrl = async (url: string) => {
-	const { pages, source} = await import('$embodi/pages');
+	const { pages } = await import('$embodi/pages');
 	const { data } = await import('$embodi/data');
 
 	const pageImportFu = pages[url];

@@ -15,37 +15,31 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 	return relativePath.slice(0, -(extension.length+1));
 }
 
-const wrapperImportFunctionString = (name: string, path: string) => `"/${name}": () => import('${path}.embodi')`;
+const wrapperPath = (path: string) => `${path}.embodi`;
+const wrapperUrlPath = (name: string, path: string) => `"/${name}": "${wrapperPath(path)}"`;
+const wrapperImportFunctionString = (name: string, path: string) => `"/${name}": () => import('${wrapperPath(path)}')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
-const wrapperExport = (imports: string) => `export const pages = ${imports}`;
+const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
-export const generatePageImportCode = async (contentPath: string) => {
+export const getAllFiles = (contentPath: string) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
 	const dir = adapter.dir(contentPath);
 	const files = await dir.files(true);
-	const importFunctions = files.asArray().map((file) => {
+	return files.asArray().map((file) => fn(file, dir));
+}})
+
+export const generatePageImportCode = async (contentPath: string) => {
+	const importFunctions = await getAllFiles(contentPath).map((file, dir) => {
 		const url = transformPathToUrl(dir, file);
 		return wrapperImportFunctionString(url, adapter.getFullPath(file));
 	});
-	return wrapperExport(wrapperObject(importFunctions));
+	return wrapperExport('pages', wrapperObject(importFunctions));
 };
 
 
-// export const prepareContentImports = async (contentPath: string) => {
-// 	const dir = adapter.dir(contentPath);
-// 	const root = adapter.dir('/');
-// 	const files = await dir.files(true);
-// 	return files.asArray().reduce((acc, file) => {
-// 		const { extension } = file;
-// 		if(!extension) {
-// 			return acc;
-// 		}
-// 		const path =
-// 		return {
-// 			...acc,
-// 			[extension]: {
-// 				...(acc[extension] || {}),
-// 				test: () => import(adapter.getFullPath(file))
-// 			}
-// 		};
-// 	}, {} as Record<string, >);
-// };
+export const generateRoutesCode = async (contentPath: string) => {
+	const importFunctions = await getAllFiles(contentPath).map((file, dir) => {
+		const url = transformPathToUrl(dir, file);
+		return wrapperUrlPath(url, adapter.getFullPath(file));
+	});
+	return wrapperExport('routes', wrapperObject(importFunctions));
+}
