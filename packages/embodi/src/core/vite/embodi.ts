@@ -55,8 +55,9 @@ export const configPlugin = () => ({
 
 			if(isValidLoadId(id, "pages")) {
 				const {source} = await loadConfig(cwd);
-				const pagesString = await generatePageImportCode(source);
+				const pagesCode = await generatePageImportCode(source);
 				return `${pagesString}\nexport const source = "${source}";`
+				return `${pagesCode}\nexport const source = "${source}";`
 			} else if(isValidLoadId(id, "paths")) {
 				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));

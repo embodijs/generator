@@ -9,13 +9,13 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 		throw new Error(`File ${file.path} has no extension`);
 	}
 	if(file.getNameWithoutExtension() === 'index') {
-		return dir.relativePath(file.dir) ?? '/';
+		return dir.relativePath(file.dir) ?? '';
 	}
 	const relativePath = dir.relativePath(file)!;
-	return relativePath.slice(0, -extension.length);
+	return relativePath.slice(0, -(extension.length+1));
 }
 
-const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${path}.embodi')`;
+const wrapperImportFunctionString = (name: string, path: string) => `"/${name}": () => import('${path}.embodi')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (imports: string) => `export const pages = ${imports}`;
 

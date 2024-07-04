@@ -12,10 +12,6 @@ createRouter()
     return pageData;
   })
   .then(({html, Component, Layout, data}) => {
-    if(Layout === undefined) {
-      throw new Error("Component not found");
-    }
-
     new SvelteRoot({
       props: {
         Layout,
