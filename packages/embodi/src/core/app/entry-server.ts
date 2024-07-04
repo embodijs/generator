@@ -39,7 +39,7 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 }
 
 export async function render(source: string, url: string, manifest?: Manifest) {
-  const head = manifest ? createHeadFromManifest(manifest, router.path(source, url).slice(1)) : '';
+  const head = manifest ? createHeadFromManifest(manifest, (await router.path(url))) : '';
   const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
   //const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
   const app = await router.load(url);

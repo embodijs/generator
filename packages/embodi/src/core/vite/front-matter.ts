@@ -1,10 +1,8 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
 import markdownIt from 'markdown-it';
-import { loadConfig } from '../app/config.js';
-import type { EmbodiConfig } from 'core/definitions/config.js';
+import { loadConfig, type EmbodiConfig } from '../app/config.js';
 import { resolve } from 'node:path';
-
 interface PageData {
 	layout?: string;
 	[key: string]: any;
@@ -23,9 +21,19 @@ export function embodiFrontMatter () {
 	return ({
 		name: 'vite-embodi-front-matter',
 
-		async config(config, env) {
+		async config(config) {
 			embodiConfig = await loadConfig(cwd);
 			return config;
+		},
+		resolveId(id) {
+			if(id.endsWith('.md.embodi')) {
+				return `\0${id}`;
+			}
+		},
+		load(id) {
+			if(id.endsWith('.md.embodi')) {
+				return `export * from '${resolve(id.slice(2, -7))}';`
+			}
 		},
 		async transform(code, id) {
 			if(id.endsWith('.md')) {

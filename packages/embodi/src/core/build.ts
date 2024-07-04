@@ -3,11 +3,13 @@ import { configPlugin, prerenderPlugin, virtualPlugin } from "./vite/embodi.js";
 import { embodiFrontMatter } from "./vite/front-matter.js";
 import { build as viteBuild, defineConfig, type Plugin } from "vite";
 import { prerender } from "./app/prerender.js";
+import { embodiSvelte } from "./vite/svelte.js";
 
 export const createConfig = () => {
 	const plugins: Array<Plugin | Plugin[]> = [
 		configPlugin(),
 		virtualPlugin(),
+		embodiSvelte(),
 		embodiFrontMatter(),
 		svelte({
 			preprocess: vitePreprocess(),

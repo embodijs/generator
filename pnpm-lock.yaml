@@ -50,19 +50,19 @@ importers:
     dependencies:
       '@loom-io/converter':
         specifier: 0.12.1
-        version: 0.12.1(@loom-io/core@0.12.1)
+        version: 0.12.1(@loom-io/core@0.12.2)
       '@loom-io/core':
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^0.12.2
+        version: 0.12.2
       '@loom-io/json-converter':
         specifier: 0.12.1
-        version: 0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)
+        version: 0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.1
-        version: 0.12.1(@loom-io/core@0.12.1)
+        specifier: ^0.12.2
+        version: 0.12.2(@loom-io/core@0.12.2)
       '@loom-io/yaml-converter':
         specifier: 0.12.1
-        version: 0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)
+        version: 0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.1
         version: 3.1.1(svelte@4.2.18)(vite@5.3.2(@types/node@20.14.9))
@@ -80,7 +80,7 @@ importers:
         version: 4.2.18
       typescript:
         specifier: ^5.0.0
-        version: 5.5.2
+        version: 5.5.3
       vite:
         specifier: ^5.2.11
         version: 5.3.2(@types/node@20.14.9)
@@ -90,10 +90,10 @@ importers:
     devDependencies:
       '@loom-io/in-memory-adapter':
         specifier: 0.12.0
-        version: 0.12.0(@loom-io/core@0.12.1)
+        version: 0.12.0(@loom-io/core@0.12.2)
       '@sveltejs/package':
         specifier: ^2.3.2
-        version: 2.3.2(svelte@4.2.18)(typescript@5.5.2)
+        version: 2.3.2(svelte@4.2.18)(typescript@5.5.3)
       '@types/markdown-it':
         specifier: ^14.1.1
         version: 14.1.1
@@ -290,6 +290,9 @@ packages:
   '@loom-io/core@0.12.1':
     resolution: {integrity: sha512-dbl1qZW3CkFNEo8Z8IxS2Gfzqj74UKf/jB1A8odzVOpjIrJ2dWq3ebI59bP64jc83xx23Yvx0tmuykn4OzNLVg==}
 
+  '@loom-io/core@0.12.2':
+    resolution: {integrity: sha512-J8u5hGVp0BqasS5xEGg7mZPfGdEJ2cevUbvsiXLjp3x3UitEQTCT1FpQE20eh4pl5zUoXmBupGInLFt1lbocAA==}
+
   '@loom-io/in-memory-adapter@0.12.0':
     resolution: {integrity: sha512-S7fG/SN8pvjaY40cEmue5TrfxoOVd1miAMXqHjEOMV/+c3pRHpjMmTEvHzt0uzLU6qmzKOV8IC7Jyn66CJzGPw==}
     peerDependencies:
@@ -310,6 +313,11 @@ packages:
     resolution: {integrity: sha512-AAPj8BC2k7Z/bW7CWREm1DVUaWHIn6KT1RKqDKI9gCni4uyQXzOHTbiTylnjII/Y1f867qB/bf8joAE8GGeAHg==}
     peerDependencies:
       '@loom-io/core': ^0.12.1
+
+  '@loom-io/node-filesystem-adapter@0.12.2':
+    resolution: {integrity: sha512-LdI1tN5Sj8pWcgOSQ/7jz65W00Jb5Wz1Uf19SXKVCbK7QBy8Pd730GbZXZU99MfJk8Ijf/dn11YJWoqamNVoHg==}
+    peerDependencies:
+      '@loom-io/core': ^0.12.2
 
   '@loom-io/yaml-converter@0.12.1':
     resolution: {integrity: sha512-UBQKiSyMF5JpjmuEehDvOZBqZsojKMWvc+eboVhOXXGQYKEVyLkKIi8QuZyBAIuZbTL7W51LoRZ/ovceaB4saQ==}
@@ -810,8 +818,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  postcss@8.4.38:
-    resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
+  postcss@8.4.39:
+    resolution: {integrity: sha512-0vzE+lAiG7hZl1/9I8yzKLx3aR9Xbof3fBHKunvMfOCYAtMhrsnccJY2iTURb9EZd5+pLuiNV9/c/GZJOHsgIw==}
     engines: {node: ^10 || ^12 || >=14}
 
   pretty-format@29.7.0:
@@ -924,8 +932,8 @@ packages:
     resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
     engines: {node: '>=4'}
 
-  typescript@5.5.2:
-    resolution: {integrity: sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==}
+  typescript@5.5.3:
+    resolution: {integrity: sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1138,35 +1146,44 @@ snapshots:
 
   '@loom-io/common@1.0.2': {}
 
-  '@loom-io/converter@0.12.1(@loom-io/core@0.12.1)':
+  '@loom-io/converter@0.12.1(@loom-io/core@0.12.2)':
     dependencies:
-      '@loom-io/core': 0.12.1
+      '@loom-io/core': 0.12.2
 
   '@loom-io/core@0.12.1':
     dependencies:
       '@loom-io/common': 1.0.2
 
-  '@loom-io/in-memory-adapter@0.12.0(@loom-io/core@0.12.1)':
+  '@loom-io/core@0.12.2':
     dependencies:
       '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.12.1
 
-  '@loom-io/json-converter@0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)':
+  '@loom-io/in-memory-adapter@0.12.0(@loom-io/core@0.12.2)':
+    dependencies:
+      '@loom-io/common': 1.0.2
+      '@loom-io/core': 0.12.2
+
+  '@loom-io/json-converter@0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)':
     optionalDependencies:
-      '@loom-io/converter': 0.12.1(@loom-io/core@0.12.1)
-      '@loom-io/core': 0.12.1
+      '@loom-io/converter': 0.12.1(@loom-io/core@0.12.2)
+      '@loom-io/core': 0.12.2
 
   '@loom-io/node-filesystem-adapter@0.12.1(@loom-io/core@0.12.1)':
     dependencies:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.1
 
-  '@loom-io/yaml-converter@0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.1))(@loom-io/core@0.12.1)':
+  '@loom-io/node-filesystem-adapter@0.12.2(@loom-io/core@0.12.2)':
+    dependencies:
+      '@loom-io/common': 1.0.2
+      '@loom-io/core': 0.12.2
+
+  '@loom-io/yaml-converter@0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)':
     dependencies:
       yaml: 2.4.5
     optionalDependencies:
-      '@loom-io/converter': 0.12.1(@loom-io/core@0.12.1)
-      '@loom-io/core': 0.12.1
+      '@loom-io/converter': 0.12.1(@loom-io/core@0.12.2)
+      '@loom-io/core': 0.12.2
 
   '@playwright/test@1.45.0':
     dependencies:
@@ -1222,14 +1239,14 @@ snapshots:
 
   '@sinclair/typebox@0.27.8': {}
 
-  '@sveltejs/package@2.3.2(svelte@4.2.18)(typescript@5.5.2)':
+  '@sveltejs/package@2.3.2(svelte@4.2.18)(typescript@5.5.3)':
     dependencies:
       chokidar: 3.6.0
       kleur: 4.1.5
       sade: 1.8.1
       semver: 7.6.2
       svelte: 4.2.18
-      svelte2tsx: 0.7.13(svelte@4.2.18)(typescript@5.5.2)
+      svelte2tsx: 0.7.13(svelte@4.2.18)(typescript@5.5.3)
     transitivePeerDependencies:
       - typescript
 
@@ -1660,7 +1677,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  postcss@8.4.38:
+  postcss@8.4.39:
     dependencies:
       nanoid: 3.3.7
       picocolors: 1.0.1
@@ -1744,12 +1761,12 @@ snapshots:
     dependencies:
       svelte: 4.2.18
 
-  svelte2tsx@0.7.13(svelte@4.2.18)(typescript@5.5.2):
+  svelte2tsx@0.7.13(svelte@4.2.18)(typescript@5.5.3):
     dependencies:
       dedent-js: 1.0.1
       pascal-case: 3.1.2
       svelte: 4.2.18
-      typescript: 5.5.2
+      typescript: 5.5.3
 
   svelte@4.2.18:
     dependencies:
@@ -1782,7 +1799,7 @@ snapshots:
 
   type-detect@4.0.8: {}
 
-  typescript@5.5.2: {}
+  typescript@5.5.3: {}
 
   uc.micro@2.1.0: {}
 
@@ -1810,7 +1827,7 @@ snapshots:
   vite@5.3.2(@types/node@20.14.9):
     dependencies:
       esbuild: 0.21.5
-      postcss: 8.4.38
+      postcss: 8.4.39
       rollup: 4.18.0
     optionalDependencies:
       '@types/node': 20.14.9
