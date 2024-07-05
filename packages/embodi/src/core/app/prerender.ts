@@ -2,7 +2,7 @@ import path from 'node:path'
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter'
 import type { LoomFile } from '@loom-io/core';
 import { loadAppHtml } from '../vite/utils/load-data.js';
-import {getRoutesToPrerender } from '../vite/utils/load-content.js';
+import { getRoutesToPrerender } from '../vite/utils/load-content.js';
 import type { PublicDirs } from './config.js';
 
 export interface PrerenderOptions {

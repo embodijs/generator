@@ -1,4 +1,3 @@
-import { isRelativePath } from "core/utils/paths.js";
 import { join } from "node:path";
 import type { Plugin as VitePlugin, UserConfig as ViteConfig } from "vite";
 
@@ -15,7 +14,7 @@ export interface EmbodiUserConfig {
 export interface PublicDirs {
 	public: string;
 	data: string;
-	content: `/${string}`;;
+	content: `/${string}`;
 	template: string | undefined;
 }
 
@@ -44,12 +43,11 @@ export const loadConfig = async (cwd: string): Promise<EmbodiConfig> => {
 		statics: "",
 		base: config.base ? config.base : "/",
 		dist: config.dist ? config.dist : "dist",
-		source: config.source ?? "/",
 		templatePrefix: templatePrefix,
 		inputDirs: {
 			public: publicDir,
 			data: config.dataDir ?? "__data",
-			content: config.source ?? "/",
+			content: config.source ?? "/content",
 			template: templateDir
 		},
 		viteConfig: {

@@ -1,6 +1,6 @@
 import { Directory, isDirectory, type LoomFile } from "@loom-io/core";
 import { adapter } from "./project-adapter.js"
-import type { PublicDirs } from "core/app/config.js";
+import type { PublicDirs } from "../../app/config.js";
 
 
 export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
@@ -21,9 +21,6 @@ const wrapperUrlPath = (name: string, path: string) => `"${name}": "${wrapperPat
 const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${wrapperPath(path)}')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
-
-
-
 
 const getPublicDirsInsideContentDir = (publicDirs: PublicDirs): Directory[] => {
 	const { content, ...otherPublicDirs } = publicDirs;
