@@ -3,6 +3,7 @@ import fm from 'front-matter';
 import markdownIt from 'markdown-it';
 import { loadConfig, type EmbodiConfig } from '../app/config.js';
 import { resolve } from 'node:path';
+import { isRelativePath } from '../utils/paths.js';
 interface PageData {
 	layout?: string;
 	[key: string]: any;
@@ -10,9 +11,7 @@ interface PageData {
 
 const cwd = process.cwd();
 
-function isRelativePath(path: string) {
-	return path.startsWith('./') || path.startsWith('../');
-}
+
 
 export function embodiFrontMatter () {
 
