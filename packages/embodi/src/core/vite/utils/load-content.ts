@@ -1,5 +1,6 @@
 import type { Directory, LoomFile } from "@loom-io/core";
 import { adapter } from "./project-adapter.js"
+import type { PublicDirs } from "../../app/config.js";
 
 
 export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
