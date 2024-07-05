@@ -9,7 +9,7 @@
 		"preview": "embodi preview"
 	},
 	"devDependencies": {
-		"embodi": "^0.6.0",
+		"embodi": "^0.7.0",
 		"svelte": "^4.2.17"
 	}
 }
