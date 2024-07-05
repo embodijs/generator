@@ -22,8 +22,7 @@ const wrapperImportFunctionString = (name: string, path: string) => `"${name}": 
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
-export const getAllFiles = (contentPath: string) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
-	const dir = adapter.dir(contentPath);
+
 export const getAllPages = (publicDirs: PublicDirs) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
 	const { content } = publicDirs;
 	const dir = adapter.dir(content);
@@ -49,5 +48,5 @@ export const generateRoutesCode = async (publicDirs: PublicDirs) => {
 }
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
-	return getAllFiles(contentPath).map((file, dir) => transformPathToUrl(dir, file));
+	return getAllPages(publicDirs).map((file, dir) => transformPathToUrl(dir, file));
 }
