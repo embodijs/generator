@@ -30,7 +30,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./src",
-
+    "paths": {
+      "$core/*": ["./src/core/*"],
+    },
   },
   "exclude": ["**/*.spec.ts", "node_modules"],
   "include": ["./src/**/*", "src/core/vite/virtual-modules"]

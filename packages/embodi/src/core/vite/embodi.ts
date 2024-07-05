@@ -20,11 +20,11 @@ export const configPlugin = () => ({
 			const distBase = projectConfig.dist ?? "dist";
 			const newConfig: UserConfig = {
 				...config,
-				base: projectConfig.base,
+				...projectConfig.viteConfig,
 				root: cwd,
 				plugins: [
 					...config.plugins ?? [],
-					...projectConfig.plugins ?? []
+					...projectConfig.viteConfig.plugins ?? []
 				],
 				resolve: {
 					alias: {
@@ -54,10 +54,10 @@ export const configPlugin = () => ({
 		async load(id) {
 
 			if(isValidLoadId(id, "pages")) {
-				const {source} = await loadConfig(cwd);
-				const pagesCode = await generatePageImportCode(source);
-				const routesCode = await generateRoutesCode(source);
-				return `${pagesCode}\n${routesCode}\nexport const source = "${source}";`
+				const config = await loadConfig(cwd);
+				const pagesCode = await generatePageImportCode(config.inputDirs);
+				const routesCode = await generateRoutesCode(config.inputDirs);
+				return `${pagesCode}\n${routesCode}\nexport const source = "${config.inputDirs.content}";`
 			} else if(isValidLoadId(id, "paths")) {
 				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, "../app/entry-client.js"));
@@ -66,15 +66,15 @@ export const configPlugin = () => ({
 			} else if(isValidLoadId(id, "data")) {
 				const projectConfig = await loadConfig(cwd);
 
-				const dataDirectoryPath = projectConfig.dataDir;
+				const dataDirectoryPath = projectConfig.inputDirs.data;
 				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
 			}
 		},
-		async handleHotUpdate({server, file, timestamp}) {
+		async handleHotUpdate({server, file}) {
 			const projectConfig = await loadConfig(cwd);
 
-			if(file.startsWith(resolve(cwd, projectConfig.dataDir))) {
+			if(file.startsWith(resolve(cwd, projectConfig.inputDirs.data))) {
 
 				invalidateModule(server, "data");
 				server.ws.send({
@@ -99,9 +99,9 @@ export const configPlugin = () => ({
 				if(!isSsr) {
 					return;
 				}
-				const {source, statics} = await loadConfig(cwd);
+				const {inputDirs, statics} = await loadConfig(cwd);
 				await prerender({
-					source,
+					inputDirs,
 					statics
 				});
 			}
@@ -123,13 +123,13 @@ export const configPlugin = () => ({
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// TODO: add static file route here
-				const {source, statics} = await loadConfig(cwd);
+				const {inputDirs, statics} = await loadConfig(cwd);
 
 				const template = await loadAppHtml(statics);
 				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
 				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
 
-				const rendered = await render(source, req.originalUrl);
+				const rendered = await render(inputDirs.content, req.originalUrl);
 				if(!rendered) {
 					return next();
 				}

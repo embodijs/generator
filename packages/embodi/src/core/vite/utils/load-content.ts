@@ -1,5 +1,6 @@
 import type { Directory, LoomFile } from "@loom-io/core";
 import { adapter } from "./project-adapter.js"
+import type { PublicDirs } from "../../app/config.js";
 
 
 export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
@@ -21,14 +22,16 @@ const wrapperImportFunctionString = (name: string, path: string) => `"${name}": 
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
-export const getAllFiles = (contentPath: string) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
-	const dir = adapter.dir(contentPath);
+
+export const getAllPages = (publicDirs: PublicDirs) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
+	const { content } = publicDirs;
+	const dir = adapter.dir(content);
 	const files = await dir.files(true);
 	return files.asArray().map((file) => fn(file, dir));
 }})
 
-export const generatePageImportCode = async (contentPath: string) => {
-	const importFunctions = await getAllFiles(contentPath).map((file, dir) => {
+export const generatePageImportCode = async (publicDirs: PublicDirs) => {
+	const importFunctions = await getAllPages(publicDirs).map((file, dir) => {
 		const url = transformPathToUrl(dir, file);
 		return wrapperImportFunctionString(url, adapter.getFullPath(file));
 	});
@@ -36,14 +39,14 @@ export const generatePageImportCode = async (contentPath: string) => {
 };
 
 
-export const generateRoutesCode = async (contentPath: string) => {
-	const importFunctions = await getAllFiles(contentPath).map((file, dir) => {
+export const generateRoutesCode = async (publicDirs: PublicDirs) => {
+	const importFunctions = await getAllPages(publicDirs).map((file, dir) => {
 		const url = transformPathToUrl(dir, file);
 		return wrapperUrlPath(url, adapter.getFullPath(file));
 	});
 	return wrapperExport('routes', wrapperObject(importFunctions));
 }
 
-export const getRoutesToPrerender = async (contentPath: string) => {
-	return getAllFiles(contentPath).map((file, dir) => transformPathToUrl(dir, file));
+export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
+	return getAllPages(publicDirs).map((file, dir) => transformPathToUrl(dir, file));
 }

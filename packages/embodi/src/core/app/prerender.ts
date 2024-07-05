@@ -2,11 +2,12 @@ import path from 'node:path'
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter'
 import type { LoomFile } from '@loom-io/core';
 import { loadAppHtml } from '../vite/utils/load-data.js';
-import {getRoutesToPrerender } from '../vite/utils/load-content.js';
+import { getRoutesToPrerender } from '../vite/utils/load-content.js';
+import type { PublicDirs } from './config.js';
 
 export interface PrerenderOptions {
 	statics: string;
-	source: `/${string}`;
+	inputDirs: PublicDirs;
 }
 
 const fs = new FilesystemAdapter();
@@ -15,7 +16,8 @@ const toAbsolute = (p: string) => {
 	return path.resolve(process.cwd(), p)
 }
 
-export const prerender = async ({ statics, source }: PrerenderOptions) => {
+export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
+	const { content: contentDir } = inputDirs;
 	const manifest = JSON.parse(
 		await fs.file('/dist/static/.vite/manifest.json').text('utf-8')
 	)
@@ -24,9 +26,9 @@ export const prerender = async ({ statics, source }: PrerenderOptions) => {
 	const { render } = await import(toAbsolute('dist/server/entry-server.js'))
 
   // pre-render each route...
-	const routesToPrerender = await getRoutesToPrerender(source);
+	const routesToPrerender = await getRoutesToPrerender(inputDirs);
   for (const url of routesToPrerender) {
-		const rendered = await render(source, url, manifest)
+		const rendered = await render(contentDir, url, manifest)
 		if(!rendered) continue;
 		const { html: appHtml, css, head} = rendered;
     const html = template
