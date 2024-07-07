@@ -1,4 +1,4 @@
-import { Directory, isDirectory, type LoomFile } from "@loom-io/core";
+import { type Directory, isDirectory, type LoomFile } from "@loom-io/core";
 import { adapter } from "./project-adapter.js"
 import type { PublicDirs } from "../../app/config.js";
 
