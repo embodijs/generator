@@ -55,8 +55,8 @@ importers:
         specifier: ^0.12.2
         version: 0.12.2
       '@loom-io/json-converter':
-        specifier: 0.12.1
-        version: 0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)
+        specifier: 0.12.2
+        version: 0.12.2(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)
       '@loom-io/node-filesystem-adapter':
         specifier: ^0.12.2
         version: 0.12.2(@loom-io/core@0.12.2)
@@ -298,11 +298,11 @@ packages:
     peerDependencies:
       '@loom-io/core': ^0.12.0
 
-  '@loom-io/json-converter@0.12.1':
-    resolution: {integrity: sha512-9RDqb0YO17GUhd3YH7M6tDycQOPgRyhDrrZdsOwrlnzbD9jP6CRecA/7Mpaunm+qK+/EjChGgl5rhtNhsee0+g==}
+  '@loom-io/json-converter@0.12.2':
+    resolution: {integrity: sha512-WjUM3Xo6jgSxyJ27VcA2WNtnygpbZ712/aQgY9M9EKe1wurA1hBVmSr1D53N0Af6jnznJw58jNeGpmSswjdilA==}
     peerDependencies:
-      '@loom-io/converter': ^0.12.1
-      '@loom-io/core': ^0.12.1
+      '@loom-io/converter': ^0.12.2
+      '@loom-io/core': ^0.12.2
     peerDependenciesMeta:
       '@loom-io/converter':
         optional: true
@@ -1163,7 +1163,7 @@ snapshots:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.2
 
-  '@loom-io/json-converter@0.12.1(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)':
+  '@loom-io/json-converter@0.12.2(@loom-io/converter@0.12.1(@loom-io/core@0.12.2))(@loom-io/core@0.12.2)':
     optionalDependencies:
       '@loom-io/converter': 0.12.1(@loom-io/core@0.12.2)
       '@loom-io/core': 0.12.2
