@@ -89,8 +89,8 @@ importers:
         version: 1.6.0(@types/node@20.14.9)
     devDependencies:
       '@loom-io/in-memory-adapter':
-        specifier: 0.12.0
-        version: 0.12.0(@loom-io/core@0.12.2)
+        specifier: 0.12.2
+        version: 0.12.2(@loom-io/core@0.12.2)
       '@sveltejs/package':
         specifier: ^2.3.2
         version: 2.3.2(svelte@4.2.18)(typescript@5.5.3)
@@ -293,10 +293,10 @@ packages:
   '@loom-io/core@0.12.2':
     resolution: {integrity: sha512-J8u5hGVp0BqasS5xEGg7mZPfGdEJ2cevUbvsiXLjp3x3UitEQTCT1FpQE20eh4pl5zUoXmBupGInLFt1lbocAA==}
 
-  '@loom-io/in-memory-adapter@0.12.0':
-    resolution: {integrity: sha512-S7fG/SN8pvjaY40cEmue5TrfxoOVd1miAMXqHjEOMV/+c3pRHpjMmTEvHzt0uzLU6qmzKOV8IC7Jyn66CJzGPw==}
+  '@loom-io/in-memory-adapter@0.12.2':
+    resolution: {integrity: sha512-Hm5YjC1dW0amJO2gR47gX1AJsPt+Jf9h3fSh/lGLYghiwUn8NVIVH+TyEtpJIszF8Em1Z3UtzoWgJU+VCNHXWg==}
     peerDependencies:
-      '@loom-io/core': ^0.12.0
+      '@loom-io/core': ^0.12.2
 
   '@loom-io/json-converter@0.12.1':
     resolution: {integrity: sha512-9RDqb0YO17GUhd3YH7M6tDycQOPgRyhDrrZdsOwrlnzbD9jP6CRecA/7Mpaunm+qK+/EjChGgl5rhtNhsee0+g==}
@@ -1158,7 +1158,7 @@ snapshots:
     dependencies:
       '@loom-io/common': 1.0.2
 
-  '@loom-io/in-memory-adapter@0.12.0(@loom-io/core@0.12.2)':
+  '@loom-io/in-memory-adapter@0.12.2(@loom-io/core@0.12.2)':
     dependencies:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.2

@@ -32,7 +32,7 @@
 	},
 	"type": "module",
 	"devDependencies": {
-		"@loom-io/in-memory-adapter": "0.12.0",
+		"@loom-io/in-memory-adapter": "0.12.2",
 		"@sveltejs/package": "^2.3.2",
 		"@types/markdown-it": "^14.1.1",
 		"@types/minimist": "^1.2.5"
