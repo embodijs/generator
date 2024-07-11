@@ -1,3 +1,5 @@
+import { join, resolve } from "path";
+import { loadConfig, type PublicDirs } from "../../app/config.js";
 import type { ViteDevServer } from "vite";
 
 export const VIRTUAL_MODULE_PREFIX = "$embodi";
@@ -17,5 +19,17 @@ export function isValidLoadId(id: string, ...modules: string[]) {
 
 export function invalidateModule(server: ViteDevServer, module: string) {
 	const virtualModule = server.moduleGraph.getModuleById(`${VIRTUAL_MODULE_ID}/${module}`);
-	server.moduleGraph.invalidateModule(virtualModule!);
+	if(virtualModule) {
+		server.moduleGraph.invalidateModule(virtualModule);
+	}
+}
+
+export async function isHotUpdate(id: string, publicDir: keyof PublicDirs) {
+	const cwd = process.cwd();
+	const { inputDirs } = await loadConfig(cwd)
+	const path = inputDirs[publicDir];
+	if(!path) {
+		return false;
+	}
+	return id.startsWith(join(cwd, path));
 }
