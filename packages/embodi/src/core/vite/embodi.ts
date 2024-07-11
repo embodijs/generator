@@ -1,13 +1,14 @@
-import { type Plugin, type UserConfig } from "vite";
+import { type Connect, type Plugin, type UserConfig } from "vite";
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from "node:url";
 import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-import { invalidateModule, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
+import { invalidateModule, isHotUpdate, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
 import { loadAppHtml, loadData } from "./utils/load-data.js";
 import { generatePageImportCode, generateRoutesCode } from "./utils/load-content.js";
+import type { ServerResponse } from "node:http";
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -72,16 +73,24 @@ export const configPlugin = () => ({
 			}
 		},
 		async handleHotUpdate({server, file}) {
-			const projectConfig = await loadConfig(cwd);
-
-			if(file.startsWith(resolve(cwd, projectConfig.inputDirs.data))) {
-
+			if(await isHotUpdate(file, "data")) {
 				invalidateModule(server, "data");
 				server.ws.send({
 					type: 'full-reload'
 				})
 			}
 
+		},
+		async configureServer(server) {
+			// Invalidate pages and paths when content changes
+			server.watcher.on("add", async (file: string) => {
+				console.log("file added", file)
+				if (await isHotUpdate(file, "content")) {
+					console.log("content changed")
+					invalidateModule(server, "pages");
+					invalidateModule(server, "paths");
+				}
+			});
 		}
 	}) satisfies Plugin;
 
@@ -121,7 +130,7 @@ export const configPlugin = () => ({
 			}
 		},
 		configureServer(server) {
-			server.middlewares.use(async (req, res, next) => {
+			const devServer = async (req: Connect.IncomingMessage, res: ServerResponse, next: Connect.NextFunction, looped: boolean = false) => {
 				// TODO: add static file route here
 				const {inputDirs, statics} = await loadConfig(cwd);
 
@@ -142,7 +151,9 @@ export const configPlugin = () => ({
 					'Content-Length': html.length
 				})
 				return res.end(html);
-			})
+			}
+
+			server.middlewares.use(devServer);
 		},
 
 	}) satisfies Plugin;
