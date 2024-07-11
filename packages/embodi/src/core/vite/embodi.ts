@@ -84,9 +84,7 @@ export const configPlugin = () => ({
 		async configureServer(server) {
 			// Invalidate pages and paths when content changes
 			server.watcher.on("add", async (file: string) => {
-				console.log("file added", file)
 				if (await isHotUpdate(file, "content")) {
-					console.log("content changed")
 					invalidateModule(server, "pages");
 					invalidateModule(server, "paths");
 				}
