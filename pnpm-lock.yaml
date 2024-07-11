@@ -11,9 +11,6 @@ importers:
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
-      '@playwright/test':
-        specifier: ^1.45.1
-        version: 1.45.1
       '@types/node':
         specifier: ^20.14.10
         version: 20.14.10
@@ -30,11 +27,11 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@loom-io/core':
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^0.12.2
+        version: 0.12.2
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.1
-        version: 0.12.1(@loom-io/core@0.12.1)
+        specifier: ^0.12.2
+        version: 0.12.2(@loom-io/core@0.12.2)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
@@ -287,9 +284,6 @@ packages:
     peerDependencies:
       '@loom-io/core': ^0.12.1
 
-  '@loom-io/core@0.12.1':
-    resolution: {integrity: sha512-dbl1qZW3CkFNEo8Z8IxS2Gfzqj74UKf/jB1A8odzVOpjIrJ2dWq3ebI59bP64jc83xx23Yvx0tmuykn4OzNLVg==}
-
   '@loom-io/core@0.12.2':
     resolution: {integrity: sha512-J8u5hGVp0BqasS5xEGg7mZPfGdEJ2cevUbvsiXLjp3x3UitEQTCT1FpQE20eh4pl5zUoXmBupGInLFt1lbocAA==}
 
@@ -308,11 +302,6 @@ packages:
         optional: true
       '@loom-io/core':
         optional: true
-
-  '@loom-io/node-filesystem-adapter@0.12.1':
-    resolution: {integrity: sha512-AAPj8BC2k7Z/bW7CWREm1DVUaWHIn6KT1RKqDKI9gCni4uyQXzOHTbiTylnjII/Y1f867qB/bf8joAE8GGeAHg==}
-    peerDependencies:
-      '@loom-io/core': ^0.12.1
 
   '@loom-io/node-filesystem-adapter@0.12.2':
     resolution: {integrity: sha512-LdI1tN5Sj8pWcgOSQ/7jz65W00Jb5Wz1Uf19SXKVCbK7QBy8Pd730GbZXZU99MfJk8Ijf/dn11YJWoqamNVoHg==}
@@ -808,18 +797,8 @@ packages:
   pkg-types@1.1.1:
     resolution: {integrity: sha512-ko14TjmDuQJ14zsotODv7dBlwxKhUKQEhuhmbqo1uCi9BB0Z2alo/wAXg6q1dTR5TyuqYyWhjtfe/Tsh+X28jQ==}
 
-  playwright-core@1.45.0:
-    resolution: {integrity: sha512-lZmHlFQ0VYSpAs43dRq1/nJ9G/6SiTI7VPqidld9TDefL9tX87bTKExWZZUF5PeRyqtXqd8fQi2qmfIedkwsNQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   playwright-core@1.45.1:
     resolution: {integrity: sha512-LF4CUUtrUu2TCpDw4mcrAIuYrEjVDfT1cHbJMfwnE2+1b8PZcFzPNgvZCvq2JfQ4aTjRCCHw5EJ2tmr2NSzdPg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
-  playwright@1.45.0:
-    resolution: {integrity: sha512-4z3ac3plDfYzGB6r0Q3LF8POPR20Z8D0aXcxbJvmfMgSSq1hkcgvFRXJk9rUq5H/MJ0Ktal869hhOdI/zUTeLA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1160,10 +1139,6 @@ snapshots:
     dependencies:
       '@loom-io/core': 0.12.2
 
-  '@loom-io/core@0.12.1':
-    dependencies:
-      '@loom-io/common': 1.0.2
-
   '@loom-io/core@0.12.2':
     dependencies:
       '@loom-io/common': 1.0.2
@@ -1177,11 +1152,6 @@ snapshots:
     optionalDependencies:
       '@loom-io/converter': 0.12.1(@loom-io/core@0.12.2)
       '@loom-io/core': 0.12.2
-
-  '@loom-io/node-filesystem-adapter@0.12.1(@loom-io/core@0.12.1)':
-    dependencies:
-      '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.12.1
 
   '@loom-io/node-filesystem-adapter@0.12.2(@loom-io/core@0.12.2)':
     dependencies:
@@ -1679,15 +1649,7 @@ snapshots:
       mlly: 1.7.1
       pathe: 1.1.2
 
-  playwright-core@1.45.0: {}
-
   playwright-core@1.45.1: {}
-
-  playwright@1.45.0:
-    dependencies:
-      playwright-core: 1.45.0
-    optionalDependencies:
-      fsevents: 2.3.2
 
   playwright@1.45.1:
     dependencies:
