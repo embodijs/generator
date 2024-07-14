@@ -1,6 +1,6 @@
-import { createRouter } from "./router.js";
+import { createRouter } from "../core/app/router.js";
 import { entryClient } from "$embodi/paths";
-import SvelteRoot from "./Root.svelte";
+import SvelteRoot from "../core/app/Root.svelte";
 import type { Manifest } from "vite";
 
 

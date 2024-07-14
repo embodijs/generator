@@ -28,6 +28,12 @@
 		".": {
 			"types": "./dist/exports/lib.d.ts",
 			"import": "./dist/exports/lib.js"
+		},
+		"./entry-client.js": {
+			"import": "./dist/exports/entry-client.js"
+		},
+		"./entry-server.js": {
+			"import": "./dist/exports/entry-server.js"
 		}
 	},
 	"type": "module",

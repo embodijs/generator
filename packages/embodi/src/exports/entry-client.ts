@@ -1,5 +1,5 @@
-import { createRouter } from './router.js';
-import SvelteRoot from './Root.svelte';
+import { createRouter } from '../core/app/router.js';
+import SvelteRoot from '../core/app/Root.svelte';
 
 const currentUrl = new URL(window.location.href).pathname;
 

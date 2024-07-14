@@ -131,10 +131,10 @@ export const configPlugin = () => ({
 			const devServer = async (req: Connect.IncomingMessage, res: ServerResponse, next: Connect.NextFunction, looped: boolean = false) => {
 				// TODO: add static file route here
 				const {inputDirs, statics} = await loadConfig(cwd);
-
+				const entryClientUrl = fileURLToPath(new URL(`${packageJson.name}/entry-client.js`, import.meta.url));
 				const template = await loadAppHtml(statics);
-				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
-				const { render } = await server.ssrLoadModule(`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`);
+				const linkToClient = `<script type="module" defer src="${entryClientUrl}"></script>`;
+				const { render } = await server.ssrLoadModule(`${packageJson.name}/entry-server.js`);
 
 				const rendered = await render(inputDirs.content, req.originalUrl);
 				if(!rendered) {
