@@ -52,7 +52,7 @@
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
-		"vitest": "^1.6.0"
+		"vitest": "^2.0.3"
 	},
 	"repository": {
 		"type": "git",
