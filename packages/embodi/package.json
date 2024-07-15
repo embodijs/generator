@@ -43,7 +43,7 @@
 		"vite": "^5.2.11"
 	},
 	"dependencies": {
-		"@loom-io/converter": "0.12.1",
+		"@loom-io/converter": "0.12.2",
 		"@loom-io/core": "^0.12.2",
 		"@loom-io/json-converter": "0.12.2",
 		"@loom-io/node-filesystem-adapter": "^0.12.2",
