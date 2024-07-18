@@ -1,4 +1,4 @@
-import type { Directory, LoomFile } from "@loom-io/core";
+import { type Directory, isDirectory, type LoomFile } from "@loom-io/core";
 import { adapter } from "./project-adapter.js"
 import type { PublicDirs } from "../../app/config.js";
 
@@ -22,12 +22,25 @@ const wrapperImportFunctionString = (name: string, path: string) => `"${name}": 
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
+const getPublicDirsInsideContentDir = (publicDirs: PublicDirs): Directory[] => {
+	const { content, ...otherPublicDirs } = publicDirs;
+	const contentDir = adapter.dir(content);
+
+	return Object
+		.values(otherPublicDirs)
+		.map((dir) => dir != null && adapter.dir(dir))
+		.filter((dir): dir is Directory => isDirectory(dir) && !contentDir.relativePath(dir))
+
+}
 
 export const getAllPages = (publicDirs: PublicDirs) => ({ map: async (fn: (file: LoomFile, dir: Directory) => any) => {
 	const { content } = publicDirs;
 	const dir = adapter.dir(content);
 	const files = await dir.files(true);
-	return files.asArray().map((file) => fn(file, dir));
+
+	const publicDirsInsideContentDir = getPublicDirsInsideContentDir(publicDirs);
+
+	return files.asArray().map((file) => fn(file, dir)).filter((file) => !publicDirsInsideContentDir.some((dir) => dir.relativePath(file)));
 }})
 
 export const generatePageImportCode = async (publicDirs: PublicDirs) => {
