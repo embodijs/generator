@@ -31,7 +31,7 @@ export function embodiFrontMatter () {
 		},
 		load(id) {
 			if(id.endsWith('.md.embodi')) {
-				return `export * from '${resolve(id.slice(2, -7))}';`
+				return `export * from '/${id.slice(2, -7)}';`
 			}
 		},
 		async transform(code, id) {
@@ -41,7 +41,7 @@ export function embodiFrontMatter () {
 				const { templatePrefix } = embodiConfig;
 
 				const {layout} = attributes;
-				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(markdownIt().render(body))};`
+				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(markdownIt().render(body))};`;
 				if(layout ) {
 					if(isRelativePath(templatePrefix)) {
 						result = `import Layout from '${`${resolve(templatePrefix, `${layout}.svelte`)}`}'; export { Layout }; \n` + result;
