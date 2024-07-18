@@ -5,10 +5,11 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-import { invalidateModule, isHotUpdate, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
+import { getVirtualParams, invalidateModule, isHotUpdate, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
 import { loadAppHtml, loadData } from "./utils/load-data.js";
 import { generatePageImportCode, generateRoutesCode } from "./utils/load-content.js";
-import type { ServerResponse } from "node:http";
+import { type ServerResponse } from "node:http";
+import { generateCollectionsImportsCode } from "./utils/collections.js";
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -50,7 +51,7 @@ export const configPlugin = () => ({
 	export const virtualPlugin = () => ({
 		name: "embodi-virtual-plugin",
 		async resolveId(id) {
-			return validateResolveId(id, "pages", "paths", "data");
+			return validateResolveId(id, "pages", "paths", "data", "collections");
 		},
 		async load(id) {
 
@@ -70,6 +71,10 @@ export const configPlugin = () => ({
 				const dataDirectoryPath = projectConfig.inputDirs.data;
 				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
+			} else if(isValidLoadId(id, "collections")) {
+				const params = getVirtualParams(id);
+				const amount = params.amount ? parseInt(params.amount) : undefined;
+				return await generateCollectionsImportsCode(amount);
 			}
 		},
 		async handleHotUpdate({server, file}) {
