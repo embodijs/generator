@@ -15,7 +15,7 @@ export function getVirtualParams(id: string): { [key: string]: string } {
 	if(!params) {
 		return {};
 	}
-	return Object.fromEntries(Object.entries(new URLSearchParams(params)));
+	return Object.fromEntries((new URLSearchParams(params)).entries());
 }
 
 export function validateResolveId(id: string, ...modules: string[]) {

@@ -73,8 +73,7 @@ export const configPlugin = () => ({
 				return `export const data = ${JSON.stringify(data)};`;
 			} else if(isValidLoadId(id, "collections")) {
 				const params = getVirtualParams(id);
-				const amount = params.amount ? parseInt(params.amount) : undefined;
-				return await generateCollectionsImportsCode(amount);
+				return await generateCollectionsImportsCode(params);
 			}
 		},
 		async handleHotUpdate({server, file}) {

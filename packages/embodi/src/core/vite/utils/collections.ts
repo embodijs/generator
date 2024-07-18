@@ -2,14 +2,22 @@ import { getAllPages, getPageImportPath, loadPageData, transformPathToUrl } from
 import { loadConfig } from "../../app/config.js";
 import { getUniqueAttributeName } from "./virtuals.js";
 
-
+interface CollectionParams {
+	only?: string[] | string;
+	sortBy?: keyof CollectionMeta;
+	sortDirection?: 'asc' | 'desc';
+	skip?: number;
+	limit?: number;
+}
 interface CollectionMeta {
 	tag: string;
-	updateAt: Date;
+	updatedAt: Date;
 	createdAt?: Date;
 	page: string;
 	importPath: string;
 }
+
+type PreparedFunction = (collections: CollectionMeta[]) => CollectionMeta[];
 
 async function createCollectionsMeta (): Promise<CollectionMeta[]> {
 	const config = await loadConfig(process.cwd());
@@ -39,22 +47,62 @@ async function createCollectionsMeta (): Promise<CollectionMeta[]> {
 
 
 
+const prepareFilter =
+	(keep: string[]): PreparedFunction =>
+		(collections: CollectionMeta[]) =>
+			collections.filter((collection) => keep.includes(collection.tag));
 
-export async function generateCollectionsImportsCode(max?: number) {
+
+type CollectionTuple = [CollectionMeta, CollectionMeta];
+
+const setDirection = ( collections: CollectionTuple,  direction: 'asc' | 'desc') => {
+	return direction === 'asc' ? collections : collections.reverse() as CollectionTuple;
+}
+
+const getValue = <T>( collections: CollectionTuple, sortBy: keyof CollectionMeta) => {
+	return collections.map((collection) => collection[sortBy]) as [T, T];
+}
+
+const compareString = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
+	const [valueA, valueB] = getValue<string>(setDirection([a, b], direction), sortBy);
+	return valueA.localeCompare(valueB);
+}
+
+const compareDate = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
+	const [valueA, valueB] = getValue<Date>(setDirection([a, b], direction), sortBy);
+	return valueA.getTime() - valueB.getTime();
+}
+
+const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'asc' = 'asc'): PreparedFunction => {
+	if(['page', 'tag'].includes(sortBy)) {
+		return (collections: CollectionMeta[]) => collections.sort(compareString(sortBy, direction));
+	} else {
+		return (collections: CollectionMeta[]) => collections.sort(compareDate(sortBy, direction));
+	}
+}
+
+const prepareLimit = (limit?: number, skip: number = 0) => (collections: CollectionMeta[]) => collections.slice(skip, skip + (limit ?? (collections.length - skip)));
+
+const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
+	const { limit, skip, only, sortBy, sortDirection } = params;
+	const prepared: PreparedFunction[] = [];
+	only && prepared.push(prepareFilter(Array.isArray(only) ? only : [only]));
+	sortBy && prepared.push(prepareSort(sortBy, sortDirection));
+	(limit || skip) && prepared.push(prepareLimit(limit, skip));
+	return prepared;
+}
+
+export async function generateCollectionsImportsCode(params: CollectionParams): Promise<string> {
 	const allCollections = await createCollectionsMeta();
-	const collections = allCollections.sort(( c1, c2 ) =>  c2.updatedAt.getTime() - c1.updatedAt.getTime()).slice(0, max ?? allCollections.length);
+	const collections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections);
+
 
 	const listOfImportsWithId =  collections.map(({ importPath }) => {
 		const id = getUniqueAttributeName('col');
 		return [id, `import { data as ${id} } from '${importPath}';`];
 	});
 
-	const cleanMeta = collections.map(({ tag, updatedAt, createdAt, page }) => ({
-		tag,
-		updatedAt: updatedAt.toISOString(),
-		createdAt: createdAt?.toISOString(),
-		page
-	}));
+	const cleanMeta = collections.map(({ importPath, ...exportAbles}) => exportAbles);
 
 	return `
 		${listOfImportsWithId.map(([, importLine]) => importLine).join('\n')}
