@@ -7,5 +7,5 @@ import { createFrontMatterConverter } from '@loom-io/front-matter-converter';
 
 export const adapter = new FilesystemAdapter();
 //TODO: This should be solved in Font-Matter Converter
-export const frontMatterConverter: FileConverter<{data: unknown, content: string}> = createFrontMatterConverter();
+export const frontMatterConverter: ReturnType<typeof createFrontMatterConverter> = createFrontMatterConverter();
 export const converter = createCombinedConverter([createJsonConverter(), createYamlConverter()]);
