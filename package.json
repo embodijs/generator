@@ -8,8 +8,8 @@
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^8.4.1",
-		"@types/node": "^20.14.10",
-		"vitest": "^1.6.0",
-		"publint": "^0.2.8"
+		"@types/node": "^20.14.11",
+		"publint": "^0.2.9",
+		"vitest": "^2.0.3"
 	}
 }

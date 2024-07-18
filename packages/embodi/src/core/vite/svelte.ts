@@ -13,7 +13,8 @@ export function embodiSvelte () {
 		},
 		load(id) {
 			if(id.endsWith('.svelte.embodi')) {
-				return `export { default as Component } from '${resolve(id.slice(2, -7))}';`
+
+				return `export { default as Component } from '/${id.slice(2, -7)}';`
 			}
 		},
 	}) satisfies Plugin;
