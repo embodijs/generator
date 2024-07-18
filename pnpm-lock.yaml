@@ -27,10 +27,10 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@loom-io/core':
-        specifier: ^0.12.3
+        specifier: ^0.12.7
         version: 0.12.7
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.3
+        specifier: ^0.12.7
         version: 0.12.7(@loom-io/core@0.12.7)
       kleur:
         specifier: ^4.1.5
