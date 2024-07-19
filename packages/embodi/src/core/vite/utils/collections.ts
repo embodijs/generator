@@ -47,7 +47,7 @@ async function createCollectionsMeta (): Promise<CollectionMeta[]> {
 
 
 
-const prepareFilter =
+export const prepareFilter =
 	(keep: string[]): PreparedFunction =>
 		(collections: CollectionMeta[]) =>
 			collections.filter((collection) => keep.includes(collection.tag));
@@ -55,25 +55,25 @@ const prepareFilter =
 
 type CollectionTuple = [CollectionMeta, CollectionMeta];
 
-const setDirection = ( collections: CollectionTuple,  direction: 'asc' | 'desc') => {
+export const setDirection = ( collections: CollectionTuple,  direction: 'asc' | 'desc') => {
 	return direction === 'asc' ? collections : collections.reverse() as CollectionTuple;
 }
 
-const getValue = <T>( collections: CollectionTuple, sortBy: keyof CollectionMeta) => {
+export const getValue = <T>( collections: CollectionTuple, sortBy: keyof CollectionMeta) => {
 	return collections.map((collection) => collection[sortBy]) as [T, T];
 }
 
-const compareString = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
+export const compareString = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
 	const [valueA, valueB] = getValue<string>(setDirection([a, b], direction), sortBy);
 	return valueA.localeCompare(valueB);
 }
 
-const compareDate = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
+export const compareDate = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
 	const [valueA, valueB] = getValue<Date>(setDirection([a, b], direction), sortBy);
 	return valueA.getTime() - valueB.getTime();
 }
 
-const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'asc' = 'asc'): PreparedFunction => {
+export const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'asc' = 'asc'): PreparedFunction => {
 	if(['page', 'tag'].includes(sortBy)) {
 		return (collections: CollectionMeta[]) => collections.sort(compareString(sortBy, direction));
 	} else {
@@ -83,7 +83,7 @@ const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'asc' = '
 
 const prepareLimit = (limit?: number, skip: number = 0) => (collections: CollectionMeta[]) => collections.slice(skip, skip + (limit ?? (collections.length - skip)));
 
-const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
+export const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
 	const { limit, skip, only, sortBy, sortDirection } = params;
 	const prepared: PreparedFunction[] = [];
 	only && prepared.push(prepareFilter(Array.isArray(only) ? only : [only]));
