@@ -5,7 +5,7 @@ import { relative } from "node:path";
 import { loadConfig } from "../app/config.js";
 import { prerender } from "../app/prerender.js";
 import packageJson from "../../../package.json"  with { type: "json" };
-import { getVirtualParams, invalidateModule, isHotUpdate, isValidLoadId, validateResolveId } from "./utils/virtuals.js";
+import { getVirtualParams, invalidateEmbodiModule, invalidateStoredCollection, isHotUpdate, isValidLoadId, storeLoadId, validateResolveId } from "./utils/virtuals.js";
 import { loadAppHtml, loadData } from "./utils/load-data.js";
 import { generatePageImportCode, generateRoutesCode } from "./utils/load-content.js";
 import { type ServerResponse } from "node:http";
@@ -72,13 +72,19 @@ export const configPlugin = () => ({
 				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
 			} else if(isValidLoadId(id, "collections")) {
+				storeLoadId("collections", id);
 				const params = getVirtualParams(id);
 				return await generateCollectionsImportsCode(params);
 			}
 		},
 		async handleHotUpdate({server, file}) {
 			if(await isHotUpdate(file, "data")) {
-				invalidateModule(server, "data");
+				await invalidateEmbodiModule(server, "data");
+				server.ws.send({
+					type: 'full-reload'
+				})
+			} else if(await isHotUpdate(file, "content")) {
+				await invalidateStoredCollection(server, "collections");
 				server.ws.send({
 					type: 'full-reload'
 				})
@@ -89,8 +95,8 @@ export const configPlugin = () => ({
 			// Invalidate pages and paths when content changes
 			server.watcher.on("add", async (file: string) => {
 				if (await isHotUpdate(file, "content")) {
-					invalidateModule(server, "pages");
-					invalidateModule(server, "paths");
+					await invalidateEmbodiModule(server, "pages");
+					await invalidateEmbodiModule(server, "paths");
 				}
 			});
 		}
