@@ -17,6 +17,28 @@ This will guide you through some steps and create a basic structure.
 Embodi will read any Markdown or Svelte file the source directory ( default to `<root>/content` directory) in your project structure and convert it to a page. Markdown will only be interpreted as page if they `layout` attribute in front-matter.
 The name is a reference to a Svelte file in the `__layout` folder. The component gets the property data, which contain the front-matter data. The rendered markdown part is given into a slot. So each layout should display rendered content needs to have a slot. In layout components you can do everything you normally do with Svelte.
 
+## Collections
+
+Any file has `tags` attribute in its front-matter with at least one tag ( list is required even with one element ) will be added to a collection. You can access collections in svelte components with importing `$embodi/collections`. This import allows params, to filter, sort or reduce the amount of collections e.g.: `$embodi/collections?only=dogs;cats&limit3`.
+
+```ts
+// Following params are possible
+export interface CollectionParams {
+	only?: string[]; // ; separated list or only one value possible
+	sortBy?: keyof CollectionMeta;
+	sortDirection?: 'asc' | 'desc';
+	skip?: number; // entries to skip
+	limit?: number; // amount of entries
+}
+export interface CollectionMeta {
+	tag: string;
+	updatedAt: Date;
+	createdAt?: Date;
+	page: string;
+}
+```
+
+
 ### Public files and images
 
 To store public files like `robots.txt`, images or css use the `public` folder in the root directory. To change the folder name use the `.embodi.js` file and set the option `publicDir` option. Files in the public directory are referenced without the absolute path e.g. `<root>/public/icon.png` need to be referenced as `/icon.png`
