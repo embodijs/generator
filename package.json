@@ -3,6 +3,7 @@
 		"dev": "pnpm run --recursive dev",
 		"test": "pnpm run --recursive test",
 		"test:unit": "vitest",
+		"test:ci": "vitest --run",
 		"build": "pnpm run --recursive build",
 		"prepublishOnly": "pnpm run --recursive prepublishOnly"
 	},

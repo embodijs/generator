@@ -27,11 +27,11 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@loom-io/core':
-        specifier: ^0.12.3
-        version: 0.12.7
+        specifier: ^0.12.8
+        version: 0.12.8
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.3
-        version: 0.12.7(@loom-io/core@0.12.7)
+        specifier: ^0.12.8
+        version: 0.12.8(@loom-io/core@0.12.8)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
@@ -46,23 +46,23 @@ importers:
   packages/embodi:
     dependencies:
       '@loom-io/converter':
-        specifier: 0.12.7
-        version: 0.12.7(@loom-io/core@0.12.7)
+        specifier: 0.12.9
+        version: 0.12.9(@loom-io/core@0.12.9)
       '@loom-io/core':
-        specifier: ^0.12.7
-        version: 0.12.7
+        specifier: ^0.12.9
+        version: 0.12.9
       '@loom-io/front-matter-converter':
-        specifier: ^0.12.7
-        version: 0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)
+        specifier: ^0.12.9
+        version: 0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)
       '@loom-io/json-converter':
-        specifier: 0.12.7
-        version: 0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)
+        specifier: 0.12.9
+        version: 0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.7
-        version: 0.12.7(@loom-io/core@0.12.7)
+        specifier: ^0.12.9
+        version: 0.12.9(@loom-io/core@0.12.9)
       '@loom-io/yaml-converter':
-        specifier: 0.12.7
-        version: 0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)
+        specifier: 0.12.9
+        version: 0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.1
         version: 3.1.1(svelte@4.2.18)(vite@5.3.4(@types/node@20.14.11))
@@ -89,8 +89,8 @@ importers:
         version: 2.0.3(@types/node@20.14.11)
     devDependencies:
       '@loom-io/in-memory-adapter':
-        specifier: 0.12.3
-        version: 0.12.3(@loom-io/core@0.12.7)
+        specifier: 0.12.9
+        version: 0.12.9(@loom-io/core@0.12.9)
       '@sveltejs/package':
         specifier: ^2.3.2
         version: 2.3.2(svelte@4.2.18)(typescript@5.5.3)
@@ -281,51 +281,59 @@ packages:
   '@loom-io/common@1.0.2':
     resolution: {integrity: sha512-4VuPRHB0LnTSebcO51+/sssAyOgdRv0Z0Zhr6Cix1lqr19tjGS+xVMWczhevlD5uDaPCRFKPXL2XQCNl2Y5VOg==}
 
-  '@loom-io/converter@0.12.7':
-    resolution: {integrity: sha512-mpWR2fu4q/Mxg8WELLVHETiY+fARcrGDu3bGL0XbXSM0Vvou6O6wwY2dqim1b/2+WBaubxbO3S2OG8S5C229KA==}
+  '@loom-io/converter@0.12.9':
+    resolution: {integrity: sha512-EClmblpQfw1ySwdXIRFn3lWc0gXt6AQvr5pq/JbwHaXXTRUjRTQJhVPUXh4F6lV/YZvOrm6raSw7iSeK43U+xQ==}
     peerDependencies:
-      '@loom-io/core': ^0.12.7
+      '@loom-io/core': ^0.12.9
 
-  '@loom-io/core@0.12.7':
-    resolution: {integrity: sha512-coZ8LfKhup7k98N5h4Vvjg6W9K7h3qdEHu/HLLcUqchflJLAVP9CMaVXFpGm+ad56z90g8CnWB1NWuU7+HU5lQ==}
+  '@loom-io/core@0.12.8':
+    resolution: {integrity: sha512-gp5Xuv7BjP+lzhRoVW0VuXa3lzXbG+0oK1KuANIY+cpA9b378iZPdUQBhZ1p++YwFUuUiStkXSGyHs4AtbiTVQ==}
 
-  '@loom-io/front-matter-converter@0.12.7':
-    resolution: {integrity: sha512-7q7mjp3cGtPCzigVqCreIqoEbrPq+FeywCTiFJVP0DPMWTFyC7dle463BCzFF1/avcHGomguggzvGgdt1nnV9w==}
+  '@loom-io/core@0.12.9':
+    resolution: {integrity: sha512-Btco9gFTiaz8TqRqbdQzvVD6tHRWRO/jWgt0RAXNE8i7E7EAN01wnJgqyGWwAClCW7Rp4GxLuUCgOxtnI9QWWQ==}
+
+  '@loom-io/front-matter-converter@0.12.9':
+    resolution: {integrity: sha512-2i9uk0rAmDneRIRaOi/ycSdKgyVLoAcFB7nFeacD46yUUC1FrkvADuOuTv5CqruY/VrBWX4UAoimDfELCBfbFw==}
     peerDependencies:
-      '@loom-io/converter': ^0.12.7
-      '@loom-io/core': ^0.12.7
+      '@loom-io/converter': ^0.12.9
+      '@loom-io/core': ^0.12.9
     peerDependenciesMeta:
       '@loom-io/converter':
         optional: true
       '@loom-io/core':
         optional: true
 
-  '@loom-io/in-memory-adapter@0.12.3':
-    resolution: {integrity: sha512-iWXSkxzhViNhdCBKX2QAUE0vdRYqskXSr38puFTnLJ6oUuJqaI6AzDX/vUs1WqY4ndAnxjEOP1VbHUQtBBMlaw==}
+  '@loom-io/in-memory-adapter@0.12.9':
+    resolution: {integrity: sha512-PR4BCXGxNELNagrH8kV4GHA8Dpj7Q2kT2GmCBWCkt+/J+SLotQbMrA1RGVLZGxTPRyIEEfjMhn2JxoHkgosBVw==}
     peerDependencies:
-      '@loom-io/core': ^0.12.3
+      '@loom-io/core': ^0.12.9
 
-  '@loom-io/json-converter@0.12.7':
-    resolution: {integrity: sha512-MI+WscBi8Jpnk/FMpG1K5qrYSFllGej5fiOixtlN724G13pumKU+eRkhf4Ijk74zhqVWhWa0yLQZiQTG6aamWQ==}
+  '@loom-io/json-converter@0.12.9':
+    resolution: {integrity: sha512-FjGmTgBgVrFqBeP+fv55vNbUWxqd+AhceEmHS1UlOQSjcKNUsMDkgbTNnzlrBOys+d9tX4eAwulnTeq0O/N3Dg==}
     peerDependencies:
-      '@loom-io/converter': ^0.12.7
-      '@loom-io/core': ^0.12.7
+      '@loom-io/converter': ^0.12.9
+      '@loom-io/core': ^0.12.9
     peerDependenciesMeta:
       '@loom-io/converter':
         optional: true
       '@loom-io/core':
         optional: true
 
-  '@loom-io/node-filesystem-adapter@0.12.7':
-    resolution: {integrity: sha512-4i9VZqbmk6pjVbL63GFVeYf5jRz3j/18jA8DQLXOYFdIOKP/ZlmewNB7YUYmTkj2fVUSYuDdtI2KnaKoLQoK0A==}
+  '@loom-io/node-filesystem-adapter@0.12.8':
+    resolution: {integrity: sha512-AQL4inpEfZIZ1rdOLwBAnZy/vX+R3YdmbiyW11YIYjpqxwqNbslbrUIAOJKOWdhZ+HxRkxtQic/JVH6P5WQXNg==}
     peerDependencies:
-      '@loom-io/core': ^0.12.7
+      '@loom-io/core': ^0.12.8
 
-  '@loom-io/yaml-converter@0.12.7':
-    resolution: {integrity: sha512-vL/k4PhS5BfU3MZSd5tRmQCptMtiGbv47s4hf9Vq4dB2FOfJWnWBFAq/pAb4bbl3ku1Q/l+IejBjIpHpG++69w==}
+  '@loom-io/node-filesystem-adapter@0.12.9':
+    resolution: {integrity: sha512-C+S8Qg/u8erfh70+jM2zxHj0+ABF0PK2GXoHJPX6iDfLHHneItn93MBtvB51fbDO8j93ntgGgCwTssED1M1Sdg==}
     peerDependencies:
-      '@loom-io/converter': ^0.12.7
-      '@loom-io/core': ^0.12.7
+      '@loom-io/core': ^0.12.9
+
+  '@loom-io/yaml-converter@0.12.9':
+    resolution: {integrity: sha512-YmaBHEwg0Sa8F9WJScQO60DaPg9NHsNgqXGiyWnUxhCZuW2GP9tQBkc/6KDjKiPsbQSKpzFkI2ChhXoeciPRHA==}
+    peerDependencies:
+      '@loom-io/converter': ^0.12.9
+      '@loom-io/core': ^0.12.9
     peerDependenciesMeta:
       '@loom-io/converter':
         optional: true
@@ -1099,42 +1107,51 @@ snapshots:
 
   '@loom-io/common@1.0.2': {}
 
-  '@loom-io/converter@0.12.7(@loom-io/core@0.12.7)':
+  '@loom-io/converter@0.12.9(@loom-io/core@0.12.9)':
     dependencies:
-      '@loom-io/core': 0.12.7
+      '@loom-io/core': 0.12.9
 
-  '@loom-io/core@0.12.7':
+  '@loom-io/core@0.12.8':
     dependencies:
       '@loom-io/common': 1.0.2
 
-  '@loom-io/front-matter-converter@0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)':
+  '@loom-io/core@0.12.9':
+    dependencies:
+      '@loom-io/common': 1.0.2
+
+  '@loom-io/front-matter-converter@0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)':
     dependencies:
       yaml: 2.4.5
     optionalDependencies:
-      '@loom-io/converter': 0.12.7(@loom-io/core@0.12.7)
-      '@loom-io/core': 0.12.7
+      '@loom-io/converter': 0.12.9(@loom-io/core@0.12.9)
+      '@loom-io/core': 0.12.9
 
-  '@loom-io/in-memory-adapter@0.12.3(@loom-io/core@0.12.7)':
+  '@loom-io/in-memory-adapter@0.12.9(@loom-io/core@0.12.9)':
     dependencies:
       '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.12.7
+      '@loom-io/core': 0.12.9
 
-  '@loom-io/json-converter@0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)':
+  '@loom-io/json-converter@0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)':
     optionalDependencies:
-      '@loom-io/converter': 0.12.7(@loom-io/core@0.12.7)
-      '@loom-io/core': 0.12.7
+      '@loom-io/converter': 0.12.9(@loom-io/core@0.12.9)
+      '@loom-io/core': 0.12.9
 
-  '@loom-io/node-filesystem-adapter@0.12.7(@loom-io/core@0.12.7)':
+  '@loom-io/node-filesystem-adapter@0.12.8(@loom-io/core@0.12.8)':
     dependencies:
       '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.12.7
+      '@loom-io/core': 0.12.8
 
-  '@loom-io/yaml-converter@0.12.7(@loom-io/converter@0.12.7(@loom-io/core@0.12.7))(@loom-io/core@0.12.7)':
+  '@loom-io/node-filesystem-adapter@0.12.9(@loom-io/core@0.12.9)':
+    dependencies:
+      '@loom-io/common': 1.0.2
+      '@loom-io/core': 0.12.9
+
+  '@loom-io/yaml-converter@0.12.9(@loom-io/converter@0.12.9(@loom-io/core@0.12.9))(@loom-io/core@0.12.9)':
     dependencies:
       yaml: 2.4.5
     optionalDependencies:
-      '@loom-io/converter': 0.12.7(@loom-io/core@0.12.7)
-      '@loom-io/core': 0.12.7
+      '@loom-io/converter': 0.12.9(@loom-io/core@0.12.9)
+      '@loom-io/core': 0.12.9
 
   '@playwright/test@1.45.1':
     dependencies:

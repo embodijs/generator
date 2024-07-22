@@ -14,8 +14,8 @@
 	"license": "Apache-2.0",
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
-		"@loom-io/core": "^0.12.3",
-		"@loom-io/node-filesystem-adapter": "^0.12.3",
+		"@loom-io/core": "^0.12.8",
+		"@loom-io/node-filesystem-adapter": "^0.12.8",
 		"kleur": "^4.1.5"
 	},
 	"devDependencies": {
