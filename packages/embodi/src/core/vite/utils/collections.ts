@@ -2,14 +2,14 @@ import { getAllPages, getPageImportPath, loadPageData, transformPathToUrl } from
 import { loadConfig } from "../../app/config.js";
 import { getUniqueAttributeName } from "./virtuals.js";
 
-interface CollectionParams {
+export interface CollectionParams {
 	only?: string[] | string;
 	sortBy?: keyof CollectionMeta;
 	sortDirection?: 'asc' | 'desc';
 	skip?: number;
 	limit?: number;
 }
-interface CollectionMeta {
+export interface CollectionMeta {
 	tag: string;
 	updatedAt: Date;
 	createdAt?: Date;
@@ -81,7 +81,7 @@ export const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'a
 	}
 }
 
-const prepareLimit = (limit?: number, skip: number = 0) => (collections: CollectionMeta[]) => collections.slice(skip, skip + (limit ?? (collections.length - skip)));
+export const prepareLimit = (limit?: number, skip: number = 0) => (collections: CollectionMeta[]) => collections.slice(skip, skip + (limit ?? (collections.length - skip)));
 
 export const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
 	const { limit, skip, only, sortBy, sortDirection } = params;
