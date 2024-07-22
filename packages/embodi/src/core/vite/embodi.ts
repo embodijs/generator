@@ -74,7 +74,11 @@ export const configPlugin = () => ({
 			} else if(isValidLoadId(id, "collections")) {
 				storeLoadId("collections", id);
 				const params = getVirtualParams(id);
-				return await generateCollectionsImportsCode(params);
+
+				return await generateCollectionsImportsCode({
+					...params,
+					only: params.only ? params.only.split(';') : undefined
+				});
 			}
 		},
 		async handleHotUpdate({server, file}) {

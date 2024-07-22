@@ -3,7 +3,7 @@ import { loadConfig } from "../../app/config.js";
 import { getUniqueAttributeName } from "./virtuals.js";
 
 export interface CollectionParams {
-	only?: string[] | string;
+	only?: string[];
 	sortBy?: keyof CollectionMeta;
 	sortDirection?: 'asc' | 'desc';
 	skip?: number;
@@ -86,7 +86,7 @@ export const prepareLimit = (limit?: number, skip: number = 0) => (collections: 
 export const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
 	const { limit, skip, only, sortBy, sortDirection } = params;
 	const prepared: PreparedFunction[] = [];
-	only && prepared.push(prepareFilter(Array.isArray(only) ? only : [only]));
+	only && prepared.push(prepareFilter(only));
 	sortBy && prepared.push(prepareSort(sortBy, sortDirection));
 	(limit || skip) && prepared.push(prepareLimit(limit, skip));
 	return prepared;
