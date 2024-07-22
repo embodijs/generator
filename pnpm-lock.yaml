@@ -30,8 +30,8 @@ importers:
         specifier: ^0.12.8
         version: 0.12.8
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.8
-        version: 0.12.8(@loom-io/core@0.12.8)
+        specifier: ^0.12.9
+        version: 0.12.9(@loom-io/core@0.12.8)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
@@ -318,11 +318,6 @@ packages:
         optional: true
       '@loom-io/core':
         optional: true
-
-  '@loom-io/node-filesystem-adapter@0.12.8':
-    resolution: {integrity: sha512-AQL4inpEfZIZ1rdOLwBAnZy/vX+R3YdmbiyW11YIYjpqxwqNbslbrUIAOJKOWdhZ+HxRkxtQic/JVH6P5WQXNg==}
-    peerDependencies:
-      '@loom-io/core': ^0.12.8
 
   '@loom-io/node-filesystem-adapter@0.12.9':
     resolution: {integrity: sha512-C+S8Qg/u8erfh70+jM2zxHj0+ABF0PK2GXoHJPX6iDfLHHneItn93MBtvB51fbDO8j93ntgGgCwTssED1M1Sdg==}
@@ -1136,7 +1131,7 @@ snapshots:
       '@loom-io/converter': 0.12.9(@loom-io/core@0.12.9)
       '@loom-io/core': 0.12.9
 
-  '@loom-io/node-filesystem-adapter@0.12.8(@loom-io/core@0.12.8)':
+  '@loom-io/node-filesystem-adapter@0.12.9(@loom-io/core@0.12.8)':
     dependencies:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.8
