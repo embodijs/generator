@@ -40,6 +40,8 @@ jobs:
           cache: "pnpm"
       - name: Install
         run: pnpm install
+      - name: Unit Test
+        run: pnpm run test:ci
       - name: Build && publint
         run: pnpm run prepublishOnly
       - name: Publish Dry Run
