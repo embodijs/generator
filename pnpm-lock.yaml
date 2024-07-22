@@ -27,11 +27,11 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@loom-io/core':
-        specifier: ^0.12.8
-        version: 0.12.8
+        specifier: ^0.12.9
+        version: 0.12.9
       '@loom-io/node-filesystem-adapter':
         specifier: ^0.12.9
-        version: 0.12.9(@loom-io/core@0.12.8)
+        version: 0.12.9(@loom-io/core@0.12.9)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
@@ -285,9 +285,6 @@ packages:
     resolution: {integrity: sha512-EClmblpQfw1ySwdXIRFn3lWc0gXt6AQvr5pq/JbwHaXXTRUjRTQJhVPUXh4F6lV/YZvOrm6raSw7iSeK43U+xQ==}
     peerDependencies:
       '@loom-io/core': ^0.12.9
-
-  '@loom-io/core@0.12.8':
-    resolution: {integrity: sha512-gp5Xuv7BjP+lzhRoVW0VuXa3lzXbG+0oK1KuANIY+cpA9b378iZPdUQBhZ1p++YwFUuUiStkXSGyHs4AtbiTVQ==}
 
   '@loom-io/core@0.12.9':
     resolution: {integrity: sha512-Btco9gFTiaz8TqRqbdQzvVD6tHRWRO/jWgt0RAXNE8i7E7EAN01wnJgqyGWwAClCW7Rp4GxLuUCgOxtnI9QWWQ==}
@@ -1106,10 +1103,6 @@ snapshots:
     dependencies:
       '@loom-io/core': 0.12.9
 
-  '@loom-io/core@0.12.8':
-    dependencies:
-      '@loom-io/common': 1.0.2
-
   '@loom-io/core@0.12.9':
     dependencies:
       '@loom-io/common': 1.0.2
@@ -1130,11 +1123,6 @@ snapshots:
     optionalDependencies:
       '@loom-io/converter': 0.12.9(@loom-io/core@0.12.9)
       '@loom-io/core': 0.12.9
-
-  '@loom-io/node-filesystem-adapter@0.12.9(@loom-io/core@0.12.8)':
-    dependencies:
-      '@loom-io/common': 1.0.2
-      '@loom-io/core': 0.12.8
 
   '@loom-io/node-filesystem-adapter@0.12.9(@loom-io/core@0.12.9)':
     dependencies:
