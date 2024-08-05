@@ -9,7 +9,7 @@
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^8.4.1",
-		"@types/node": "^20.14.11",
+		"@types/node": "^22.1.0",
 		"publint": "^0.2.9",
 		"vitest": "^2.0.3"
 	}
