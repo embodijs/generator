@@ -22,18 +22,19 @@ type PreparedFunction = (collections: CollectionMeta[]) => CollectionMeta[];
 async function createCollectionsMeta (): Promise<CollectionMeta[]> {
 	const config = await loadConfig(process.cwd());
 	const rawData = await Promise.all((await getAllPages(config.inputDirs)).map(async (file, dir) => {
-		const data = await loadPageData(file) as { tags?: string[] } | undefined;
+		const data = await loadPageData(file) as { tags?: string[], title?: string, name?: string } | undefined;
 		const { createdAt, updatedAt } = await file.getMeta();
 		if(!data) {
 			return undefined;
 		}
-		const { tags } = data ;
+		const { tags, title, name } = data ;
 		if(!tags) {
 			return undefined;
 		}
 		const page = transformPathToUrl(dir, file);
 		const importPath = getPageImportPath(file);
 		return tags.map((tag: string) => ({
+			title: title ?? name,
 			tag,
 			createdAt,
 			updatedAt,
