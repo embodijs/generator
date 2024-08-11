@@ -94,16 +94,23 @@ export const convertCollectionParamsToPreparedFunctions = (params: CollectionPar
 }
 
 export async function generateCollectionsImportsCode(params: CollectionParams): Promise<string> {
-	const allCollections = await createCollectionsMeta();
-	const collections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections);
+	const allCollections = (await createCollectionsMeta())
+	const filteredCollections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections)
 
 
-	const listOfImportsWithId =  collections.map(({ importPath }) => {
+	const listOfImportsWithId =  filteredCollections
+	.reduce((importPaths, { importPath }) => {
+		if(!importPaths.includes(importPath)){
+			return [...importPaths, importPath]
+		}
+		return importPaths;
+	},[] as string[])
+	.map((importPath ) => {
 		const id = getUniqueAttributeName('col');
 		return [id, `import { data as ${id} } from '${importPath}';`];
 	});
 
-	const cleanMeta = collections.map(({ importPath, ...exportAbles}) => exportAbles);
+	const cleanMeta = filteredCollections.map(({ importPath, ...exportAbles}) => exportAbles);
 
 	return `
 		${listOfImportsWithId.map(([, importLine]) => importLine).join('\n')}
