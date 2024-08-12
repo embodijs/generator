@@ -6,7 +6,8 @@
 	"bin": "./bin.js",
 	"scripts": {
 		"dev": "node ./bin.js",
-		"test": "playwright test"
+		"test:e2e:init": "playwright install",
+		"test:e2e": "playwright test"
 	},
 	"type": "module",
 	"keywords": [],
