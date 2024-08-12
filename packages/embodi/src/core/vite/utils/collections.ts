@@ -22,18 +22,19 @@ type PreparedFunction = (collections: CollectionMeta[]) => CollectionMeta[];
 async function createCollectionsMeta (): Promise<CollectionMeta[]> {
 	const config = await loadConfig(process.cwd());
 	const rawData = await Promise.all((await getAllPages(config.inputDirs)).map(async (file, dir) => {
-		const data = await loadPageData(file) as { tags?: string[] } | undefined;
+		const data = await loadPageData(file) as { tags?: string[], title?: string, name?: string } | undefined;
 		const { createdAt, updatedAt } = await file.getMeta();
 		if(!data) {
 			return undefined;
 		}
-		const { tags } = data ;
+		const { tags, title, name } = data ;
 		if(!tags) {
 			return undefined;
 		}
 		const page = transformPathToUrl(dir, file);
 		const importPath = getPageImportPath(file);
 		return tags.map((tag: string) => ({
+			title: title ?? name,
 			tag,
 			createdAt,
 			updatedAt,
@@ -93,16 +94,23 @@ export const convertCollectionParamsToPreparedFunctions = (params: CollectionPar
 }
 
 export async function generateCollectionsImportsCode(params: CollectionParams): Promise<string> {
-	const allCollections = await createCollectionsMeta();
-	const collections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections);
+	const allCollections = (await createCollectionsMeta())
+	const filteredCollections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections)
 
 
-	const listOfImportsWithId =  collections.map(({ importPath }) => {
+	const listOfImportsWithId =  filteredCollections
+	.reduce((importPaths, { importPath }) => {
+		if(!importPaths.includes(importPath)){
+			return [...importPaths, importPath]
+		}
+		return importPaths;
+	},[] as string[])
+	.map((importPath ) => {
 		const id = getUniqueAttributeName('col');
 		return [id, `import { data as ${id} } from '${importPath}';`];
 	});
 
-	const cleanMeta = collections.map(({ importPath, ...exportAbles}) => exportAbles);
+	const cleanMeta = filteredCollections.map(({ importPath, ...exportAbles}) => exportAbles);
 
 	return `
 		${listOfImportsWithId.map(([, importLine]) => importLine).join('\n')}

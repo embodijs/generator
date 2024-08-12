@@ -35,5 +35,5 @@
     },
   },
   "exclude": ["**/*.spec.ts", "node_modules"],
-  "include": ["./src/**/*", "src/core/vite/virtual-modules"]
+  "include": ["./src/**/*", "./src/core/vite/virtual-modules/*"]
 }
