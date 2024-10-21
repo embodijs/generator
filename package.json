@@ -9,7 +9,7 @@
 		"prepublishOnly": "pnpm run --recursive prepublishOnly"
 	},
 	"devDependencies": {
-		"@faker-js/faker": "^8.4.1",
+		"@faker-js/faker": "^9.0.3",
 		"@types/node": "^22.7.7",
 		"publint": "^0.2.11",
 		"vitest": "^2.1.3"
