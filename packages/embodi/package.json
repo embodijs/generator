@@ -50,7 +50,7 @@
 		"@loom-io/json-converter": "0.12.9",
 		"@loom-io/node-filesystem-adapter": "^0.12.9",
 		"@loom-io/yaml-converter": "0.12.9",
-		"@sveltejs/vite-plugin-svelte": "^3.1.2",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
