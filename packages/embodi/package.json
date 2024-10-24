@@ -33,13 +33,13 @@
 	"type": "module",
 	"devDependencies": {
 		"@loom-io/in-memory-adapter": "0.12.9",
-		"@sveltejs/package": "^2.3.5",
+		"@sveltejs/package": "^2.3.6",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
 		"rollup": "^4.24.0"
 	},
 	"peerDependencies": {
-		"svelte": "^4.2.17",
+		"svelte": "^5.1.0",
 		"typescript": "^5.0.0",
 		"vite": "^5.2.11"
 	},
@@ -50,7 +50,7 @@
 		"@loom-io/json-converter": "0.12.9",
 		"@loom-io/node-filesystem-adapter": "^0.12.9",
 		"@loom-io/yaml-converter": "0.12.9",
-		"@sveltejs/vite-plugin-svelte": "^3.1.2",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",

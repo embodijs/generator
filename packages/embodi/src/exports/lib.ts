@@ -1,6 +1,3 @@
-import { createDevServer, createPreviewServer } from "../core/dev.js";
-import { generate } from "../core/build.js";
-import { defineConfig } from "../core/app/config.js";
-
-export {createDevServer, generate, createPreviewServer};
-export {defineConfig};
+export { createDevServer, createPreviewServer } from '../core/dev.js';
+export { generate } from '../core/build.js';
+export { defineConfig } from '../core/app/config.js';
