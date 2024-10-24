@@ -1,20 +1,26 @@
 <script lang="ts">
-	export let Layout: ConstructorOfATypedSvelteComponent | undefined = undefined;
-	export let Component: ConstructorOfATypedSvelteComponent | undefined = undefined;
-	export let html: string | undefined = undefined;
-	export let data: any;
+	import type { Snippet, SvelteComponent } from 'svelte';
+
+	interface RootProps {
+		Layout?: SvelteComponent;
+		Component?: SvelteComponent;
+		html?: string;
+		data: any;
+	}
+
+	let { Layout, Component, html, data }: RootProps = $props();
 </script>
 
 {#if Layout}
-	<svelte:component this={Layout} {data}>
+	<Layout {data}>
 		{#if Component}
-			<svelte:component this={Component} {data} />
+			<Component {data} />
 		{:else if html}
 			{@html html}
 		{/if}
-	</svelte:component>
+	</Layout>
 {:else if Component}
-	<svelte:component this={Component} {data} />
+	<Component {data} />
 {:else if html}
 	{@html html}
 {/if}
