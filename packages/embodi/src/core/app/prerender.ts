@@ -1,4 +1,4 @@
-import path from 'node:path';
+import path, { resolve } from 'node:path';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { loadAppHtml } from '../vite/utils/load-data.js';
 import { getRoutesToPrerender } from '../vite/utils/load-content.js';
@@ -20,7 +20,7 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const manifest = JSON.parse(await fs.file('/dist/static/.vite/manifest.json').text('utf-8'));
 	const template = await loadAppHtml(statics);
 
-	const { render } = await import('./entry-server.js');
+	const { render } = await import(toAbsolute('dist/server/entry-server.js'));
 
 	// pre-render each route...
 	const routesToPrerender = await getRoutesToPrerender(inputDirs);
