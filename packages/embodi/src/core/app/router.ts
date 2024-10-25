@@ -9,18 +9,19 @@ const getPageFromUrl = async (url: string) => {
 	const { data } = await import('$embodi/data');
 
 	const pageImportFu = pages[url];
-	if(!pageImportFu) return;
+	if (!pageImportFu) return;
 
 	const page = await pageImportFu();
-	return { ...page, data: {
-		...data,
-		...page.data
-	}};
-
-}
+	return {
+		...page,
+		data: {
+			...data,
+			...page.data
+		}
+	};
+};
 
 export const createRouter = () => {
-
 	const loadPage = async (url: string) => {
 		const page = getPageFromUrl(url);
 		return page;
@@ -29,6 +30,5 @@ export const createRouter = () => {
 	return {
 		load: loadPage,
 		path: convertUrlToPath
-	}
-
-}
+	};
+};

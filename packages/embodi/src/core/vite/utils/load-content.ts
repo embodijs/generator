@@ -1,27 +1,26 @@
-import type { Directory, LoomFile } from "@loom-io/core";
-import { adapter, frontMatterConverter } from "./project-adapter.js"
-import { type PublicDirs } from "../../app/config.js";
-
+import type { Directory, LoomFile } from '@loom-io/core';
+import { adapter, frontMatterConverter } from './project-adapter.js';
+import { type PublicDirs } from '../../app/config.js';
 
 export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
-
 	const { extension } = file;
-	if(!extension) {
+	if (!extension) {
 		throw new Error(`File ${file.path} has no extension`);
 	}
-	if(file.getNameWithoutExtension() === 'index') {
-		return dir.relativePath(file.dir) ?? '/';
+
+	if (file.getNameWithoutExtension() === 'index') {
+		return `/${dir.relativePath(file.dir)}`;
 	}
 	const relativePath = dir.relativePath(file)!;
-	return `/${relativePath.slice(0, -(extension.length+1))}`;
-}
+	return `/${relativePath.slice(0, -(extension.length + 1))}`;
+};
 
 const wrapperPath = (path: string) => `${path}.embodi`;
 const wrapperUrlPath = (name: string, path: string) => `"${name}": "${wrapperPath(path)}"`;
-const wrapperImportFunctionString = (name: string, path: string) => `"${name}": () => import('${wrapperPath(path)}')`;
+const wrapperImportFunctionString = (name: string, path: string) =>
+	`"${name}": () => import('${wrapperPath(path)}')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
 const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
-
 
 export const getAllPages = async (publicDirs: PublicDirs) => {
 	const { content } = publicDirs;
@@ -35,18 +34,18 @@ export const getAllPages = async (publicDirs: PublicDirs) => {
 		asArray: () => files.asArray(),
 		getDir: () => dir,
 		getList: () => files
-	}
-}
+	};
+};
 
 export const getPageImportPath = (file: LoomFile) => wrapperPath(adapter.getFullPath(file));
 
 export const loadPageData = async (file: LoomFile) => {
 	const { data } = await frontMatterConverter.parse(file);
-	if(!data || Object.keys(data).length === 0) {
+	if (!data || Object.keys(data).length === 0) {
 		return undefined;
 	}
 	return data;
-}
+};
 
 export const generatePageImportCode = async (publicDirs: PublicDirs) => {
 	const importFunctions = (await getAllPages(publicDirs)).map((file, dir) => {
@@ -56,15 +55,14 @@ export const generatePageImportCode = async (publicDirs: PublicDirs) => {
 	return wrapperExport('pages', wrapperObject(importFunctions));
 };
 
-
 export const generateRoutesCode = async (publicDirs: PublicDirs) => {
 	const importFunctions = (await getAllPages(publicDirs)).map((file, dir) => {
 		const url = transformPathToUrl(dir, file);
 		return wrapperUrlPath(url, adapter.getFullPath(file));
 	});
 	return wrapperExport('routes', wrapperObject(importFunctions));
-}
+};
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
 	return (await getAllPages(publicDirs)).map((file, dir) => transformPathToUrl(dir, file));
-}
+};
