@@ -157,28 +157,33 @@ export const devServerPlugin = () =>
 				looped: boolean = false
 			) => {
 				// TODO: add static file route here
-				const { inputDirs, statics } = await loadConfig(cwd);
+				try {
+					const { inputDirs, statics } = await loadConfig(cwd);
 
-				const rawTemplate = await loadAppHtml(statics);
-				const template = await server.transformIndexHtml(req.originalUrl!, rawTemplate);
-				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
-				const { render } = await server.ssrLoadModule(
-					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
-				);
+					const rawTemplate = await loadAppHtml(statics);
+					const template = await server.transformIndexHtml(req.originalUrl!, rawTemplate);
+					const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
+					const { render } = await server.ssrLoadModule(
+						`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
+					);
 
-				const rendered = await render(inputDirs.content, req.originalUrl);
-				if (!rendered) {
-					return next();
+					const rendered = await render(inputDirs.content, req.originalUrl);
+					if (!rendered) {
+						return next();
+					}
+
+					const html = template
+						.replace(`<!--app-head-->`, (rendered.head ?? '') + linkToClient)
+						.replace(`<!--app-html-->`, rendered.html ?? '');
+					res.writeHead(200, {
+						'Content-Type': 'text/html',
+						'Content-Length': html.length
+					});
+					return res.end(html);
+				} catch (e) {
+					console.warn('## Error while rendering:');
+					console.error(e);
 				}
-
-				const html = template
-					.replace(`<!--app-head-->`, (rendered.head ?? '') + linkToClient)
-					.replace(`<!--app-html-->`, rendered.html ?? '');
-				res.writeHead(200, {
-					'Content-Type': 'text/html',
-					'Content-Length': html.length
-				});
-				return res.end(html);
 			};
 
 			server.middlewares.use(devServer);
