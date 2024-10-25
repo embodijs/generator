@@ -38,7 +38,6 @@ export interface CollectionMeta {
 }
 ```
 
-
 ### Public files and images
 
 To store public files like `robots.txt`, images or css use the `public` folder in the root directory. To change the folder name use the `.embodi.js` file and set the option `publicDir` option. Files in the public directory are referenced without the absolute path e.g. `<root>/public/icon.png` need to be referenced as `/icon.png`
@@ -46,6 +45,7 @@ To store public files like `robots.txt`, images or css use the `public` folder i
 ## Build
 
 To build your project, run `npm run build` and `npm run preview` to preview it.
+
 > Do not use `npm run preview` for production.
 
 ## Deployment
@@ -58,9 +58,9 @@ When using Embodi, everything is preconfigured. The `.embodi.js` file could be j
 
 ```js
 // .embodi.js
-import { defineConfig } from 'embodi'
+import { defineConfig } from 'embodi';
 
-export default defineConfig({})
+export default defineConfig({});
 ```
 
 ### Options
@@ -70,7 +70,7 @@ Embodi use [Vite](https://vitejs.dev) under the hood, so most options from vite 
 #### base
 
 - Type: `string`
-- Default: `/content`
+- Default: `/`
 - Reference: [Vite](https://vitejs.dev/config/shared-options.html#base)
 
 Base public path when served in development or production. Needs to start with `/`
@@ -108,7 +108,7 @@ Output directory of build sources. Copy the content of the static folder of dist
 #### source
 
 - Type: `string`
-- Default: `/`
+- Default: `/content`
 
 Source folder to read markdown files from. String have to start `/`
 
@@ -123,6 +123,7 @@ pnpm install
 ```
 
 Build the library and use it locally in other projects using `watch' mode.
+
 ```bash
 pnpm run build -- --watch
 ```
