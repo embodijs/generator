@@ -20,7 +20,7 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const manifest = JSON.parse(await fs.file('/dist/static/.vite/manifest.json').text('utf-8'));
 	const template = await loadAppHtml(statics);
 
-	const { render } = await import(resolve(process.cwd(), 'dist/server/entry-server.js'));
+	const { render } = await import(toAbsolute('dist/server/entry-server.js'));
 
 	// pre-render each route...
 	const routesToPrerender = await getRoutesToPrerender(inputDirs);
