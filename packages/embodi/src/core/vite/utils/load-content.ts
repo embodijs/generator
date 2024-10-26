@@ -9,7 +9,7 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 	}
 
 	if (file.getNameWithoutExtension() === 'index') {
-		return `/${dir.relativePath(file.dir)}`;
+		return `/${dir.relativePath(file.dir) ?? ''}`;
 	}
 	const relativePath = dir.relativePath(file)!;
 	return `/${relativePath.slice(0, -(extension.length + 1))}`;
