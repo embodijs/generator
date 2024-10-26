@@ -1,6 +1,7 @@
 import { createServer, preview, defineConfig, type Plugin } from 'vite';
 import { configPlugin, devServerPlugin, virtualPlugin } from './vite/embodi.js';
-import { embodiFrontMatter } from './vite/markdown.js';
+import { embodiMarkdown } from './vite/markdown.js';
+import { embodiHtml } from './vite/html.js';
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { embodiSvelte } from './vite/svelte.js';
 
@@ -12,7 +13,8 @@ export const createConfig = () => {
 		configPlugin(),
 		virtualPlugin(),
 		embodiSvelte(),
-		embodiFrontMatter(),
+		embodiMarkdown(),
+		embodiHtml(),
 		devServerPlugin()
 	];
 

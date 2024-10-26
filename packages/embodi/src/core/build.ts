@@ -1,6 +1,7 @@
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { configPlugin, prerenderPlugin, virtualPlugin } from './vite/embodi.js';
-import { embodiFrontMatter } from './vite/markdown.js';
+import { embodiMarkdown } from './vite/markdown.js';
+import { embodiHtml } from './vite/html.js';
 import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
 
@@ -9,7 +10,8 @@ export const createConfig = () => {
 		configPlugin(),
 		virtualPlugin(),
 		embodiSvelte(),
-		embodiFrontMatter(),
+		embodiMarkdown(),
+		embodiHtml(),
 		svelte({
 			preprocess: vitePreprocess()
 		}),
