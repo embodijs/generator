@@ -1,15 +1,15 @@
 {
-	"name": "~TODO~",
-	"module": "index.ts",
-	"type": "module",
-	"scripts": {
-		"dev": "embodi dev",
-		"build": "embodi generate",
-		"generate": "embodi generate",
-		"preview": "embodi preview"
-	},
-	"devDependencies": {
-		"embodi": "^0.7.0",
-		"svelte": "^4.2.17"
-	}
+  "name": "~TODO~",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "embodi dev",
+    "build": "embodi generate",
+    "generate": "embodi generate",
+    "preview": "embodi preview"
+  },
+  "devDependencies": {
+    "embodi": "^0.8.0",
+    "svelte": "^5.1.0"
+  }
 }

@@ -1,6 +1,6 @@
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { configPlugin, prerenderPlugin, virtualPlugin } from './vite/embodi.js';
-import { embodiFrontMatter } from './vite/front-matter.js';
+import { embodiFrontMatter } from './vite/markdown.js';
 import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
 
