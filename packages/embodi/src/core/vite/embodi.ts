@@ -18,6 +18,7 @@ import { loadAppHtml, loadData } from './utils/load-data.js';
 import { generatePageImportCode, generateRoutesCode } from './utils/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
+import { isCompileException } from './utils/exceptions.js';
 
 const cwd = process.cwd();
 const cfd = dirname(fileURLToPath(import.meta.url));
@@ -181,8 +182,14 @@ export const devServerPlugin = () =>
 					});
 					return res.end(html);
 				} catch (e) {
-					console.warn('## Error while rendering:');
-					console.error(e);
+					if (isCompileException(e)) {
+						console.warn(`Error in ${e.loc.file}:${e.loc.line}:${e.loc.column}`);
+						console.error(e.message);
+						console.error(e.frame);
+					} else {
+						console.error(e);
+					}
+					server.restart();
 				}
 			};
 
