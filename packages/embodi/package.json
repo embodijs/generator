@@ -36,7 +36,7 @@
 		"@sveltejs/package": "^2.3.6",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
-		"rollup": "^4.24.0"
+		"rollup": "^4.24.2"
 	},
 	"peerDependencies": {
 		"svelte": "^5.1.0",
