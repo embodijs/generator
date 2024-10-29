@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    // Enable latest features
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "declaration": true,
+
+    // Bundler mode
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    //"allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    //"noEmit": true,
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Root and out dir
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "$core/*": ["./src/core/*"]
+    }
+  },
+  "exclude": ["**/*.spec.ts", "node_modules"],
+  "include": ["./src/**/*"]
+}

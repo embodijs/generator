@@ -6,14 +6,18 @@ import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
 
 export const createConfig = () => {
+	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
+		svelte({
+			preprocess: vitePreprocess()
+		}),
 		configPlugin(),
 		virtualPlugin(),
 		embodiSvelte(),
 		embodiMarkdown(),
 		embodiHtml(),
 		svelte({
-			preprocess: vitePreprocess()
+		...config.plugins,
 		}),
 		prerenderPlugin()
 	];

@@ -6,6 +6,7 @@ import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { embodiSvelte } from './vite/svelte.js';
 
 export const createConfig = () => {
+	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
 		svelte({
 			preprocess: vitePreprocess()
@@ -16,6 +17,8 @@ export const createConfig = () => {
 		embodiMarkdown(),
 		embodiHtml(),
 		devServerPlugin()
+		devServerPlugin(),
+		...config.plugins
 	];
 
 	return defineConfig({

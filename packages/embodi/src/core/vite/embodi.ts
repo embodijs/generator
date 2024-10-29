@@ -34,7 +34,6 @@ export const configPlugin = () =>
 				...config,
 				...projectConfig.viteConfig,
 				root: cwd,
-				plugins: [...(config.plugins ?? []), ...(projectConfig.viteConfig.plugins ?? [])],
 				resolve: {
 					...config.resolve,
 					alias: {
