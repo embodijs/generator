@@ -4,6 +4,7 @@ import { embodiMarkdown } from './vite/markdown.js';
 import { embodiHtml } from './vite/html.js';
 import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
+import { loadConfig } from './app/config.js';
 
 export const createConfig = () => {
 	const config = await loadConfig();
