@@ -1,20 +1,19 @@
 import { createRouter } from './router.js';
 import { hydrate } from 'svelte';
+import { before } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 
 const currentUrl = new URL(window.location.href).pathname;
 
-export default createRouter()
-	.load(currentUrl)
-	.then((pageData) => {
-		if (pageData === undefined) {
-			throw new Error('Page not found');
-		}
-		return pageData;
-	})
-	.then(({ html, Component, Layout, data }) => {
-		return hydrate(SvelteRoot, {
-			target: document.getElementById('app')!,
-			props: { Layout, data, html, Component }
-		});
+const hydrateClient = async () => {
+	const pageData = await createRouter().load(currentUrl);
+	if (!pageData) return;
+	const { html, Component, Layout, data } = pageData;
+	await before({ data });
+	hydrate(SvelteRoot, {
+		target: document.getElementById('app')!,
+		props: { Layout, data, html, Component }
 	});
+};
+
+export default hydrateClient();

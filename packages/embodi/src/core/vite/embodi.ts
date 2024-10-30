@@ -61,9 +61,9 @@ export const virtualPlugin = () =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
-			return validateResolveId(id, 'pages', 'paths', 'data', 'collections');
+			return validateResolveId(id, 'pages', 'paths', 'data', 'collections', 'hooks', 'env');
 		},
-		async load(id) {
+		async load(id, options) {
 			if (isValidLoadId(id, 'pages')) {
 				const config = await loadConfig(cwd);
 				const pagesCode = await generatePageImportCode(config.inputDirs);
@@ -88,6 +88,10 @@ export const virtualPlugin = () =>
 					...params,
 					only: params.only ? params.only.split(';') : undefined
 				});
+			} else if (isValidLoadId(id, 'hooks')) {
+				return `export * from '${resolve(cwd, 'hooks')}';`;
+			} else if (isValidLoadId(id, 'env')) {
+				return `export const browser = ${JSON.stringify(!options?.ssr)};`;
 			}
 		},
 		async handleHotUpdate({ server, file }) {

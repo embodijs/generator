@@ -1,5 +1,6 @@
 import { createRouter } from './router.js';
 import { entryClient } from '$embodi/paths';
+import { before } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';
 import type { Manifest } from 'vite';
@@ -41,6 +42,7 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const app = await router.load(url);
 	if (!app) return;
+	await before({ data: app.data });
 	// @ts-ignore
 	const data = renderSvelte(SvelteRoot, { props: app });
 	if (!data) return;
