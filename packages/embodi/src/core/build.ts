@@ -6,7 +6,7 @@ import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
 import { loadConfig } from './app/config.js';
 
-export const createConfig = () => {
+export const createConfig = async () => {
 	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
 		svelte({
@@ -29,7 +29,7 @@ export const createConfig = () => {
 };
 
 export const generate = async () => {
-	const config = createConfig();
+	const config = await createConfig();
 	console.info('build client scripts...');
 	await viteBuild({
 		...config,
