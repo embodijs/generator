@@ -1,6 +1,7 @@
 import type { Directory, LoomFile } from '@loom-io/core';
 import { adapter, frontMatterConverter } from './project-adapter.js';
 import { type PublicDirs } from '../../app/config.js';
+import { addTrailingSlash } from '../../utils/paths.js';
 
 export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 	const { extension } = file;
@@ -9,10 +10,10 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 	}
 
 	if (file.getNameWithoutExtension() === 'index') {
-		return `/${dir.relativePath(file.dir) ?? ''}`;
+		return addTrailingSlash(`/${dir.relativePath(file.dir) ?? ''}`);
 	}
 	const relativePath = dir.relativePath(file)!;
-	return `/${relativePath.slice(0, -(extension.length + 1))}`;
+	return addTrailingSlash(`/${relativePath.slice(0, -(extension.length + 1))}`);
 };
 
 const wrapperPath = (path: string) => `${path}.embodi`;
