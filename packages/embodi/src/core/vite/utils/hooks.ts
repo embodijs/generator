@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { adapter } from './project-adapter.js';
 
 const defaultCode = `
-  export const render = function () {}
+  export const renderHook = function () {}
 `;
 
 const generateCode = async (cwd: string) =>
