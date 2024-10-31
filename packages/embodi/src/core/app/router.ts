@@ -1,3 +1,5 @@
+import { addTrailingSlash } from '../utils/paths.js';
+
 const convertUrlToPath = async (url: string) => {
 	const { routes } = await import('$embodi/pages');
 
@@ -8,7 +10,7 @@ const getPageFromUrl = async (url: string) => {
 	const { pages } = await import('$embodi/pages');
 	const { data } = await import('$embodi/data');
 
-	const pageImportFu = pages[url];
+	const pageImportFu = pages[addTrailingSlash(url)];
 	if (!pageImportFu) return;
 
 	const page = await pageImportFu();
