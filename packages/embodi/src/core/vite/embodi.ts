@@ -18,6 +18,7 @@ import { loadAppHtml, loadData } from './utils/load-data.js';
 import { generatePageImportCode, generateRoutesCode } from './utils/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
+import { generateHooksCode } from './utils/hooks.js';
 import { isCompileException } from './utils/exceptions.js';
 
 const cwd = process.cwd();
@@ -34,7 +35,6 @@ export const configPlugin = () =>
 				...config,
 				...projectConfig.viteConfig,
 				root: cwd,
-				plugins: [...(config.plugins ?? []), ...(projectConfig.viteConfig.plugins ?? [])],
 				resolve: {
 					...config.resolve,
 					alias: {
@@ -62,9 +62,9 @@ export const virtualPlugin = () =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
-			return validateResolveId(id, 'pages', 'paths', 'data', 'collections');
+			return validateResolveId(id, 'pages', 'paths', 'data', 'collections', 'hooks', 'env');
 		},
-		async load(id) {
+		async load(id, options) {
 			if (isValidLoadId(id, 'pages')) {
 				const config = await loadConfig(cwd);
 				const pagesCode = await generatePageImportCode(config.inputDirs);
@@ -89,6 +89,10 @@ export const virtualPlugin = () =>
 					...params,
 					only: params.only ? params.only.split(';') : undefined
 				});
+			} else if (isValidLoadId(id, 'hooks')) {
+				return generateHooksCode();
+			} else if (isValidLoadId(id, 'env')) {
+				return `export const browser = ${JSON.stringify(!options?.ssr)};`;
 			}
 		},
 		async handleHotUpdate({ server, file }) {

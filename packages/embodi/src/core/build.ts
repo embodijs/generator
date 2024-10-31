@@ -4,16 +4,21 @@ import { embodiMarkdown } from './vite/markdown.js';
 import { embodiHtml } from './vite/html.js';
 import { build as viteBuild, defineConfig, type Plugin } from 'vite';
 import { embodiSvelte } from './vite/svelte.js';
+import { loadConfig } from './app/config.js';
 
-export const createConfig = () => {
+export const createConfig = async () => {
+	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
+		svelte({
+			preprocess: vitePreprocess()
+		}),
 		configPlugin(),
 		virtualPlugin(),
 		embodiSvelte(),
 		embodiMarkdown(),
 		embodiHtml(),
 		svelte({
-			preprocess: vitePreprocess()
+		...config.plugins,
 		}),
 		prerenderPlugin()
 	];
@@ -24,7 +29,7 @@ export const createConfig = () => {
 };
 
 export const generate = async () => {
-	const config = createConfig();
+	const config = await createConfig();
 	console.info('build client scripts...');
 	await viteBuild({
 		...config,

@@ -17,6 +17,9 @@ const getPageFromUrl = async (url: string) => {
 	return {
 		...page,
 		data: {
+			page: {
+				url
+			},
 			...data,
 			...page.data
 		}

@@ -1,14 +1,5 @@
-<script lang="ts">
-	import type { Snippet, SvelteComponent } from 'svelte';
-
-	interface RootProps {
-		Layout?: SvelteComponent;
-		Component?: SvelteComponent;
-		html?: string;
-		data: any;
-	}
-
-	let { Layout, Component, html, data }: RootProps = $props();
+<script>
+	let { Layout, Component, html, data } = $props();
 </script>
 
 {#if Layout}

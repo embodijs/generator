@@ -4,8 +4,10 @@ import { embodiMarkdown } from './vite/markdown.js';
 import { embodiHtml } from './vite/html.js';
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { embodiSvelte } from './vite/svelte.js';
+import { loadConfig } from './app/config.js';
 
-export const createConfig = () => {
+export const createConfig = async () => {
+	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
 		svelte({
 			preprocess: vitePreprocess()
@@ -16,6 +18,8 @@ export const createConfig = () => {
 		embodiMarkdown(),
 		embodiHtml(),
 		devServerPlugin()
+		devServerPlugin(),
+		...config.plugins
 	];
 
 	return defineConfig({
