@@ -112,6 +112,44 @@ Output directory of build sources. Copy the content of the static folder of dist
 
 Source folder to read markdown files from. String have to start `/`
 
+## Hooks
+
+Currently there is only one hook that is running before rendering the content.
+The hooks runs client and server sides, so the code needs to be able to run on client and server side.
+A hooks files is not required, but helpful to run inital code before rendering e.g. i18n setup.
+
+The hook file should be placed in the root directory and named `hooks.js` or `hooks.ts`.
+
+```ts
+// hooks.ts
+// This is an example of a hook file with i18next setup
+
+import { init, changeLanguage } from 'i18next';
+import type { RenderHook } from 'embodi';
+
+// data containes all data the page will rendered with
+export const render: RenderHook = ({ data }) => {
+	init({
+		lng: data.locale,
+		resources: {
+			en: {
+				translation: {
+					Hello: 'Hello',
+					World: 'World'
+				}
+			},
+			de: {
+				translation: {
+					Hello: 'Hallo',
+					World: 'Welt'
+				}
+			}
+		}
+	});
+	changeLanguage(data.lang);
+};
+```
+
 ## Support
 
 **Support is welcome!!!** Tell us what you miss, report bugs or open pull requests.
