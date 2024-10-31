@@ -18,6 +18,7 @@ import { loadAppHtml, loadData } from './utils/load-data.js';
 import { generatePageImportCode, generateRoutesCode } from './utils/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
+import { generateHooksCode } from './utils/hooks.js';
 import { isCompileException } from './utils/exceptions.js';
 
 const cwd = process.cwd();
@@ -89,7 +90,7 @@ export const virtualPlugin = () =>
 					only: params.only ? params.only.split(';') : undefined
 				});
 			} else if (isValidLoadId(id, 'hooks')) {
-				return `export * from '${resolve(cwd, 'hooks')}';`;
+				return generateHooksCode();
 			} else if (isValidLoadId(id, 'env')) {
 				return `export const browser = ${JSON.stringify(!options?.ssr)};`;
 			}
