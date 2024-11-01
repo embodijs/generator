@@ -5,6 +5,7 @@ import { embodiHtml } from './vite/html.js';
 import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { embodiSvelte } from './vite/svelte.js';
 import { loadConfig } from './app/config.js';
+import viteYaml from '@modyfi/vite-plugin-yaml';
 
 export const createConfig = async () => {
 	const config = await loadConfig();
