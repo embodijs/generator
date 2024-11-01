@@ -17,7 +17,6 @@ export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
 };
 
 const wrapperPath = (path: string) => `${path}.embodi`;
-const wrapperUrlPath = (name: string, path: string) => `"${name}": "${wrapperPath(path)}"`;
 const wrapperImportFunctionString = (name: string, path: string) =>
 	`"${name}": () => import('${wrapperPath(path)}')`;
 const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
@@ -54,14 +53,6 @@ export const generatePageImportCode = async (publicDirs: PublicDirs) => {
 		return wrapperImportFunctionString(url, adapter.getFullPath(file));
 	});
 	return wrapperExport('pages', wrapperObject(importFunctions));
-};
-
-export const generateRoutesCode = async (publicDirs: PublicDirs) => {
-	const importFunctions = (await getAllPages(publicDirs)).map((file, dir) => {
-		const url = transformPathToUrl(dir, file);
-		return wrapperUrlPath(url, adapter.getFullPath(file));
-	});
-	return wrapperExport('routes', wrapperObject(importFunctions));
 };
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
