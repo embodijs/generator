@@ -1,4 +1,4 @@
 declare module '$embodi/collections' {
-	export const meta: Array<import('../../utils/collections').CollectionMeta>;
+	export const meta: Array<import('../../utils/collections.ts').CollectionMeta>;
 	export const collections: Array<any>;
 }

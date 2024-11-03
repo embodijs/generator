@@ -1,12 +1,35 @@
 import type { Directory, LoomFile } from '@loom-io/core';
 import { adapter, frontMatterConverter } from './project-adapter.js';
 import { type PublicDirs } from '../../app/config.js';
+import { pipe } from 'pipe-and-combine';
 import {
 	normalizeUrlPath,
 	splitNormalizedUrlPath,
 	type NormalizeUrlPath
 } from '../../utils/paths.js';
+import { UniqueArray } from '../../utils/unique-array.js';
 
+enum FILE_TYPE {
+	INDEX,
+	PAGE,
+	DATA
+}
+
+type PageObject = {
+	type: FILE_TYPE;
+	url: NormalizeUrlPath;
+	page: number;
+	data: number[];
+};
+
+const map =
+	<T, U>(fn: (arg: T) => U) =>
+	(arr: T[]) =>
+		arr.map(fn);
+
+const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
+	return indezes.map((index) => refs.at(index)!);
+};
 const snippedPathEmdodi = (path: string) => `${path}.embodi`;
 const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)}')`;
 const snippedImport = (path: string) => `import('${path}')`;
@@ -14,10 +37,11 @@ const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`
 const snippedArray = (items: string[]) => `[${items.join(',')}]`;
 const snippedPromiseAll = (items?: string[]) =>
 	items?.length ? `await Promise.all(${snippedArray(items)})` : '[]';
-const snippedPageImport = (pageImport: string, dataImports: string[]) =>
+const snippedDataImports = pipe(resolveLinks, map(snippedImport), snippedPromiseAll);
+const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
 	`async function () {
-  const data = ${snippedPromiseAll(dataImports)}
-  const page = await ${pageImport};
+  const data = ${snippedDataImports(ref, ...page.data)}
+  const page = await ${snippedImportEmbodi(resolveLinks(ref, page.page)[0])};
   const defaultData = data.map(d => d.default);
   return {
     ...page,
@@ -27,17 +51,22 @@ const snippedPageImport = (pageImport: string, dataImports: string[]) =>
 const snippedObjectJunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
 const snippedExport = (name: string, content: string) => `export const ${name} = ${content}`;
 
-export const transformPagePathToUrl = (dir: Directory, file: LoomFile) => {
+export const transformPathToUrl = (
+	dir: Directory,
+	file: LoomFile
+): [NormalizeUrlPath, FILE_TYPE] => {
 	const { extension } = file;
 	if (!extension) {
 		throw new Error(`File ${file.path} has no extension`);
 	}
-
-	if (file.getNameWithoutExtension() === 'index' || file.getNameWithoutExtension() === '+data') {
-		return normalizeUrlPath(`/${dir.relativePath(file.dir) ?? ''}`);
+	if (file.getNameWithoutExtension() === 'index') {
+		return [normalizeUrlPath(`/${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.INDEX];
+	} else if (file.getNameWithoutExtension() === '+data') {
+		return [normalizeUrlPath(`/${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.DATA];
+	} else {
+		const relativePath = dir.relativePath(file)?.slice(0, -(extension.length + 1));
+		return [normalizeUrlPath(`/${relativePath}`), FILE_TYPE.PAGE];
 	}
-	const relativePath = dir.relativePath(file)!;
-	return normalizeUrlPath(`/${relativePath.slice(0, -(extension.length + 1))}`);
 };
 
 export const getAllFiles = async (publicDirs: PublicDirs) => {
@@ -76,70 +105,86 @@ export const loadPageData = async (file: LoomFile) => {
 	return data;
 };
 
-type ImportMap = [NormalizeUrlPath, string];
+type UrlMap = [NormalizeUrlPath, number, FILE_TYPE];
 
-const mapImportToUrl = (files: LoomFile[], contentDir: Directory): ImportMap[] => {
-	return files
+const mapUrlToArray = (
+	files: LoomFile[],
+	contentDir: Directory,
+	ref = new UniqueArray<string>()
+): [UrlMap[], UniqueArray<string>] => {
+	const urls = files
 		.map((file) => {
-			const url = transformPagePathToUrl(contentDir, file);
+			const [url, fileType] = transformPathToUrl(contentDir, file);
 			const absolutePath = adapter.getFullPath(file);
-			return [url, snippedImport(absolutePath)] as ImportMap;
+			const index = ref.push(absolutePath);
+			return [url, index, fileType] as UrlMap;
 		})
 		.sort((a, b) => b[0].localeCompare(a[0]));
+
+	return [urls, ref];
 };
 
-const getDataImportByUrl = (
-	url: NormalizeUrlPath,
-	dataImports: ImportMap[]
-): string | undefined => {
+const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): number | undefined => {
 	const [, dataImportCode] = dataImports.find(([importUrl]) => url === importUrl) ?? [[]];
 	return dataImportCode;
 };
 
-const mapDataToPage = (
-	pageUrl: NormalizeUrlPath,
-	dataImports: ImportMap[],
-	isIndexFile: boolean
-): string[] => {
+const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
 	const rootUrl = '/';
-	const dataImportCode = getDataImportByUrl(pageUrl, dataImports);
+	const [pageUrl, pageRef, fileType] = pageMap;
+	const dataRef = getRefByUrl(pageUrl, dataMap);
 	const urlParts = splitNormalizedUrlPath(pageUrl);
-	isIndexFile || urlParts.pop(); // remove last if not index file
+	fileType === FILE_TYPE.INDEX || urlParts.pop(); // remove last if not index file
 
 	if (urlParts.length === 0) {
-		return dataImportCode ? [dataImportCode] : [];
+		return dataRef ? [dataRef] : [];
 	}
 
-	const rootNode: [NormalizeUrlPath, string[]] = [rootUrl, dataImportCode ? [dataImportCode] : []];
-
-	const [, imports] = urlParts.reduce(([url, imports], part) => {
+	const rootNode: [NormalizeUrlPath, number[]] = [rootUrl, dataRef ? [dataRef] : []];
+	const [, refs] = urlParts.reduce(([url, refs], part) => {
 		const current: NormalizeUrlPath = `${url}${part}/`;
-		const dataImport = getDataImportByUrl(current, dataImports);
-		if (dataImport) {
-			return [current, [...imports, dataImport]];
+		const dataRef = getRefByUrl(current, dataMap);
+		if (dataRef == null) {
+			return [current, refs];
 		}
-		return [current, imports];
+		return [current, [...refs, dataRef]];
 	}, rootNode);
-	return imports;
+	return refs;
 };
 
-export const generatePageImportCode = async (publicDirs: PublicDirs) => {
-	const { contentDir, pages, data } = await getAllFiles(publicDirs);
-	const dataImportMap = mapImportToUrl(data, contentDir);
-	const importFunctions = pages.map((pageFile) => {
-		const isIndexFile = pageFile.getNameWithoutExtension().toLowerCase() === 'index';
-		const url = transformPagePathToUrl(contentDir, pageFile);
-		const dataImports = mapDataToPage(url, dataImportMap, isIndexFile);
-		const pageCode = snippedPageImport(
-			snippedImportEmbodi(adapter.getFullPath(pageFile)),
-			dataImports
-		);
-		return snippedObjectJunk(url, pageCode);
+const createPageObjects = (pageMaps: UrlMap[], dataMaps: UrlMap[]): PageObject[] => {
+	return pageMaps.map((pageMap) => {
+		const [url, index, type] = pageMap;
+		const dataRefs = mapDataToPage(pageMap, dataMaps);
+		return {
+			type,
+			url,
+			page: index,
+			data: dataRefs
+		};
 	});
-	return snippedExport('pages', snippedObjectJunkWrapper(importFunctions));
+};
+
+export const generateContentMap = async (
+	publicDirs: PublicDirs
+): Promise<[PageObject[], string[]]> => {
+	const { contentDir, pages, data } = await getAllFiles(publicDirs);
+	const [dataUrls, dataLinkRef] = mapUrlToArray(data, contentDir);
+	const [pageUrls, linkRef] = mapUrlToArray(pages, contentDir, dataLinkRef);
+	const pageObjects = createPageObjects(pageUrls, dataUrls);
+	return [pageObjects, linkRef];
+};
+
+export const generatePageImportCode = async (pages: PageObject[], linkRef: string[]) => {
+	const pagesCodeSnippeds = pages.map((page) => {
+		const pageCodeFunction = snippedPageImport(page, linkRef);
+		return snippedObjectJunk(page.url, pageCodeFunction);
+	});
+	const pagesCodeObject = snippedObjectJunkWrapper(pagesCodeSnippeds);
+	return snippedExport('pages', pagesCodeObject);
 };
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
 	const { contentDir, pages } = await getAllFiles(publicDirs);
-	return pages.map((file) => transformPagePathToUrl(contentDir, file));
+	return pages.map((file) => transformPathToUrl(contentDir, file));
 };

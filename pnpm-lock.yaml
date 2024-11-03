@@ -78,6 +78,9 @@ importers:
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
+      pipe-and-combine:
+        specifier: ^0.5.7
+        version: 0.5.7
       svelte:
         specifier: ^5.1.0
         version: 5.1.0
@@ -723,6 +726,9 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  pipe-and-combine@0.5.7:
+    resolution: {integrity: sha512-lBhkELmVxyWWTnmO85uha2XgVwn86e5QzMiAvqO2HO0uvpEQVlhfjgELTdVUgVs/PNrjohCbh3G+Qbatro2Qcw==}
 
   playwright-core@1.48.1:
     resolution: {integrity: sha512-Yw/t4VAFX/bBr1OzwCuOMZkY1Cnb4z/doAFSwf4huqAGWmf9eMNjmK7NiOljCdLmxeRYcGPPmcDgU0zOlzP0YA==}
@@ -1431,6 +1437,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
+
+  pipe-and-combine@0.5.7: {}
 
   playwright-core@1.48.1: {}
 

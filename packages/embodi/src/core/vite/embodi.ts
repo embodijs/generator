@@ -15,14 +15,14 @@ import {
 	validateResolveId
 } from './utils/virtuals.js';
 import { loadAppHtml, loadData } from './utils/load-data.js';
-import { generatePageImportCode } from './utils/load-content.js';
+import { generateContentMap, generatePageImportCode } from './utils/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
 import { generateHooksCode } from './utils/hooks.js';
 import { isCompileException } from './utils/exceptions.js';
 
-const cwd = process.cwd();
-const cfd = dirname(fileURLToPath(import.meta.url));
+const cwd = process.cwd(); // Current working directory
+const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
 
 export const configPlugin = () =>
 	({
@@ -67,7 +67,8 @@ export const virtualPlugin = () =>
 		async load(id, options) {
 			if (isValidLoadId(id, 'pages')) {
 				const config = await loadConfig(cwd);
-				const pagesCode = await generatePageImportCode(config.inputDirs);
+				const contentMap = await generateContentMap(config.inputDirs);
+				const pagesCode = await generatePageImportCode(...contentMap);
 				return `${pagesCode}\nexport const source = "${config.inputDirs.content}";`;
 			} else if (isValidLoadId(id, 'paths')) {
 				const { statics } = await loadConfig(cwd);
