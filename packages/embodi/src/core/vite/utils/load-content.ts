@@ -8,6 +8,8 @@ import {
 	type NormalizeUrlPath
 } from '../../utils/paths.js';
 import { UniqueArray } from '../../utils/unique-array.js';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 enum FILE_TYPE {
 	INDEX,
@@ -43,13 +45,20 @@ const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
   const data = ${snippedDataImports(ref, ...page.data)}
   const page = await ${snippedImportEmbodi(resolveLinks(ref, page.page)[0])};
   const defaultData = data.map(d => d.default);
+  const mergedData = mergeOneLevelObjects(...defaultData, page.data);
   return {
     ...page,
-    data: [...defaultData, page.data]
+    data: mergedData
   }
 }`;
+const pathToMergeOneLevelObjects = resolve(
+	dirname(fileURLToPath(import.meta.url)),
+	'../../utils/data.js'
+);
 const snippedObjectJunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
-const snippedExport = (name: string, content: string) => `export const ${name} = ${content}`;
+const snippedFile = (name: string, content: string) =>
+	`import { mergeOneLevelObjects } from '${pathToMergeOneLevelObjects}';
+export const ${name} = ${content};`;
 
 export const transformPathToUrl = (
 	dir: Directory,

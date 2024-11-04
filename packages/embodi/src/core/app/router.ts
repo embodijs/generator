@@ -1,4 +1,3 @@
-import { mergeOneLevelObjects } from '../utils/data.js';
 import { addTrailingSlash } from '../utils/paths.js';
 
 const convertUrlToPath = async (url: string) => {
@@ -15,7 +14,10 @@ const getPageFromUrl = async (url: string) => {
 	if (!pageImportFu) return;
 
 	const page = await pageImportFu();
-	const mergedData = mergeOneLevelObjects(data, ...page.data);
+	const mergedData = {
+		...data,
+		...page.data
+	};
 	return {
 		...page,
 		data: {
