@@ -1,5 +1,5 @@
 import type { Directory, LoomFile } from '@loom-io/core';
-import { adapter, frontMatterConverter } from './project-adapter.js';
+import { adapter, frontMatterConverter, converter } from './project-adapter.js';
 import { type PublicDirs } from '../../app/config.js';
 import { pipe } from 'pipe-and-combine';
 import {
@@ -8,6 +8,8 @@ import {
 	type NormalizeUrlPath
 } from '../../utils/paths.js';
 import { UniqueArray } from '../../utils/unique-array.js';
+import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
+import { mergeOneLevelObjects } from '../../utils/data.js';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -106,12 +108,18 @@ export const splitPagesAndData = (files: LoomFile[]) => {
 
 export const getPageImportPath = (file: LoomFile) => snippedPathEmdodi(adapter.getFullPath(file));
 
-export const loadPageData = async (file: LoomFile) => {
-	const { data } = await frontMatterConverter.parse(file);
-	if (!data || Object.keys(data).length === 0) {
-		return undefined;
+// TODO: Replace this structure with a converter supports frontmatter, json and yaml
+const readFileData = async (file: LoomFile): Promise<Record<string, unknown>> => {
+	const { extension } = file;
+	if (!extension) {
+		throw new Error(`File ${file.path} has no extension`);
+		// TODO: Allow more types, maybe integrate this with converter functions (vite plugins)
+	} else if (['yaml', 'yml', 'json'].includes(extension)) {
+		return converter.parse(file) as Promise<Record<string, unknown>>;
+	} else {
+		const { data } = (await frontMatterConverter.parse(file)) as { data: Record<string, unknown> };
+		return data ?? {};
 	}
-	return data;
 };
 
 type UrlMap = [NormalizeUrlPath, number, FILE_TYPE];
@@ -190,7 +198,29 @@ export const generatePageImportCode = async (pages: PageObject[], linkRef: strin
 		return snippedObjectJunk(page.url, pageCodeFunction);
 	});
 	const pagesCodeObject = snippedObjectJunkWrapper(pagesCodeSnippeds);
-	return snippedExport('pages', pagesCodeObject);
+	return snippedFile('pages', pagesCodeObject);
+};
+
+export const loadData = async (pages: PageObject[], linkRef: string[]) => {
+	const rootAdapter = new FilesystemAdapter('/');
+	const loadedFiles = await Promise.all(
+		linkRef.map((ref) => {
+			const files = rootAdapter.file(ref);
+			return readFileData(files);
+		})
+	);
+	const loadedPageData = pages.map(({ page, data, type, url }) => {
+		const mappedData = data.map((index) => loadedFiles[index]);
+		const mappedPage = loadedFiles[page];
+		const mergedData = mergeOneLevelObjects(...mappedData, mappedPage);
+		return {
+			type,
+			url,
+			data: mergedData
+		};
+	});
+
+	return loadedPageData;
 };
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
