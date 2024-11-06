@@ -42,6 +42,7 @@ export const configPlugin = () =>
 					}
 				},
 				build: {
+					target: 'ES2022',
 					emptyOutDir: true,
 					ssr,
 					ssrManifest: !ssr,
