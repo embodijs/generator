@@ -32,7 +32,8 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 			.replace(`<!--app-head-->`, head ?? '')
 			.replace(`<!--app-html-->`, appHtml ?? '');
 
-		const filePath = `dist/static${url === '/' ? '/index' : url}.html`;
+		// const filePath = `dist/static${url === '/' ? '/index' : url.slice(0, -1)}.html`;
+		const filePath = `dist/static${url}index.html`;
 		const file = fs.file(filePath);
 		await file.create();
 		await file.write(html);

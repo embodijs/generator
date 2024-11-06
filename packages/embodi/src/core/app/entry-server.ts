@@ -4,15 +4,16 @@ import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';
 import type { Manifest } from 'vite';
+import { addLeadingSlash } from '../utils/paths.js';
 
 const router = createRouter();
 
 const createScriptTag = (url: string) => {
-	return `<script type="module" src="/${url}" defer></script>`;
+	return `<script type="module" src="${addLeadingSlash(url)}" defer></script>`;
 };
 
 const createStyleTag = (url: string) => {
-	return `<link rel="stylesheet" href="/${url}" />`;
+	return `<link rel="stylesheet" href="${addLeadingSlash(url)}" />`;
 };
 
 const createHeadFromManifest = (manifest: Manifest, entry: string): string => {

@@ -1,69 +1,247 @@
 import type { Directory, LoomFile } from '@loom-io/core';
-import { adapter, frontMatterConverter } from './project-adapter.js';
+import { adapter, frontMatterConverter, converter } from './project-adapter.js';
 import { type PublicDirs } from '../../app/config.js';
-import { addTrailingSlash } from '../../utils/paths.js';
+import { pipe } from 'pipe-and-combine';
+import {
+	normalizeUrlPath,
+	splitNormalizedUrlPath,
+	type NormalizeUrlPath
+} from '../../utils/paths.js';
+import { UniqueArray } from '../../utils/unique-array.js';
+import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
+import { mergeOneLevelObjects } from '../../utils/data.js';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { AnyObject } from '../../definitions/types.js';
 
-export const transformPathToUrl = (dir: Directory, file: LoomFile) => {
+enum FILE_TYPE {
+	INDEX,
+	PAGE,
+	DATA
+}
+
+export type PageObject = {
+	type: FILE_TYPE;
+	url: NormalizeUrlPath;
+	page: number;
+	data: number[];
+};
+
+const map =
+	<T, U>(fn: (arg: T) => U) =>
+	(arr: T[]) =>
+		arr.map(fn);
+
+const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
+	return indezes.map((index) => refs.at(index)!);
+};
+const snippedPathEmdodi = (path: string) => `${path}.embodi`;
+const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)}')`;
+const snippedImport = (path: string) => `import('${path}')`;
+const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`;
+const snippedArray = (items: string[]) => `[${items.join(',')}]`;
+const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;
+const snippedPromiseAll = (items?: string[]) =>
+	items?.length ? `await Promise.all(${snippedArray(items)})` : '[]';
+const snippedDataImports = pipe(resolveLinks, map(snippedImport), snippedPromiseAll);
+const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
+	`async function () {
+  const data = ${snippedDataImports(ref, ...page.data)}
+  const page = await ${snippedImportEmbodi(resolveLinks(ref, page.page)[0])};
+  const defaultData = data.map(d => d.default);
+  const mergedData = mergeOneLevelObjects(...defaultData, page.data);
+  return {
+    ...page,
+    data: mergedData
+  }
+}`;
+const pathToMergeOneLevelObjects = resolve(
+	dirname(fileURLToPath(import.meta.url)),
+	'../../utils/data.js'
+);
+const snippedObjectJunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
+const snippedFile = (name: string, content: string) =>
+	`import { mergeOneLevelObjects } from '${pathToMergeOneLevelObjects}';
+export const ${name} = ${content};`;
+
+export const transformPathToUrl = (
+	dir: Directory,
+	file: LoomFile
+): [NormalizeUrlPath, FILE_TYPE] => {
 	const { extension } = file;
 	if (!extension) {
 		throw new Error(`File ${file.path} has no extension`);
 	}
-
 	if (file.getNameWithoutExtension() === 'index') {
-		return addTrailingSlash(`/${dir.relativePath(file.dir) ?? ''}`);
+		return [normalizeUrlPath(`${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.INDEX];
+	} else if (file.getNameWithoutExtension() === '+data') {
+		return [normalizeUrlPath(`${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.DATA];
+	} else {
+		const relativePath = dir.relativePath(file)?.slice(0, -(extension.length + 1));
+		return [normalizeUrlPath(`${relativePath}`), FILE_TYPE.PAGE];
 	}
-	const relativePath = dir.relativePath(file)!;
-	return addTrailingSlash(`/${relativePath.slice(0, -(extension.length + 1))}`);
 };
 
-const wrapperPath = (path: string) => `${path}.embodi`;
-const wrapperUrlPath = (name: string, path: string) => `"${name}": "${wrapperPath(path)}"`;
-const wrapperImportFunctionString = (name: string, path: string) =>
-	`"${name}": () => import('${wrapperPath(path)}')`;
-const wrapperObject = (imports: string[]) => `({${imports.join(',')}})`;
-const wrapperExport = (name: string, content: string) => `export const ${name} = ${content}`;
-
-export const getAllPages = async (publicDirs: PublicDirs) => {
+export const getAllFiles = async (publicDirs: PublicDirs) => {
 	const { content } = publicDirs;
 	const dir = adapter.dir(content);
-	const files = await dir.files(true);
+	const files = (await dir.files(true)).asArray();
+	const { pages, data } = splitPagesAndData(files);
 
 	return {
-		map: <T>(fn: (file: LoomFile, dir: Directory) => T) => {
-			return files.asArray().map((file) => fn(file, dir));
-		},
-		asArray: () => files.asArray(),
-		getDir: () => dir,
-		getList: () => files
+		contentDir: dir,
+		pages,
+		data
 	};
 };
 
-export const getPageImportPath = (file: LoomFile) => wrapperPath(adapter.getFullPath(file));
-
-export const loadPageData = async (file: LoomFile) => {
-	const { data } = await frontMatterConverter.parse(file);
-	if (!data || Object.keys(data).length === 0) {
-		return undefined;
-	}
-	return data;
+export const splitPagesAndData = (files: LoomFile[]) => {
+	return files.reduce(
+		(acc, file) => {
+			if (file.name.startsWith('+data.')) {
+				return { ...acc, data: [...acc.data, file] };
+			} else {
+				return { ...acc, pages: [...acc.pages, file] };
+			}
+		},
+		{ pages: [], data: [] } as { pages: LoomFile[]; data: LoomFile[] }
+	);
 };
 
-export const generatePageImportCode = async (publicDirs: PublicDirs) => {
-	const importFunctions = (await getAllPages(publicDirs)).map((file, dir) => {
-		const url = transformPathToUrl(dir, file);
-		return wrapperImportFunctionString(url, adapter.getFullPath(file));
+export const getPageImportPath = (file: LoomFile) => snippedPathEmdodi(adapter.getFullPath(file));
+
+// TODO: Replace this structure with a converter supports frontmatter, json and yaml
+const readFileData = async (file: LoomFile): Promise<Record<string, unknown>> => {
+	const { extension } = file;
+	if (!extension) {
+		throw new Error(`File ${file.path} has no extension`);
+		// TODO: Allow more types, maybe integrate this with converter functions (vite plugins)
+	} else if (['yaml', 'yml', 'json'].includes(extension)) {
+		return converter.parse(file) as Promise<Record<string, unknown>>;
+	} else {
+		const { data } = (await frontMatterConverter.parse(file)) as { data: Record<string, unknown> };
+		return data ?? {};
+	}
+};
+
+type UrlMap = [NormalizeUrlPath, number, FILE_TYPE];
+
+const mapUrlToArray = (
+	files: LoomFile[],
+	contentDir: Directory,
+	ref = new UniqueArray<string>()
+): [UrlMap[], UniqueArray<string>] => {
+	const urls = files
+		.map((file) => {
+			const [url, fileType] = transformPathToUrl(contentDir, file);
+			const absolutePath = adapter.getFullPath(file);
+			const index = ref.push(absolutePath);
+			return [url, index, fileType] as UrlMap;
+		})
+		.sort((a, b) => b[0].localeCompare(a[0]));
+
+	return [urls, ref];
+};
+
+const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): number | undefined => {
+	const [, dataImportCode] = dataImports.find(([importUrl]) => url === importUrl) ?? [[]];
+	return dataImportCode;
+};
+
+const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
+	const rootUrl = '/';
+	const [pageUrl, pageRef, fileType] = pageMap;
+	const dataRef = getRefByUrl(pageUrl, dataMap);
+	const urlParts = splitNormalizedUrlPath(pageUrl);
+	fileType === FILE_TYPE.INDEX || urlParts.pop(); // remove last if not index file
+
+	if (urlParts.length === 0) {
+		return dataRef ? [dataRef] : [];
+	}
+
+	const rootNode: [NormalizeUrlPath, number[]] = [rootUrl, dataRef ? [dataRef] : []];
+	const [, refs] = urlParts.reduce(([url, refs], part) => {
+		const current: NormalizeUrlPath = `${url}${part}/`;
+		const dataRef = getRefByUrl(current, dataMap);
+		if (dataRef == null) {
+			return [current, refs];
+		}
+		return [current, [...refs, dataRef]];
+	}, rootNode);
+	return refs;
+};
+
+const createPageObjects = (pageMaps: UrlMap[], dataMaps: UrlMap[]): PageObject[] => {
+	return pageMaps.map((pageMap) => {
+		const [url, index, type] = pageMap;
+		const dataRefs = mapDataToPage(pageMap, dataMaps);
+		return {
+			type,
+			url,
+			page: index,
+			data: dataRefs
+		};
 	});
-	return wrapperExport('pages', wrapperObject(importFunctions));
+};
+
+export const generateContentMap = async (
+	publicDirs: PublicDirs
+): Promise<[PageObject[], string[]]> => {
+	const { contentDir, pages, data } = await getAllFiles(publicDirs);
+	const [dataUrls, dataLinkRef] = mapUrlToArray(data, contentDir);
+	const [pageUrls, linkRef] = mapUrlToArray(pages, contentDir, dataLinkRef);
+	const pageObjects = createPageObjects(pageUrls, dataUrls);
+	return [pageObjects, linkRef];
+};
+
+export const generatePageImportCode = async (pages: PageObject[], linkRef: string[]) => {
+	const pagesCodeSnippeds = pages.map((page) => {
+		const pageCodeFunction = snippedPageImport(page, linkRef);
+		return snippedObjectJunk(page.url, pageCodeFunction);
+	});
+	const pagesCodeObject = snippedObjectJunkWrapper(pagesCodeSnippeds);
+	return snippedFile('pages', pagesCodeObject);
+};
+
+export type PageData<T extends AnyObject = AnyObject> = {
+	type: FILE_TYPE;
+	url: NormalizeUrlPath;
+	data: T;
+};
+
+export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<PageData[]> => {
+	const rootAdapter = new FilesystemAdapter('/');
+	const loadedFiles = await Promise.all(
+		linkRef.map((ref) => {
+			const files = rootAdapter.file(ref);
+			return readFileData(files);
+		})
+	);
+	const loadedPageData = pages.map(({ page, data, type, url }) => {
+		const mappedData = data.map((index) => loadedFiles[index]);
+		const mappedPage = loadedFiles[page];
+		const mergedData = mergeOneLevelObjects(...mappedData, mappedPage);
+		return {
+			type,
+			url,
+			data: mergedData
+		};
+	});
+
+	return loadedPageData;
 };
 
 export const generateRoutesCode = async (publicDirs: PublicDirs) => {
-	const importFunctions = (await getAllPages(publicDirs)).map((file, dir) => {
-		const url = transformPathToUrl(dir, file);
-		return wrapperUrlPath(url, adapter.getFullPath(file));
+	const { pages, contentDir } = await getAllFiles(publicDirs);
+	const importFunctions = pages.map((file) => {
+		const [url] = transformPathToUrl(contentDir, file);
+		const pathEmdodi = getPageImportPath(file);
+		return snippedObjectJunk(url, `'${pathEmdodi}'`);
 	});
-	return wrapperExport('routes', wrapperObject(importFunctions));
+	return snippedExport('routes', snippedObjectJunkWrapper(importFunctions));
 };
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
-	return (await getAllPages(publicDirs)).map((file, dir) => transformPathToUrl(dir, file));
+	const { contentDir, pages } = await getAllFiles(publicDirs);
+	return pages.map((file) => transformPathToUrl(contentDir, file)[0]);
 };

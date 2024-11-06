@@ -1,8 +1,11 @@
-import { getAllPages, getPageImportPath, loadPageData, transformPathToUrl } from "./load-content.js";
-import { loadConfig } from "../../app/config.js";
-import { getUniqueAttributeName } from "./virtuals.js";
+import { generateContentMap, loadData, type PageData } from './load-content.js';
+import { loadConfig } from '../../app/config.js';
+import { pipe } from 'pipe-and-combine';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 export interface CollectionParams {
+	locale?: string;
 	only?: string[];
 	sortBy?: keyof CollectionMeta;
 	sortDirection?: 'asc' | 'desc';
@@ -11,78 +14,102 @@ export interface CollectionParams {
 }
 export interface CollectionMeta {
 	tag: string;
-	updatedAt: Date;
+	url: string;
+	updatedAt?: Date;
 	createdAt?: Date;
-	page: string;
-	importPath: string;
+	data: Record<string, unknown>;
 }
+
+export type CollectionPage = PageData<{ tags: string | string[] }>;
 
 type PreparedFunction = (collections: CollectionMeta[]) => CollectionMeta[];
 
-async function createCollectionsMeta (): Promise<CollectionMeta[]> {
-	const config = await loadConfig(process.cwd());
-	const rawData = await Promise.all((await getAllPages(config.inputDirs)).map(async (file, dir) => {
-		const data = await loadPageData(file) as { tags?: string[], title?: string, name?: string } | undefined;
-		const { createdAt, updatedAt } = await file.getMeta();
-		if(!data) {
-			return undefined;
-		}
-		const { tags, title, name } = data ;
-		if(!tags) {
-			return undefined;
-		}
-		const page = transformPathToUrl(dir, file);
-		const importPath = getPageImportPath(file);
-		return tags.map((tag: string) => ({
-			title: title ?? name,
-			tag,
-			createdAt,
-			updatedAt,
-			page,
-			importPath
-		}));
-	}));
+const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
+const pathContentHelpers = resolve(cfd, '../../app/content-helper.js');
 
-	return rawData.filter((collection) => collection !== undefined).flat();
+function getTagArray({ data }: { data: { tags: string[] | string } }): Array<string> {
+	if (Array.isArray(data.tags)) {
+		return data.tags;
+	} else if (typeof data.tags === 'string') {
+		return [data.tags];
+	} else {
+		return [];
+	}
 }
 
+async function createCollectionsMeta(): Promise<CollectionMeta[]> {
+	const config = await loadConfig(process.cwd());
 
+	const pagesWithRef = await generateContentMap(config.inputDirs);
+	const dataWithMeta = await loadData(...pagesWithRef);
+	const dataWithTags = dataWithMeta.filter(
+		({ data }) => data.tags && (Array.isArray(data.tags) || typeof data.tags === 'string')
+	) as CollectionPage[];
+
+	const dataPerTag = dataWithTags
+		.map((page) => {
+			const tags = getTagArray(page);
+			return tags.map((tag: string) => ({
+				...page,
+				tag
+			}));
+		})
+		.flat();
+	return dataPerTag;
+}
 
 export const prepareFilter =
 	(keep: string[]): PreparedFunction =>
-		(collections: CollectionMeta[]) =>
-			collections.filter((collection) => keep.includes(collection.tag));
-
+	(collections: CollectionMeta[]) =>
+		collections.filter((collection) => keep.includes(collection.tag));
 
 type CollectionTuple = [CollectionMeta, CollectionMeta];
 
-export const setDirection = ( collections: CollectionTuple,  direction: 'asc' | 'desc') => {
-	return direction === 'asc' ? collections : collections.reverse() as CollectionTuple;
-}
+export const setDirection = (collections: CollectionTuple, direction: 'asc' | 'desc') => {
+	return direction === 'asc' ? collections : (collections.reverse() as CollectionTuple);
+};
 
-export const getValue = <T>( collections: CollectionTuple, sortBy: keyof CollectionMeta) => {
+export const getValue = <T>(collections: CollectionTuple, sortBy: keyof CollectionMeta) => {
 	return collections.map((collection) => collection[sortBy]) as [T, T];
-}
+};
 
-export const compareString = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
-	const [valueA, valueB] = getValue<string>(setDirection([a, b], direction), sortBy);
-	return valueA.localeCompare(valueB);
-}
+export const compareString =
+	(sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') =>
+	(a: CollectionMeta, b: CollectionMeta) => {
+		const [valueA, valueB] = getValue<string>(setDirection([a, b], direction), sortBy);
+		return valueA.localeCompare(valueB);
+	};
 
-export const compareDate = (sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') => (a: CollectionMeta, b: CollectionMeta) => {
-	const [valueA, valueB] = getValue<Date>(setDirection([a, b], direction), sortBy);
-	return valueA.getTime() - valueB.getTime();
-}
+export const compareDate =
+	(sortBy: keyof CollectionMeta, direction: 'asc' | 'desc') =>
+	(a: CollectionMeta, b: CollectionMeta) => {
+		const [valueA, valueB] = getValue<Date>(setDirection([a, b], direction), sortBy);
+		return valueA.getTime() - valueB.getTime();
+	};
 
-export const prepareSort = (sortBy: keyof CollectionMeta, direction: 'desc' | 'asc' = 'asc'): PreparedFunction => {
-	if(['page', 'tag'].includes(sortBy)) {
+export const prepareSort = (
+	sortBy: keyof CollectionMeta,
+	direction: 'desc' | 'asc' = 'asc'
+): PreparedFunction => {
+	if (['page', 'tag'].includes(sortBy)) {
 		return (collections: CollectionMeta[]) => collections.sort(compareString(sortBy, direction));
 	} else {
 		return (collections: CollectionMeta[]) => collections.sort(compareDate(sortBy, direction));
 	}
-}
+};
 
-export const prepareLimit = (limit?: number, skip: number = 0) => (collections: CollectionMeta[]) => collections.slice(skip, skip + (limit ?? (collections.length - skip)));
+export const prepareLocale = (locale: string) => (collections: CollectionMeta[]) =>
+	collections.filter(
+		(collection) =>
+			collection.data.locale &&
+			typeof collection.data.locale === 'string' &&
+			collection.data.locale?.toLowerCase() === locale.toLowerCase()
+	);
+
+export const prepareLimit =
+	(limit?: number, skip: number = 0) =>
+	(collections: CollectionMeta[]) =>
+		collections.slice(skip, skip + (limit ?? collections.length - skip));
 
 export const convertCollectionParamsToPreparedFunctions = (params: CollectionParams) => {
 	const { limit, skip, only, sortBy, sortDirection } = params;
@@ -91,30 +118,39 @@ export const convertCollectionParamsToPreparedFunctions = (params: CollectionPar
 	sortBy && prepared.push(prepareSort(sortBy, sortDirection));
 	(limit || skip) && prepared.push(prepareLimit(limit, skip));
 	return prepared;
-}
+};
+
+const dummyFunction: PreparedFunction = (d: CollectionMeta[]) => d;
+const optional = <TV, TA>(value: TV | undefined, alternative: TA): NonNullable<TV> | TA =>
+	value == null ? alternative : value;
+
+export const initPipeline = (params: CollectionParams): PreparedFunction => {
+	const { locale, limit, skip, only, sortBy, sortDirection } = params;
+	console.log({ params });
+	return pipe(
+		optional(locale && prepareLocale(locale), dummyFunction),
+		optional(only && prepareFilter(only), dummyFunction),
+		optional(sortBy && prepareSort(sortBy, sortDirection), dummyFunction),
+		optional(limit == null || skip == null ? undefined : prepareLimit(limit, skip), dummyFunction)
+	);
+};
 
 export async function generateCollectionsImportsCode(params: CollectionParams): Promise<string> {
-	const allCollections = (await createCollectionsMeta())
-	const filteredCollections = convertCollectionParamsToPreparedFunctions(params).reduce((collections, prepare) => prepare(collections), allCollections)
+	const collectionMetas = await createCollectionsMeta();
+	const filterPipe = initPipeline(params);
+	const filteredCollections = filterPipe(collectionMetas);
+	const urls = filteredCollections.map(({ url }) => url);
 
+	const pagesImport = `import { pages } from '$embodi/pages';`;
+	const loadPagesImport = `import { loadPages } from '${pathContentHelpers}';`;
 
-	const listOfImportsWithId =  filteredCollections
-	.reduce((importPaths, { importPath }) => {
-		if(!importPaths.includes(importPath)){
-			return [...importPaths, importPath]
-		}
-		return importPaths;
-	},[] as string[])
-	.map((importPath ) => {
-		const id = getUniqueAttributeName('col');
-		return [id, `import { data as ${id} } from '${importPath}';`];
-	});
+	const cleanMeta = filteredCollections.map(({ url, data: { title, name } }) => ({
+		url,
+		title: title ?? name
+	}));
 
-	const cleanMeta = filteredCollections.map(({ importPath, ...exportAbles}) => exportAbles);
-
-	return `
-		${listOfImportsWithId.map(([, importLine]) => importLine).join('\n')}
-		export const collections = [${listOfImportsWithId.map(([id]) => id).join(', ')}];
-		export const meta = ${JSON.stringify(cleanMeta)};
-	`;
+	return `${pagesImport}
+${loadPagesImport}
+export const collections = await loadPages(pages, ${JSON.stringify(urls)});
+export const meta = ${JSON.stringify(cleanMeta)};`;
 }
