@@ -32,7 +32,7 @@
 	},
 	"type": "module",
 	"devDependencies": {
-		"@loom-io/in-memory-adapter": "0.12.9",
+		"@loom-io/in-memory-adapter": "0.12.10",
 		"@sveltejs/package": "^2.3.6",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
@@ -44,12 +44,12 @@
 		"vite": "^5.2.11"
 	},
 	"dependencies": {
-		"@loom-io/converter": "0.12.9",
-		"@loom-io/core": "^0.12.9",
-		"@loom-io/front-matter-converter": "^0.12.9",
-		"@loom-io/json-converter": "0.12.9",
-		"@loom-io/node-filesystem-adapter": "^0.12.9",
-		"@loom-io/yaml-converter": "0.12.9",
+		"@loom-io/converter": "0.12.10",
+		"@loom-io/core": "^0.12.10",
+		"@loom-io/front-matter-converter": "^0.12.10",
+		"@loom-io/json-converter": "0.12.10",
+		"@loom-io/node-filesystem-adapter": "^0.12.10",
+		"@loom-io/yaml-converter": "0.12.10",
 		"@modyfi/vite-plugin-yaml": "^1.1.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"front-matter": "^4.0.2",
