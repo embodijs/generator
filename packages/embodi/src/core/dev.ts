@@ -10,6 +10,7 @@ import viteYaml from '@modyfi/vite-plugin-yaml';
 export const createConfig = async () => {
 	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
+		viteYaml(),
 		svelte({
 			preprocess: vitePreprocess()
 		}),
