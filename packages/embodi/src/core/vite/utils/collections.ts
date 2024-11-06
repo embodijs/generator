@@ -1,10 +1,11 @@
-import { generateContentMap, loadData } from './load-content.js';
+import { generateContentMap, loadData, type PageData } from './load-content.js';
 import { loadConfig } from '../../app/config.js';
 import { pipe } from 'pipe-and-combine';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 export interface CollectionParams {
+	locale?: string;
 	only?: string[];
 	sortBy?: keyof CollectionMeta;
 	sortDirection?: 'asc' | 'desc';
@@ -19,27 +20,41 @@ export interface CollectionMeta {
 	data: Record<string, unknown>;
 }
 
+export type CollectionPage = PageData<{ tags: string | string[] }>;
+
 type PreparedFunction = (collections: CollectionMeta[]) => CollectionMeta[];
 
 const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
 const pathContentHelpers = resolve(cfd, '../../app/content-helper.js');
+
+function getTagArray({ data }: { data: { tags: string[] | string } }): Array<string> {
+	if (Array.isArray(data.tags)) {
+		return data.tags;
+	} else if (typeof data.tags === 'string') {
+		return [data.tags];
+	} else {
+		return [];
+	}
+}
 
 async function createCollectionsMeta(): Promise<CollectionMeta[]> {
 	const config = await loadConfig(process.cwd());
 
 	const pagesWithRef = await generateContentMap(config.inputDirs);
 	const dataWithMeta = await loadData(...pagesWithRef);
-	const dataWithTags = dataWithMeta.filter(({ data }) => data?.tags && Array.isArray(data.tags));
+	const dataWithTags = dataWithMeta.filter(
+		({ data }) => data.tags && (Array.isArray(data.tags) || typeof data.tags === 'string')
+	) as CollectionPage[];
 
 	const dataPerTag = dataWithTags
-		.map((page) =>
-			page.data.tags.map((tag: string) => ({
+		.map((page) => {
+			const tags = getTagArray(page);
+			return tags.map((tag: string) => ({
 				...page,
 				tag
-			}))
-		)
+			}));
+		})
 		.flat();
-
 	return dataPerTag;
 }
 
@@ -83,6 +98,14 @@ export const prepareSort = (
 	}
 };
 
+export const prepareLocale = (locale: string) => (collections: CollectionMeta[]) =>
+	collections.filter(
+		(collection) =>
+			collection.data.locale &&
+			typeof collection.data.locale === 'string' &&
+			collection.data.locale?.toLowerCase() === locale.toLowerCase()
+	);
+
 export const prepareLimit =
 	(limit?: number, skip: number = 0) =>
 	(collections: CollectionMeta[]) =>
@@ -97,26 +120,23 @@ export const convertCollectionParamsToPreparedFunctions = (params: CollectionPar
 	return prepared;
 };
 
-const hasAnyFilter = (params: CollectionParams) => {
-	return Object.values(params).some((value) => value !== undefined);
-};
-
 const dummyFunction: PreparedFunction = (d: CollectionMeta[]) => d;
 const optional = <TV, TA>(value: TV | undefined, alternative: TA): NonNullable<TV> | TA =>
-  value == null ? alternative : value;
+	value == null ? alternative : value;
 
 export const initPipeline = (params: CollectionParams): PreparedFunction => {
-	const { limit, skip, only, sortBy, sortDirection } = params;
+	const { locale, limit, skip, only, sortBy, sortDirection } = params;
+	console.log({ params });
 	return pipe(
+		optional(locale && prepareLocale(locale), dummyFunction),
 		optional(only && prepareFilter(only), dummyFunction),
-		optional(sortBy && prepareSort(sortBy, sortDirection), dummyFunction)),
-		optional((limit == null || skip == null) ? undefined : prepareLimit(limit, skip), dummyFunction)
+		optional(sortBy && prepareSort(sortBy, sortDirection), dummyFunction),
+		optional(limit == null || skip == null ? undefined : prepareLimit(limit, skip), dummyFunction)
 	);
 };
 
 export async function generateCollectionsImportsCode(params: CollectionParams): Promise<string> {
 	const collectionMetas = await createCollectionsMeta();
-
 	const filterPipe = initPipeline(params);
 	const filteredCollections = filterPipe(collectionMetas);
 	const urls = filteredCollections.map(({ url }) => url);
@@ -128,11 +148,6 @@ export async function generateCollectionsImportsCode(params: CollectionParams): 
 		url,
 		title: title ?? name
 	}));
-
-	console.log(`${pagesImport}
-${loadPagesImport}
-export const collections = loadPages(pages, ${JSON.stringify(urls)});
-export const meta = ${JSON.stringify(cleanMeta)};`)
 
 	return `${pagesImport}
 ${loadPagesImport}

@@ -2,7 +2,6 @@ import { addTrailingSlash } from '../utils/paths.js';
 
 const convertUrlToPath = async (url: string) => {
 	const { routes } = await import('$embodi/pages');
-
 	return routes[url];
 };
 
