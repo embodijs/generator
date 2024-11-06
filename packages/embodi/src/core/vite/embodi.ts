@@ -15,7 +15,11 @@ import {
 	validateResolveId
 } from './utils/virtuals.js';
 import { loadAppHtml, loadData } from './utils/load-data.js';
-import { generateContentMap, generatePageImportCode } from './utils/load-content.js';
+import {
+	generateContentMap,
+	generatePageImportCode,
+	generateRoutesCode
+} from './utils/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
 import { generateHooksCode } from './utils/hooks.js';
@@ -70,7 +74,8 @@ export const virtualPlugin = () =>
 				const config = await loadConfig(cwd);
 				const contentMap = await generateContentMap(config.inputDirs);
 				const pagesCode = await generatePageImportCode(...contentMap);
-				return `${pagesCode}\nexport const source = "${config.inputDirs.content}";`;
+				const routesCode = await generateRoutesCode(config.inputDirs);
+				return `${pagesCode}\n${routesCode}\nexport const source = "${config.inputDirs.content}";`;
 			} else if (isValidLoadId(id, 'paths')) {
 				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cfd, '../app/entry-client.js'));
@@ -194,7 +199,7 @@ export const devServerPlugin = () =>
 					} else {
 						console.error(e);
 					}
-					server.restart();
+					// server.restart();
 				}
 			};
 

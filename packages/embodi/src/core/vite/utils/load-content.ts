@@ -12,6 +12,7 @@ import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { mergeOneLevelObjects } from '../../utils/data.js';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { AnyObject } from '../../definitions/types.js';
 
 enum FILE_TYPE {
 	INDEX,
@@ -19,7 +20,7 @@ enum FILE_TYPE {
 	DATA
 }
 
-type PageObject = {
+export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
 	page: number;
@@ -39,6 +40,7 @@ const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)
 const snippedImport = (path: string) => `import('${path}')`;
 const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`;
 const snippedArray = (items: string[]) => `[${items.join(',')}]`;
+const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;
 const snippedPromiseAll = (items?: string[]) =>
 	items?.length ? `await Promise.all(${snippedArray(items)})` : '[]';
 const snippedDataImports = pipe(resolveLinks, map(snippedImport), snippedPromiseAll);
@@ -71,12 +73,12 @@ export const transformPathToUrl = (
 		throw new Error(`File ${file.path} has no extension`);
 	}
 	if (file.getNameWithoutExtension() === 'index') {
-		return [normalizeUrlPath(`/${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.INDEX];
+		return [normalizeUrlPath(`${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.INDEX];
 	} else if (file.getNameWithoutExtension() === '+data') {
-		return [normalizeUrlPath(`/${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.DATA];
+		return [normalizeUrlPath(`${dir.relativePath(file.dir) ?? ''}`), FILE_TYPE.DATA];
 	} else {
 		const relativePath = dir.relativePath(file)?.slice(0, -(extension.length + 1));
-		return [normalizeUrlPath(`/${relativePath}`), FILE_TYPE.PAGE];
+		return [normalizeUrlPath(`${relativePath}`), FILE_TYPE.PAGE];
 	}
 };
 
@@ -201,7 +203,13 @@ export const generatePageImportCode = async (pages: PageObject[], linkRef: strin
 	return snippedFile('pages', pagesCodeObject);
 };
 
-export const loadData = async (pages: PageObject[], linkRef: string[]) => {
+export type PageData<T extends AnyObject = AnyObject> = {
+	type: FILE_TYPE;
+	url: NormalizeUrlPath;
+	data: T;
+};
+
+export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<PageData[]> => {
 	const rootAdapter = new FilesystemAdapter('/');
 	const loadedFiles = await Promise.all(
 		linkRef.map((ref) => {
@@ -223,7 +231,17 @@ export const loadData = async (pages: PageObject[], linkRef: string[]) => {
 	return loadedPageData;
 };
 
+export const generateRoutesCode = async (publicDirs: PublicDirs) => {
+	const { pages, contentDir } = await getAllFiles(publicDirs);
+	const importFunctions = pages.map((file) => {
+		const [url] = transformPathToUrl(contentDir, file);
+		const pathEmdodi = getPageImportPath(file);
+		return snippedObjectJunk(url, `'${pathEmdodi}'`);
+	});
+	return snippedExport('routes', snippedObjectJunkWrapper(importFunctions));
+};
+
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {
 	const { contentDir, pages } = await getAllFiles(publicDirs);
-	return pages.map((file) => transformPathToUrl(contentDir, file));
+	return pages.map((file) => transformPathToUrl(contentDir, file)[0]);
 };
