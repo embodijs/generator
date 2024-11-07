@@ -5,6 +5,7 @@ import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';
 import type { Manifest } from 'vite';
 import { addLeadingSlash } from '../utils/paths.js';
+import { runLoadAction } from './content-helper.js';
 
 const router = createRouter();
 
@@ -41,13 +42,14 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const head = manifest ? createHeadFromManifest(manifest, await router.path(url)) : '';
 	const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
-	const app = await router.load(url);
-	if (!app) return;
-	const data = app.load ? app.load({ data: app.data }) : app.data;
+	const pageData = await router.load(url);
+	if (!pageData) return;
+	const { html, Component, Layout } = pageData;
+	const data = runLoadAction(pageData);
 
 	await renderHook({ data });
 	// @ts-ignore
-	const rendered = renderSvelte(SvelteRoot, { props: { ...app, data } });
+	const rendered = renderSvelte(SvelteRoot, { props: { html, Component, Layout, data } });
 	if (!rendered) return;
 	return {
 		head: `${rendered.head ?? ''}\n${head}${entryHead}`,
