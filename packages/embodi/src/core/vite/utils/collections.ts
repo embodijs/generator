@@ -126,7 +126,6 @@ const optional = <TV, TA>(value: TV | undefined, alternative: TA): NonNullable<T
 
 export const initPipeline = (params: CollectionParams): PreparedFunction => {
 	const { locale, limit, skip, only, sortBy, sortDirection } = params;
-	console.log({ params });
 	return pipe(
 		optional(locale && prepareLocale(locale), dummyFunction),
 		optional(only && prepareFilter(only), dummyFunction),

@@ -23,8 +23,9 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number;
+	page: number[];
 	data: number[];
+	battery?: number;
 };
 
 const map =
@@ -42,13 +43,16 @@ const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`
 const snippedArray = (items: string[]) => `[${items.join(',')}]`;
 const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;
 const snippedPromiseAll = (items?: string[]) =>
-	items?.length ? `await Promise.all(${snippedArray(items)})` : '[]';
+	items?.length ? `Promise.all(${snippedArray(items)})` : '[]';
 const snippedDataImports = pipe(resolveLinks, map(snippedImport), snippedPromiseAll);
+const snippedContentImports = pipe(resolveLinks, map(snippedImportEmbodi), snippedPromiseAll);
 const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
 	`async function () {
-  const data = ${snippedDataImports(ref, ...page.data)}
-  const page = await ${snippedImportEmbodi(resolveLinks(ref, page.page)[0])};
+  const data = await ${snippedDataImports(ref, ...page.data)}
+  const pages = await ${snippedContentImports(ref, ...page.page)};
+
   const defaultData = data.map(d => d.default);
+  const page = mergeOneLevelObjects(...pages);
   const mergedData = mergeOneLevelObjects(...defaultData, page.data);
   return {
     ...page,
@@ -86,12 +90,13 @@ export const getAllFiles = async (publicDirs: PublicDirs) => {
 	const { content } = publicDirs;
 	const dir = adapter.dir(content);
 	const files = (await dir.files(true)).asArray();
-	const { pages, data } = splitPagesAndData(files);
+	const { pages, data, scripts } = splitPagesAndData(files);
 
 	return {
 		contentDir: dir,
 		pages,
-		data
+		data,
+		scripts
 	};
 };
 
@@ -100,11 +105,17 @@ export const splitPagesAndData = (files: LoomFile[]) => {
 		(acc, file) => {
 			if (file.name.startsWith('+data.')) {
 				return { ...acc, data: [...acc.data, file] };
+			} else if (file.extension === 'js' || file.extension === 'ts') {
+				return { ...acc, scripts: [...acc.scripts, file] };
 			} else {
 				return { ...acc, pages: [...acc.pages, file] };
 			}
 		},
-		{ pages: [], data: [] } as { pages: LoomFile[]; data: LoomFile[] }
+		{ pages: [], data: [], scripts: [] } as {
+			pages: LoomFile[];
+			data: LoomFile[];
+			scripts: LoomFile[];
+		}
 	);
 };
 
@@ -143,9 +154,15 @@ const mapUrlToArray = (
 	return [urls, ref];
 };
 
-const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): number | undefined => {
-	const [, dataImportCode] = dataImports.find(([importUrl]) => url === importUrl) ?? [[]];
-	return dataImportCode;
+export const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): number | undefined => {
+	const [[, importRef] = [], duplicate] =
+		dataImports.filter(([scriptUrl]) => scriptUrl === url) ?? [];
+	if (duplicate) {
+		console.warn(
+			`Embodi founds two script files for the same url (${url}), one will be ignored. To be sure witch one is used one should be removed.`
+		);
+	}
+	return importRef;
 };
 
 const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
@@ -171,15 +188,21 @@ const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
 	return refs;
 };
 
-const createPageObjects = (pageMaps: UrlMap[], dataMaps: UrlMap[]): PageObject[] => {
+const createPageObjects = (
+	pageMaps: UrlMap[],
+	dataMaps: UrlMap[],
+	scriptMaps: UrlMap[]
+): PageObject[] => {
 	return pageMaps.map((pageMap) => {
 		const [url, index, type] = pageMap;
 		const dataRefs = mapDataToPage(pageMap, dataMaps);
+		const scriptRef = getRefByUrl(url, scriptMaps);
 		return {
 			type,
 			url,
-			page: index,
-			data: dataRefs
+			page: [index, ...(scriptRef ? [scriptRef] : [])],
+			data: dataRefs,
+			battery: scriptRef
 		};
 	});
 };
@@ -187,10 +210,11 @@ const createPageObjects = (pageMaps: UrlMap[], dataMaps: UrlMap[]): PageObject[]
 export const generateContentMap = async (
 	publicDirs: PublicDirs
 ): Promise<[PageObject[], string[]]> => {
-	const { contentDir, pages, data } = await getAllFiles(publicDirs);
+	const { contentDir, pages, data, scripts } = await getAllFiles(publicDirs);
 	const [dataUrls, dataLinkRef] = mapUrlToArray(data, contentDir);
-	const [pageUrls, linkRef] = mapUrlToArray(pages, contentDir, dataLinkRef);
-	const pageObjects = createPageObjects(pageUrls, dataUrls);
+	const [scriptUrls, scriptAndDatatLinkRef] = mapUrlToArray(scripts, contentDir, dataLinkRef);
+	const [pageUrls, linkRef] = mapUrlToArray(pages, contentDir, scriptAndDatatLinkRef);
+	const pageObjects = createPageObjects(pageUrls, dataUrls, scriptUrls);
 	return [pageObjects, linkRef];
 };
 
