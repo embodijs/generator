@@ -6,6 +6,7 @@ import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { embodiSvelte } from './vite/svelte.js';
 import { loadConfig } from './app/config.js';
 import viteYaml from '@modyfi/vite-plugin-yaml';
+import { embodiBattery } from './vite/battery.js';
 
 export const createConfig = async () => {
 	const config = await loadConfig();
@@ -19,7 +20,7 @@ export const createConfig = async () => {
 		embodiSvelte(),
 		embodiMarkdown(),
 		embodiHtml(),
-		devServerPlugin()
+		embodiBattery(),
 		devServerPlugin(),
 		...config.plugins
 	];
