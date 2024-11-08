@@ -10,7 +10,7 @@ const hydrateClient = async () => {
 	const pageData = await createRouter().load(currentUrl);
 	if (!pageData) return;
 	const { html, Component, Layout } = pageData;
-	const data = runLoadAction(pageData);
+	const data = await runLoadAction(pageData);
 	await renderHook({ data });
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,

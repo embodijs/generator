@@ -45,8 +45,7 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const pageData = await router.load(url);
 	if (!pageData) return;
 	const { html, Component, Layout } = pageData;
-	const data = runLoadAction(pageData);
-
+	const data = await runLoadAction(pageData);
 	await renderHook({ data });
 	// @ts-ignore
 	const rendered = renderSvelte(SvelteRoot, { props: { html, Component, Layout, data } });
