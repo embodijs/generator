@@ -100,12 +100,18 @@ export const getAllFiles = async (publicDirs: PublicDirs) => {
 	};
 };
 
+const isIngnoredFile = (file: LoomFile) => ['.DS_Store'].includes(file.name);
+const isDataFile = (file: LoomFile) => file.name.startsWith('+data.');
+const isScriptFile = (file: LoomFile) => file.extension === 'js' || file.extension === 'ts';
+
 export const splitPagesAndData = (files: LoomFile[]) => {
 	return files.reduce(
 		(acc, file) => {
-			if (file.name.startsWith('+data.')) {
+			if (isIngnoredFile(file)) {
+				return acc;
+			} else if (isDataFile(file)) {
 				return { ...acc, data: [...acc.data, file] };
-			} else if (file.extension === 'js' || file.extension === 'ts') {
+			} else if (isScriptFile(file)) {
 				return { ...acc, scripts: [...acc.scripts, file] };
 			} else {
 				return { ...acc, pages: [...acc.pages, file] };
