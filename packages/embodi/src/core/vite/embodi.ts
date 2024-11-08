@@ -42,7 +42,8 @@ export const configPlugin = () =>
 				resolve: {
 					...config.resolve,
 					alias: {
-						'$embodi/*': resolve(cfd, './virtual-modules/embodi/*')
+						'$embodi/*': resolve(cfd, './virtual-modules/embodi/*'),
+						$layout: resolve(cwd, projectConfig.inputDirs.layout)
 					}
 				},
 				build: {
