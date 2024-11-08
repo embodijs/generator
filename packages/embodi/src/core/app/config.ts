@@ -8,7 +8,7 @@ export interface EmbodiUserConfig {
 	dist?: string;
 	dataDir?: string;
 	source?: `/${string}`;
-	templatePrefix?: string;
+	layoutDir?: string;
 	publicDir?: string;
 	plugins?: VitePlugin[];
 }
@@ -17,14 +17,13 @@ export interface PublicDirs {
 	public: string;
 	data: string;
 	content: `/${string}`;
-	template: string | undefined;
+	layout: string;
 }
 
 export interface EmbodiConfig {
 	statics: string;
 	dist: string;
 	plugins: VitePlugin[];
-	templatePrefix: string;
 	inputDirs: PublicDirs;
 	viteConfig: ViteConfig;
 }
@@ -37,20 +36,17 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 	};
 
 	const publicDir = config.publicDir ?? 'public';
-	const templatePrefix = config.templatePrefix ?? './__layout';
-	const templateDir = isRelativePath(templatePrefix) ? templatePrefix : undefined;
 	const mixedConfig = {
 		dataDir: config.dataDir ?? '__data',
 		statics: '',
 		base: config.base ? config.base : '/',
 		dist: config.dist ? config.dist : 'dist',
-		templatePrefix: templatePrefix,
 		plugins: config.plugins ?? [],
 		inputDirs: {
 			public: publicDir,
 			data: config.dataDir ?? '__data',
 			content: config.source ?? '/content',
-			template: templateDir
+			layout: config.layoutDir ?? './__layout'
 		},
 		viteConfig: {
 			plugins: config.plugins ?? [],
