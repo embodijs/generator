@@ -1,4 +1,4 @@
-import type { PageImportFunction } from '../definitions/types.js';
+import type { PageImportFunction, LoadAction, AnyObject } from '../definitions/types.js';
 
 export const loadPages = async <T extends string>(
 	pages: Record<T, PageImportFunction>,
@@ -11,3 +11,6 @@ export const loadPages = async <T extends string>(
 		})
 	);
 };
+
+export const runLoadAction = async ({ load, data }: { load?: LoadAction; data: AnyObject }) =>
+	load ? load({ data }) : data;

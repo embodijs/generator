@@ -2,13 +2,15 @@ import { createRouter } from './router.js';
 import { hydrate } from 'svelte';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
+import { runLoadAction } from './content-helper.js';
 
 const currentUrl = new URL(window.location.href).pathname;
 
 const hydrateClient = async () => {
 	const pageData = await createRouter().load(currentUrl);
 	if (!pageData) return;
-	const { html, Component, Layout, data } = pageData;
+	const { html, Component, Layout } = pageData;
+	const data = runLoadAction(pageData);
 	await renderHook({ data });
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,
