@@ -164,8 +164,7 @@ export const devServerPlugin = () =>
 			const devServer = async (
 				req: Connect.IncomingMessage,
 				res: ServerResponse,
-				next: Connect.NextFunction,
-				looped: boolean = false
+				next: Connect.NextFunction
 			) => {
 				// TODO: add static file route here
 				try {
@@ -199,7 +198,6 @@ export const devServerPlugin = () =>
 					} else {
 						console.error(e);
 					}
-					// server.restart();
 				}
 			};
 
