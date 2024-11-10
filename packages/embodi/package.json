@@ -30,6 +30,10 @@
 			"types": "./dist/exports/lib.d.ts",
 			"import": "./dist/exports/lib.js"
 		},
+		"./utils": {
+			"types": "./dist/exports/utils.d.ts",
+			"import": "./dist/exports/utils.js"
+		},
 		"./client": {
 			"types": "./client.d.ts"
 		}

@@ -1,3 +1,9 @@
+import path from 'node:path';
+
+export const toAbsolute = (p: string) => {
+	return path.resolve(process.cwd(), p);
+};
+
 export function isRelativePath(path: string) {
 	return path.startsWith('./') || path.startsWith('../');
 }
