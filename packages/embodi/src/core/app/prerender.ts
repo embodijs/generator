@@ -2,12 +2,16 @@ import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { loadAppHtml } from '../vite/utils/load-data.js';
 import { getRoutesToPrerender } from '../vite/utils/load-content.js';
 import type { PublicDirs } from './config.js';
-import { toAbsolute } from '../utils/paths.js';
+import path from 'node:path';
 
 export interface PrerenderOptions {
 	statics: string;
 	inputDirs: PublicDirs;
 }
+
+const toAbsolute = (p: string) => {
+	return path.resolve(process.cwd(), p);
+};
 
 const fs = new FilesystemAdapter();
 
