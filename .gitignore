@@ -2,3 +2,5 @@
 .DS_Store
 
 node_modules/
+
+packages/e2e/playwright-report/
