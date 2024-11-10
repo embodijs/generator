@@ -17,9 +17,95 @@ This will guide you through some steps and create a basic structure.
 Embodi will read any Markdown or Svelte file the source directory ( default to `<root>/content` directory) in your project structure and convert it to a page. Markdown will only be interpreted as page if they `layout` attribute in front-matter.
 The name is a reference to a Svelte file in the `__layout` folder. The component gets the property data, which contain the front-matter data. The rendered markdown part is given into a slot. So each layout should display rendered content needs to have a slot. In layout components you can do everything you normally do with Svelte.
 
+## Data
+
+Embodi offers three ways to provide data to you layout components, the list is in order of priority. All data will only be merged on the first object level.
+
+- Front-matter
+- Local data
+- Global data
+
+### Front-matter
+
+Front-matter is a block of YAML or JSON at the beginning of a file. It is used to define metadata for the file. The front-matter is separated from the content by three dashes `---`. The front-matter is parsed and passed to the layout component as a property.
+
+### Local data
+
+Local data are stored in the same directory as the markdown file. The data is stored in YAML or JSON files and need to be named `+data.yaml` or `+data.json`. Files in a higher directory will overwrite files in a lower directory.
+At least the data will be merged with the front-matter data and may be overwritten.
+
+### Global data
+
+Global data is stored in the `__data` folder in the root directory. The data is stored in YAML or JSON files. The filename is used as the attribute name. The data is merged with the front-matter data and may be overwritten.
+
+## Load actions
+
+Beside the useal content file you can create a script file with the same name e.g. `index.md` and `index.js`, but you could also just use a script file. The script gives you more options to load data or do other actions before rendering the content. The script file should be placed in the same directory as the content file.
+Additionally, you can use the `load` function to load data from a remote source. The function is a wrapper around the fetch function and returns the data as JSON.
+
+```ts
+// index.js
+// This is an example of a load file
+
+import { collections } from '$embodi/collections?locale=de&tag=project';
+import type { LoadAction } from 'embodi';
+
+export const load: LoadAction = ({ data }) => {
+	const projects = collections.map((project) => {
+		return {
+			...project.data,
+			html: project.html
+		};
+	});
+	return { ...data, projects };
+};
+```
+
+If you export a `data`, `html`, `Layout` or `Component` property, it will be overwrite the property from the content file.
+
+```ts
+export const data = {
+	title: 'Hello Embodi'
+};
+```
+
+## Hooks
+
+Embodi has a hook system to run code before rendering the content. The hook file should be placed in the root directory and named `hooks.js` or `hooks.ts`. The file runs on client and server side, so the code needs to be able to run on both sides.
+
+```ts
+// hooks.ts
+// This is an example of a hook file with i18next setup
+// This file will be executed before rendering the content
+
+import { init, changeLanguage } from 'i18next';
+import type { RenderHook } from 'embodi';
+
+export const render: RenderHook = ({ data }) => {
+	init({
+		fallbackLng: 'en',
+		debug: false,
+		resources: {
+			en: {
+				translation: {
+					embodi: 'Hello Embodi'
+				}
+			},
+			de: {
+				translation: {
+					embodi: 'Hallo Embodi'
+				}
+			}
+		}
+	});
+
+	changeLanguage(data.locale);
+};
+```
+
 ## Collections
 
-Any file has `tags` attribute in its front-matter with at least one tag ( list is required even with one element ) will be added to a collection. You can access collections in svelte components with importing `$embodi/collections`. This import allows params, to filter, sort or reduce the amount of collections e.g.: `$embodi/collections?only=dogs;cats&limit3`.
+Any file has `tags` attribute in its front-matter with at least one tag ( list is required even with one element ) will be added to a collection. You can access collections in svelte components with importing `$embodi/collections`. This import allows params, to filter, sort or reduce the amount of collections e.g.: `$embodi/collections?only=dogs;cats&limit=3`.
 
 ```ts
 // Following params are possible
@@ -32,8 +118,6 @@ export interface CollectionParams {
 }
 export interface CollectionMeta {
 	tag: string;
-	updatedAt: Date;
-	createdAt?: Date;
 	page: string;
 }
 ```
@@ -111,44 +195,6 @@ Output directory of build sources. Copy the content of the static folder of dist
 - Default: `/content`
 
 Source folder to read markdown files from. String have to start `/`
-
-## Hooks
-
-Currently there is only one hook that is running before rendering the content.
-The hooks runs client and server sides, so the code needs to be able to run on client and server side.
-A hooks files is not required, but helpful to run inital code before rendering e.g. i18n setup.
-
-The hook file should be placed in the root directory and named `hooks.js` or `hooks.ts`.
-
-```ts
-// hooks.ts
-// This is an example of a hook file with i18next setup
-
-import { init, changeLanguage } from 'i18next';
-import type { RenderHook } from 'embodi';
-
-// data containes all data the page will rendered with
-export const render: RenderHook = ({ data }) => {
-	init({
-		lng: data.locale,
-		resources: {
-			en: {
-				translation: {
-					Hello: 'Hello',
-					World: 'World'
-				}
-			},
-			de: {
-				translation: {
-					Hello: 'Hallo',
-					World: 'Welt'
-				}
-			}
-		}
-	});
-	changeLanguage(data.lang);
-};
-```
 
 ## Support
 
