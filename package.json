@@ -11,6 +11,8 @@
 	"devDependencies": {
 		"@faker-js/faker": "^8.4.1",
 		"@types/node": "^22.7.7",
+		"@playwright/test": "^1.48.1",
+    "playwright": "^1.48.1",
 		"publint": "^0.2.11",
 		"vitest": "^2.1.3"
 	}
