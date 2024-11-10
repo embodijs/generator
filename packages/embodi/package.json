@@ -8,7 +8,8 @@
 		"embodi": "bin/embodi.js"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"client.d.ts"
 	],
 	"scripts": {
 		"dev": "svelte-package -i src --watch",
@@ -28,6 +29,9 @@
 		".": {
 			"types": "./dist/exports/lib.d.ts",
 			"import": "./dist/exports/lib.js"
+		},
+		"./client": {
+			"types": "./client.d.ts"
 		}
 	},
 	"type": "module",
