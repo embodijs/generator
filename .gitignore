@@ -4,3 +4,5 @@
 node_modules/
 
 packages/e2e/playwright-report/
+
+packages/e2e/test-results/
