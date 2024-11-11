@@ -1,0 +1,16 @@
+{
+  "name": "playwright-test",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "embodi dev",
+    "render:e2e": "embodi generate",
+    "test:e2e:init": "playwright install --with-deps",
+    "test:e2e": "playwright test",
+    "preview": "embodi preview"
+  },
+  "devDependencies": {
+    "embodi": "workspace:*",
+    "svelte": "^5.1.0"
+  }
+}

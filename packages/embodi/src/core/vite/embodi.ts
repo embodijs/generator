@@ -24,6 +24,7 @@ import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from './utils/collections.js';
 import { generateHooksCode } from './utils/hooks.js';
 import { isCompileException } from './utils/exceptions.js';
+import { generateInternalStores, generateReadableStores } from './stores.js';
 
 const cwd = process.cwd(); // Current working directory
 const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
@@ -68,7 +69,17 @@ export const virtualPlugin = () =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
-			return validateResolveId(id, 'pages', 'paths', 'data', 'collections', 'hooks', 'env');
+			return validateResolveId(
+				id,
+				'pages',
+				'paths',
+				'data',
+				'collections',
+				'hooks',
+				'env',
+				'stores',
+				'stores/internal'
+			);
 		},
 		async load(id, options) {
 			if (isValidLoadId(id, 'pages')) {
@@ -100,6 +111,10 @@ export const virtualPlugin = () =>
 				return generateHooksCode();
 			} else if (isValidLoadId(id, 'env')) {
 				return `export const browser = ${JSON.stringify(!options?.ssr)};`;
+			} else if (isValidLoadId(id, 'stores/internal')) {
+				return generateInternalStores();
+			} else if (isValidLoadId(id, 'stores')) {
+				return generateReadableStores('$embodi/stores/internal');
 			}
 		},
 		async handleHotUpdate({ server, file }) {

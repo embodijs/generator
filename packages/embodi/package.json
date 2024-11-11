@@ -1,6 +1,6 @@
 {
 	"name": "embodi",
-	"version": "0.8.3",
+	"version": "0.9.0",
 	"license": "Apache-2.0",
 	"module": "dist/exports/lib.js",
 	"types": "dist/exports/lib.d.ts",
@@ -8,7 +8,8 @@
 		"embodi": "bin/embodi.js"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"client.d.ts"
 	],
 	"scripts": {
 		"dev": "svelte-package -i src --watch",
@@ -28,6 +29,13 @@
 		".": {
 			"types": "./dist/exports/lib.d.ts",
 			"import": "./dist/exports/lib.js"
+		},
+		"./utils": {
+			"types": "./dist/exports/utils.d.ts",
+			"import": "./dist/exports/utils.js"
+		},
+		"./client": {
+			"types": "./client.d.ts"
 		}
 	},
 	"type": "module",

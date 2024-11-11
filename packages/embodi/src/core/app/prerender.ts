@@ -1,19 +1,19 @@
-import path, { resolve } from 'node:path';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { loadAppHtml } from '../vite/utils/load-data.js';
 import { getRoutesToPrerender } from '../vite/utils/load-content.js';
 import type { PublicDirs } from './config.js';
+import path from 'node:path';
 
 export interface PrerenderOptions {
 	statics: string;
 	inputDirs: PublicDirs;
 }
 
-const fs = new FilesystemAdapter();
-
 const toAbsolute = (p: string) => {
 	return path.resolve(process.cwd(), p);
 };
+
+const fs = new FilesystemAdapter();
 
 export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const { content: contentDir } = inputDirs;

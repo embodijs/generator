@@ -6,12 +6,12 @@ on:
     branches: [main, master]
 jobs:
   test:
-    runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       matrix:
         node-version: [20.x, 22.x, lts/*]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: pnpm-setup
@@ -25,6 +25,8 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install
+      - name: Build Embodi
+        run: pnpm run build
       - name: Install Playwright Browsers
         run: pnpm run test:e2e:init
       - name: Run Playwright tests

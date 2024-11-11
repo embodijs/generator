@@ -10,8 +10,6 @@ import {
 import { UniqueArray } from '../../utils/unique-array.js';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { mergeOneLevelObjects } from '../../utils/data.js';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { AnyObject } from '../../definitions/types.js';
 
 enum FILE_TYPE {
@@ -59,13 +57,9 @@ const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
     data: mergedData
   }
 }`;
-const pathToMergeOneLevelObjects = resolve(
-	dirname(fileURLToPath(import.meta.url)),
-	'../../utils/data.js'
-);
 const snippedObjectJunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
 const snippedFile = (name: string, content: string) =>
-	`import { mergeOneLevelObjects } from '${pathToMergeOneLevelObjects}';
+	`import { mergeOneLevelObjects } from 'embodi/utils';
 export const ${name} = ${content};`;
 
 export const transformPathToUrl = (
