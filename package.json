@@ -1,11 +1,11 @@
 {
   "scripts": {
-    "dev": "pnpm run --recursive dev",
-    "test:e2e:init": "playwright install --with-deps",
+    "test:e2e:init": "pnpm run --recursive test:e2e:init",
     "test:e2e": "pnpm run --recursive test:e2e",
     "test": "vitest",
     "test:ci": "vitest --run",
     "build": "pnpm run --recursive build",
+    "dev": "pnpm run --recursive dev",
     "prepublishOnly": "pnpm run --recursive prepublishOnly"
   },
   "devDependencies": {
