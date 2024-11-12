@@ -5,11 +5,10 @@
   "scripts": {
     "dev": "embodi dev",
     "build": "embodi generate",
-    "generate": "embodi generate",
     "preview": "embodi preview"
   },
   "devDependencies": {
-    "embodi": "^0.8.2",
+    "embodi": "^0.9.0",
     "svelte": "^5.1.0"
   }
 }
