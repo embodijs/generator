@@ -1,6 +1,6 @@
 ---
 title: Welcome to Embodi
-layout: Home
+layout: $layout/Home.svelte
 ---
 
 ## Introduction
@@ -13,7 +13,7 @@ To edit this page you need to edit the `index.md` file in the root directory of 
 
 ## Layout
 
-At the top in the front-matter part (starts and ends with `---`) and the markdown this markdown part is interpreted by the layout file mentioned in the front-matter part. You can find this file in `__layout'. Home' refers to the file `__layout/Home.svelte'.
+At the top in the front-matter part (starts and ends with `---`) and the markdown this markdown part is interpreted by the layout file mentioned in the front-matter part. You can find this file in `__layout'. Home' refers to the file `\_\_layout/Home.svelte'.
 
 ## Public files
 
@@ -23,4 +23,4 @@ Files in the public folder are generally public. For example, you can use them t
 
 ## Global data
 
-To define global or default data, add a file to __data that can be accessed by its filename. The content for a file named nav.yml and an example content of `title: test` could be accessed as `nav.title`.
+To define global or default data, add a file to \_\_data that can be accessed by its filename. The content for a file named nav.yml and an example content of `title: test` could be accessed as `nav.title`.

@@ -33,21 +33,14 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0
       '@loom-io/core':
-        specifier: ^0.12.10
-        version: 0.12.10
+        specifier: ^0.12.11
+        version: 0.12.11
       '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.10
-        version: 0.12.10(@loom-io/core@0.12.10)
+        specifier: ^0.12.11
+        version: 0.12.11(@loom-io/core@0.12.11)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
-    devDependencies:
-      '@playwright/test':
-        specifier: ^1.48.1
-        version: 1.48.1
-      playwright:
-        specifier: ^1.48.1
-        version: 1.48.1
 
   packages/e2e:
     devDependencies:
@@ -310,6 +303,9 @@ packages:
   '@loom-io/core@0.12.10':
     resolution: {integrity: sha512-uhqklLCjhgAqmSoKLM4r1phlLuJsRBJbe5sTzT3biLkEcZE7tY4K1DXBWfNhxb+QZ33dl3bwR32ZBNtY5dRz4g==}
 
+  '@loom-io/core@0.12.11':
+    resolution: {integrity: sha512-CbmhKkk1kElHCn+WHppp1DuXdXfZEXAEF2X8gnP4eKzyLSWzZfVfYsIXRiGJixk0Txqsi5KDFCWFDd3dDMrlwQ==}
+
   '@loom-io/front-matter-converter@0.12.10':
     resolution: {integrity: sha512-II2VKctyoMHTLlatmu/eibnrhaGtJu/zO4hmGBI68/paUevG/FFBZFzZJ57ckuZDxWYBB9dpoxLK01eCmPy7uw==}
     peerDependencies:
@@ -341,6 +337,11 @@ packages:
     resolution: {integrity: sha512-gvvwTITSa12sx3mDwfd0dC4wbJQ4qi9bYW/t3U3ThQq1g12W+bR1NU8XnY0BmQxY+H013xY5YlGDLwCivNLUpA==}
     peerDependencies:
       '@loom-io/core': ^0.12.10
+
+  '@loom-io/node-filesystem-adapter@0.12.11':
+    resolution: {integrity: sha512-w8Jw/nioECD+ilMmJXjH8YIuBtw1H6eiGPineSaWek1cOUPBkG4okcT0F3ICBqyTGOYzaNq+qvsJ4m1o2grs1w==}
+    peerDependencies:
+      '@loom-io/core': ^0.12.11
 
   '@loom-io/yaml-converter@0.12.10':
     resolution: {integrity: sha512-g/T5vmcbr/VnZye0aijZdhWbNt1W3Ov2oe4s/ekeHdQ8l5Z85CAu5Xhyen6t2t3NuVbyhnuK/DFvLlz7AwrNgA==}
@@ -1052,6 +1053,10 @@ snapshots:
     dependencies:
       '@loom-io/common': 1.0.2
 
+  '@loom-io/core@0.12.11':
+    dependencies:
+      '@loom-io/common': 1.0.2
+
   '@loom-io/front-matter-converter@0.12.10(@loom-io/converter@0.12.10(@loom-io/core@0.12.10))(@loom-io/core@0.12.10)':
     dependencies:
       yaml: 2.6.0
@@ -1073,6 +1078,11 @@ snapshots:
     dependencies:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.10
+
+  '@loom-io/node-filesystem-adapter@0.12.11(@loom-io/core@0.12.11)':
+    dependencies:
+      '@loom-io/common': 1.0.2
+      '@loom-io/core': 0.12.11
 
   '@loom-io/yaml-converter@0.12.10(@loom-io/converter@0.12.10(@loom-io/core@0.12.10))(@loom-io/core@0.12.10)':
     dependencies:
