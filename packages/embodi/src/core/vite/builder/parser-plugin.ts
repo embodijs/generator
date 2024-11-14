@@ -1,5 +1,6 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
+import { normalize } from 'node:path';
 interface PageData {
 	layout?: string;
 	[key: string]: any;
@@ -21,12 +22,15 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		name,
 		resolveId(id) {
 			if (id.endsWith(embodiFormat)) {
+				if(id.startsWith('\0')) {
+					return id;
+				}
 				return `\0${id}`;
 			}
 		},
 		load(id) {
 			if (id.endsWith(embodiFormat)) {
-				return `export * from '/${id.slice(2, -7)}';`;
+				return `export * from '${id.slice(1, -7)}';`;
 			}
 		},
 		async transform(code, id) {
@@ -48,3 +52,4 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		}
 	} satisfies Plugin;
 }
+
