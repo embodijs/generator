@@ -7,6 +7,7 @@ interface PageData {
 }
 
 const cwd = process.cwd();
+const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
 export interface ContentParserPluginConfig {
 	name: string;
@@ -29,8 +30,9 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 			}
 		},
 		load(id) {
-			if (id.endsWith(embodiFormat)) {
-				return `export * from '${id.slice(1, -7)}';`;
+			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
+				console.log('id', id);
+				return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
 			}
 		},
 		async transform(code, id) {

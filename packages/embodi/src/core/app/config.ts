@@ -1,4 +1,3 @@
-import { isRelativePath } from '../utils/paths.js';
 import { join } from 'node:path';
 import type { Plugin as VitePlugin, UserConfig as ViteConfig } from 'vite';
 import { pathToFileURL } from 'node:url';

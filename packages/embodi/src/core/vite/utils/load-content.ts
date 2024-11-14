@@ -32,12 +32,14 @@ const map =
 	(arr: T[]) =>
 		arr.map(fn);
 
+const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
+
 const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
 	return indezes.map((index) => refs.at(index)!);
 };
-const snippedPathEmdodi = (path: string) => normalize(`${path}.embodi`).replaceAll('\\', '\\\\');
+const snippedPathEmdodi = (path: string) => normalizeImportPath(`${path}.embodi`);
 const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)}')`;
-const snippedImport = (path: string) => `import('${normalize(path)}')`;
+const snippedImport = (path: string) => `import('${normalizeImportPath(path)}')`;
 const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`;
 const snippedArray = (items: string[]) => `[${items.join(',')}]`;
 const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;

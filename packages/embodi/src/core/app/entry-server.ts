@@ -24,7 +24,7 @@ const followImports = (
 	imports: Set<string> = new Set(),
 	css: Set<string> = new Set()
 ) => {
-	const current = manifest[entry];
+	const current = manifest[(entry.replaceAll('\\', '/'))];
 	if (current.imports) {
 		current.imports.forEach((url: string) => {
 			imports.add(url);
@@ -44,10 +44,7 @@ const followImports = (
 };
 
 const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
-	const current = manifest[entry];
 	const heads = [];
-	heads.push(createScriptTag(current.file));
-
 	const { css, imports } = followImports(manifest, entry);
 
 	heads.push(...Array.from(css).map(createStyleTag));
@@ -58,7 +55,7 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 
 export async function render(source: string, url: string, manifest?: Manifest) {
 	const head = manifest ? createHeadFromManifest(manifest, await router.path(url)) : '';
-	const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
+	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const pageData = await router.load(url);
 	if (!pageData) return;
@@ -70,7 +67,7 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const rendered = renderSvelte(SvelteRoot, { props: { html, Component, Layout, data } });
 	if (!rendered) return;
 	return {
-		head: `${rendered.head ?? ''}\n${head}${entryHead}`,
+		head: `${rendered.head ?? ''}\n${head}`,
 		// css: data.css.code === '' ? undefined : `<style>${data.css.code}</style>`,
 		html: rendered.body
 	};
