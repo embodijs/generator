@@ -1,11 +1,13 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
+import { normalize } from 'node:path';
 interface PageData {
 	layout?: string;
 	[key: string]: any;
 }
 
 const cwd = process.cwd();
+const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
 export interface ContentParserPluginConfig {
 	name: string;
@@ -21,12 +23,16 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		name,
 		resolveId(id) {
 			if (id.endsWith(embodiFormat)) {
+				if(id.startsWith('\0')) {
+					return id;
+				}
 				return `\0${id}`;
 			}
 		},
 		load(id) {
-			if (id.endsWith(embodiFormat)) {
-				return `export * from '/${id.slice(2, -7)}';`;
+			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
+				console.log('id', id);
+				return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
 			}
 		},
 		async transform(code, id) {
@@ -48,3 +54,4 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		}
 	} satisfies Plugin;
 }
+

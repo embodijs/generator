@@ -11,6 +11,7 @@ import { UniqueArray } from '../../utils/unique-array.js';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { mergeOneLevelObjects } from '../../utils/data.js';
 import type { AnyObject } from '../../definitions/types.js';
+import { normalize } from 'node:path';
 
 enum FILE_TYPE {
 	INDEX,
@@ -31,12 +32,14 @@ const map =
 	(arr: T[]) =>
 		arr.map(fn);
 
+const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
+
 const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
 	return indezes.map((index) => refs.at(index)!);
 };
-const snippedPathEmdodi = (path: string) => `${path}.embodi`;
+const snippedPathEmdodi = (path: string) => normalizeImportPath(`${path}.embodi`);
 const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)}')`;
-const snippedImport = (path: string) => `import('${path}')`;
+const snippedImport = (path: string) => `import('${normalizeImportPath(path)}')`;
 const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`;
 const snippedArray = (items: string[]) => `[${items.join(',')}]`;
 const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;
