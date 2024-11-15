@@ -170,10 +170,9 @@ const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
 	const [pageUrl, pageRef, fileType] = pageMap;
 	const dataRef = getRefByUrl(pageUrl, dataMap);
 	const urlParts = splitNormalizedUrlPath(pageUrl);
-	fileType === FILE_TYPE.INDEX || urlParts.pop(); // remove last if not index file
-
+	fileType !== FILE_TYPE.INDEX && urlParts.pop(); // remove last if not index file
 	if (urlParts.length === 0) {
-		return dataRef ? [dataRef] : [];
+		return dataRef != null ? [dataRef] : [];
 	}
 
 	const rootNode: [NormalizeUrlPath, number[]] = [rootUrl, dataRef ? [dataRef] : []];
