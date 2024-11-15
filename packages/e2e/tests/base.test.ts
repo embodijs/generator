@@ -14,4 +14,16 @@ test.describe("Embodi build and binding", () => {
 			page.getByRole("heading", { name: "Introduction" })
 		).toBeVisible();
 	});
+
+	test("load +data.yaml", async ({ page }) => {
+		await page.goto("/");
+		await expect(
+			page.getByRole("heading", { name: "Data subtitle" })
+		).toBeVisible();
+	});
+
+	test("laod actions runs", async ({ page }) => {
+		await page.goto("/");
+		await expect(page.getByText("Hello, load action!")).toBeVisible();
+	});
 });
