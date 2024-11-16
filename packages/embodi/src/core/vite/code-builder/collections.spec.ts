@@ -1,20 +1,30 @@
 import { expect, test, describe } from 'vitest';
-import { setDirection, getValue, compareString, compareDate, CollectionMeta, prepareFilter, prepareSort, prepareLimit, convertCollectionParamsToPreparedFunctions, CollectionParams } from './collections';
+import {
+	setDirection,
+	getValue,
+	compareString,
+	compareDate,
+	CollectionMeta,
+	prepareFilter,
+	prepareSort,
+	prepareLimit,
+	convertCollectionParamsToPreparedFunctions,
+	CollectionParams
+} from './collections';
 import { faker } from '@faker-js/faker';
-
 
 const fakeMeta = ({
 	tag = faker.lorem.word(),
 	createdAt = faker.date.recent(),
 	updatedAt = faker.date.recent(),
-	page = faker.system.directoryPath(),
-	importPath = faker.system.filePath()
+	url = faker.system.directoryPath(),
+	data
 }: Partial<CollectionMeta>) => ({
 	tag,
 	createdAt,
 	updatedAt,
-	page,
-	importPath
+	url,
+	data: data ?? {}
 });
 
 describe('collections', () => {
@@ -22,12 +32,17 @@ describe('collections', () => {
 		test.each(['asc', 'desc'] as const)('setDirection %s', (direction) => {
 			const collection = fakeMeta({});
 			expect(setDirection([collection, collection], direction)).toEqual([collection, collection]);
-			expect(setDirection([collection, collection], direction)).toEqual([collection, collection].reverse());
+			expect(setDirection([collection, collection], direction)).toEqual(
+				[collection, collection].reverse()
+			);
 		});
 
-		test.each(['tag', 'createdAt', 'updatedAt', 'page'] as const)('getValue', (attr) => {
+		test.each(['tag', 'createdAt', 'updatedAt', 'url'] as const)('getValue', (attr) => {
 			const collection = fakeMeta({});
-			expect(getValue([collection, collection], attr)).toEqual([collection[attr], collection[attr]]);
+			expect(getValue([collection, collection], attr)).toEqual([
+				collection[attr],
+				collection[attr]
+			]);
 		});
 
 		test.each(['asc', 'desc'] as const)('compareString', (direction) => {
@@ -82,25 +97,22 @@ describe('collections', () => {
 				expect(skipNotEnough([a, b, c])).toEqual([]);
 			});
 		});
-
-
 	});
 
 	describe('convertCollectionParamsToPreparedFunctions', () => {
 		test('only', () => {
 			const params = {
-				only: ['a'],
+				only: ['a']
 			};
 
 			const prepared = convertCollectionParamsToPreparedFunctions(params);
 			expect(prepared).toHaveLength(1);
 			expect(prepared[0]).toBeInstanceOf(Function);
-
 		});
 
 		test('skip', () => {
 			const params = {
-				skip: 2,
+				skip: 2
 			};
 
 			const prepared = convertCollectionParamsToPreparedFunctions(params);
@@ -110,7 +122,7 @@ describe('collections', () => {
 
 		test('limit', () => {
 			const params = {
-				limit: 2,
+				limit: 2
 			};
 
 			const prepared = convertCollectionParamsToPreparedFunctions(params);
