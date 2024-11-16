@@ -27,7 +27,7 @@ import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 
 const cwd = process.cwd(); // Current working directory
-const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
+const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
 
 export const configPlugin = () =>
 	({
@@ -43,7 +43,7 @@ export const configPlugin = () =>
 				resolve: {
 					...config.resolve,
 					alias: {
-						'$embodi/*': resolve(cfd, './virtual-modules/embodi/*'),
+						'$embodi/*': resolve(cf, './virtual-modules/embodi/*'),
 						$layout: resolve(cwd, projectConfig.inputDirs.layout)
 					}
 				},
@@ -56,8 +56,8 @@ export const configPlugin = () =>
 					outDir: ssr ? join(distBase, 'server') : join(distBase, 'static'),
 					rollupOptions: {
 						input: ssr
-							? resolve(cfd, '../app/entry-server.js')
-							: { client: resolve(cfd, '../app/entry-client.js') }
+							? resolve(cf, '../app/entry-server.js')
+							: { client: resolve(cf, '../app/entry-client.js') }
 					}
 				}
 			};
@@ -90,7 +90,7 @@ export const virtualPlugin = () =>
 				return `${pagesCode}\n${routesCode}\nexport const source = "${config.inputDirs.content}";`;
 			} else if (isValidLoadId(id, 'paths')) {
 				const { statics } = await loadConfig(cwd);
-				const relativPathToClientEntry = relative(cwd, resolve(cfd, '../app/entry-client.js'));
+				const relativPathToClientEntry = relative(cwd, resolve(cf, '../app/entry-client.js'));
 
 				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${statics}";`;
 			} else if (isValidLoadId(id, 'data')) {
