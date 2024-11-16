@@ -1,6 +1,6 @@
-export { createDevServer, createPreviewServer } from '../core/dev.js';
-export { generate } from '../core/build.js';
-export { defineConfig } from '../core/app/config.js';
+export { createDevServer, createPreviewServer } from '../core/vite/dev.js';
+export { generate } from '../core/vite/build.js';
+export { defineConfig } from '../core/vite/utils/config.js';
 
 export type {
 	RenderHookEvent,
