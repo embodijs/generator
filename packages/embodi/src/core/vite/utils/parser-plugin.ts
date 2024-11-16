@@ -23,7 +23,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		name,
 		resolveId(id) {
 			if (id.endsWith(embodiFormat)) {
-				if(id.startsWith('\0')) {
+				if (id.startsWith('\0')) {
 					return id;
 				}
 				return `\0${id}`;
@@ -31,7 +31,6 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		},
 		load(id) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
-				console.log('id', id);
 				return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
 			}
 		},
@@ -54,4 +53,3 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 		}
 	} satisfies Plugin;
 }
-

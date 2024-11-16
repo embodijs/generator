@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite';
 import markdownIt from 'markdown-it';
-import { createContentParserPlugin } from './builder/parser-plugin.js';
+import { createContentParserPlugin } from '../utils/parser-plugin.js';
 
 export function embodiMarkdown(): Plugin {
 	return createContentParserPlugin({

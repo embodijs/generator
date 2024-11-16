@@ -1,5 +1,5 @@
 import { generateContentMap, loadData, type PageData } from './load-content.js';
-import { loadConfig } from '../../app/config.js';
+import { loadConfig } from '../utils/config.js';
 import { pipe } from 'pipe-and-combine';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';

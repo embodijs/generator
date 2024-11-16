@@ -1,1 +1,1 @@
-export { mergeOneLevelObjects } from '../core/utils/data.js';
+export { mergeOneLevelObjects } from '../core/app/utils/data.js';

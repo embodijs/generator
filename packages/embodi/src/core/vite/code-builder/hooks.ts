@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { adapter } from './project-adapter.js';
+import { adapter } from '../utils/project-adapter.js';
 
 const defaultCode = `
   export const renderHook = function () {}

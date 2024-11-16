@@ -1,4 +1,4 @@
-import { addTrailingSlash } from '../utils/paths.js';
+import { addTrailingSlash } from './utils/paths.js';
 import { routes, pages } from '$embodi/pages';
 import { data } from '$embodi/data';
 

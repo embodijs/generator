@@ -4,7 +4,7 @@ import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';
 import type { Manifest } from 'vite';
-import { addLeadingSlash } from '../utils/paths.js';
+import { addLeadingSlash } from './utils/paths.js';
 import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 
@@ -24,7 +24,7 @@ const followImports = (
 	imports: Set<string> = new Set(),
 	css: Set<string> = new Set()
 ) => {
-	const current = manifest[(entry.replaceAll('\\', '/'))];
+	const current = manifest[entry.replaceAll('\\', '/')];
 	if (current.imports) {
 		current.imports.forEach((url: string) => {
 			imports.add(url);
