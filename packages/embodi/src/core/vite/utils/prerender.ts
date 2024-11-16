@@ -1,8 +1,8 @@
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
-import { loadAppHtml } from '../vite/utils/load-data.js';
-import { getRoutesToPrerender } from '../vite/utils/load-content.js';
+import { loadAppHtml } from '../code-builder/load-data.js';
+import { getRoutesToPrerender } from '../code-builder/load-content.js';
 import type { PublicDirs } from './config.js';
-import path, { normalize } from 'node:path';
+import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export interface PrerenderOptions {

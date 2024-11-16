@@ -2,9 +2,9 @@ import { type Connect, type Plugin, type UserConfig } from 'vite';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { relative } from 'node:path';
-import { loadConfig } from '../app/config.js';
-import { prerender } from '../app/prerender.js';
-import packageJson from '../../../package.json' with { type: 'json' };
+import { loadConfig } from '../utils/config.js';
+import { prerender } from '../utils/prerender.js';
+import packageJson from '../../../../package.json' with { type: 'json' };
 import {
 	getVirtualParams,
 	invalidateEmbodiModule,
@@ -13,18 +13,18 @@ import {
 	isValidLoadId,
 	storeLoadId,
 	validateResolveId
-} from './utils/virtuals.js';
-import { loadAppHtml, loadData } from './utils/load-data.js';
+} from '../utils/virtuals.js';
+import { loadAppHtml, loadData } from '../code-builder/load-data.js';
 import {
 	generateContentMap,
 	generatePageImportCode,
 	generateRoutesCode
-} from './utils/load-content.js';
+} from '../code-builder/load-content.js';
 import { type ServerResponse } from 'node:http';
-import { generateCollectionsImportsCode } from './utils/collections.js';
-import { generateHooksCode } from './utils/hooks.js';
-import { isCompileException } from './utils/exceptions.js';
-import { generateInternalStores, generateReadableStores } from './stores.js';
+import { generateCollectionsImportsCode } from '../code-builder/collections.js';
+import { generateHooksCode } from '../code-builder/hooks.js';
+import { isCompileException } from '../utils/exceptions.js';
+import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 
 const cwd = process.cwd(); // Current working directory
 const cfd = dirname(fileURLToPath(import.meta.url)); // Current file directory
