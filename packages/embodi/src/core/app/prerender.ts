@@ -10,7 +10,6 @@ export interface PrerenderOptions {
 	inputDirs: PublicDirs;
 }
 
-
 const toAbsolute = (p: string) => {
 	return pathToFileURL(path.resolve(process.cwd(), p)).href;
 };
@@ -21,13 +20,9 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const { content: contentDir } = inputDirs;
 	const manifest = JSON.parse(await fs.file('/dist/static/.vite/manifest.json').text('utf-8'));
 	const template = await loadAppHtml(statics);
-	console.log('template', template);
-	console.log('path', toAbsolute('dist/server/entry-server.js'));
 	const { render } = await import(toAbsolute('dist/server/entry-server.js'));
-	console.log('render', render);
 	// pre-render each route...
 	const routesToPrerender = await getRoutesToPrerender(inputDirs);
-	console.log('routesToPrerender', routesToPrerender);
 	for (const url of routesToPrerender) {
 		const rendered = await render(contentDir, url, manifest);
 		if (!rendered) continue;
