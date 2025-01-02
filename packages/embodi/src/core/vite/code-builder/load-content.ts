@@ -18,7 +18,7 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number[];
+	page: number;
 	data: number[];
 	battery?: number;
 };
