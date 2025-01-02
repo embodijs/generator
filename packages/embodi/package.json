@@ -44,7 +44,7 @@
 		"@sveltejs/package": "^2.3.7",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
-		"rollup": "^4.26.0"
+		"rollup": "^4.29.1"
 	},
 	"peerDependencies": {
 		"svelte": "^5.1.0",
@@ -59,12 +59,12 @@
 		"@loom-io/node-filesystem-adapter": "^0.12.11",
 		"@loom-io/yaml-converter": "0.12.11",
 		"@modyfi/vite-plugin-yaml": "^1.1.0",
-		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"@sveltejs/vite-plugin-svelte": "^4.0.4",
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
-		"pipe-and-combine": "^0.5.7",
-		"vitest": "^2.1.5"
+		"pipe-and-combine": "^0.7.5",
+		"vitest": "^2.1.8"
 	},
 	"repository": {
 		"type": "git",
