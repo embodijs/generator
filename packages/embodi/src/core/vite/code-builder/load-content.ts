@@ -18,7 +18,7 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number;
+	page: number[];
 	data: number[];
 	battery?: number;
 };
@@ -243,8 +243,8 @@ export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<
 	);
 	const loadedPageData = pages.map(({ page, data, type, url }) => {
 		const mappedData = data.map((index) => loadedFiles[index]);
-		const mappedPage = loadedFiles[page];
-		const mergedData = mergeOneLevelObjects(...mappedData, mappedPage);
+		const mappedPage = page.map((index) => loadedFiles[index]);
+		const mergedData = mergeOneLevelObjects(...mappedData, ...mappedPage);
 		return {
 			type,
 			url,

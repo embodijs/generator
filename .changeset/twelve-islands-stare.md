@@ -1,0 +1,5 @@
+---
+"embodi": patch
+---
+
+Updated dependencies
