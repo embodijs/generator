@@ -18,7 +18,7 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number[];
+	page: number;
 	data: number[];
 	battery?: number;
 };
@@ -33,20 +33,20 @@ const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '
 const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
 	return indezes.map((index) => refs.at(index)!);
 };
-const snippedPathEmdodi = (path: string) => normalizeImportPath(`${path}.embodi`);
-const snippedImportEmbodi = (path: string) => `import('${snippedPathEmdodi(path)}')`;
-const snippedImport = (path: string) => `import('${normalizeImportPath(path)}')`;
-const snippedObjectJunk = (name: string, value: string) => `"${name}": ${value}`;
-const snippedArray = (items: string[]) => `[${items.join(',')}]`;
-const snippedExport = (name: string, value: string) => `export const ${name} = ${value}`;
-const snippedPromiseAll = (items?: string[]) =>
-	items?.length ? `Promise.all(${snippedArray(items)})` : '[]';
-const snippedDataImports = pipe(resolveLinks, map(snippedImport), snippedPromiseAll);
-const snippedContentImports = pipe(resolveLinks, map(snippedImportEmbodi), snippedPromiseAll);
-const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
+const snippetPathEmdodi = (path: string) => normalizeImportPath(`${path}.embodi`);
+const snippetImportEmbodi = (path: string) => `import('${snippetPathEmdodi(path)}')`;
+const snippetImport = (path: string) => `import('${normalizeImportPath(path)}')`;
+const snippetObjectChunk = (name: string, value: string) => `"${name}": ${value}`;
+const snippetArray = (items: string[]) => `[${items.join(',')}]`;
+const snippetExport = (name: string, value: string) => `export const ${name} = ${value}`;
+const snippetPromiseAll = (items?: string[]) =>
+	items?.length ? `Promise.all(${snippetArray(items)})` : '[]';
+const snippetDataImports = pipe(resolveLinks, map(snippetImport), snippetPromiseAll);
+const snippetContentImports = pipe(resolveLinks, map(snippetImportEmbodi), snippetPromiseAll);
+const snippetPageImport = (page: PageObject, ref: UniqueArray<string>) =>
 	`async function () {
-  const data = await ${snippedDataImports(ref, ...page.data)}
-  const pages = await ${snippedContentImports(ref, ...page.page)};
+  const data = await ${snippetDataImports(ref, ...page.data)}
+  const pages = await ${snippetContentImports(ref, ...page.page)};
 
   const defaultData = data.map(d => d.default);
   const page = mergeOneLevelObjects(...pages);
@@ -56,8 +56,8 @@ const snippedPageImport = (page: PageObject, ref: UniqueArray<string>) =>
     data: mergedData
   }
 }`;
-const snippedObjectJunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
-const snippedFile = (name: string, content: string) =>
+const snippetObjectChunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
+const snippetFile = (name: string, content: string) =>
 	`import { mergeOneLevelObjects } from 'embodi/utils';
 export const ${name} = ${content};`;
 
@@ -118,7 +118,7 @@ export const splitPagesAndData = (files: LoomFile[]) => {
 	);
 };
 
-export const getPageImportPath = (file: LoomFile) => snippedPathEmdodi(adapter.getFullPath(file));
+export const getPageImportPath = (file: LoomFile) => snippetPathEmdodi(adapter.getFullPath(file));
 
 // TODO: Replace this structure with a converter supports frontmatter, json and yaml
 const readFileData = async (file: LoomFile): Promise<Record<string, unknown>> => {
@@ -217,12 +217,14 @@ export const generateContentMap = async (
 };
 
 export const generatePageImportCode = async (pages: PageObject[], linkRef: string[]) => {
-	const pagesCodeSnippeds = pages.map((page) => {
-		const pageCodeFunction = snippedPageImport(page, linkRef);
-		return snippedObjectJunk(page.url, pageCodeFunction);
+  // TODO: snippet
+	const pagesCodeSnippets = pages.map((page) => {
+		const pageCodeFunction = snippetPageImport(page, linkRef);
+		// rename it to chunk
+		return snippetObjectChunk(page.url, pageCodeFunction);
 	});
-	const pagesCodeObject = snippedObjectJunkWrapper(pagesCodeSnippeds);
-	return snippedFile('pages', pagesCodeObject);
+	const pagesCodeObject = snippetObjectChunkWrapper(pagesCodeSnippets);
+	return snippetFile('pages', pagesCodeObject);
 };
 
 export type PageData<T extends AnyObject = AnyObject> = {
@@ -258,9 +260,9 @@ export const generateRoutesCode = async (publicDirs: PublicDirs) => {
 	const importFunctions = pages.map((file) => {
 		const [url] = transformPathToUrl(contentDir, file);
 		const pathEmdodi = getPageImportPath(file);
-		return snippedObjectJunk(url, `'${pathEmdodi}'`);
+		return snippetObjectChunk(url, `'${pathEmdodi}'`);
 	});
-	return snippedExport('routes', snippedObjectJunkWrapper(importFunctions));
+	return snippetExport('routes', snippetObjectChunkWrapper(importFunctions));
 };
 
 export const getRoutesToPrerender = async (publicDirs: PublicDirs) => {

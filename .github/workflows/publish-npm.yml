@@ -1,9 +1,14 @@
 name: Publish Package to npmjs
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
 jobs:
-  build:
+  version:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,9 +21,19 @@ jobs:
           node-version: "22.x"
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
+      - name: setup pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run test:ci
-      - run: pnpm -r publish --access public --no-git-checks
+      - name: create and publish versions
+        uses: changesets/action@v1
+        with:
+          version: pnpm ci:version
+          commit: "chore: update versions"
+          title: "chore: update versions"
+          publish: pnpm ci:publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_EMBODI }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_EMBODI }}
