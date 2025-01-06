@@ -1,7 +1,7 @@
 import type { Directory, LoomFile } from '@loom-io/core';
 import { adapter, frontMatterConverter, converter } from '../utils/project-adapter.js';
 import { type PublicDirs } from '../utils/config.js';
-import { pipe } from 'pipe-and-combine';
+import { pipe, map } from 'pipe-and-combine';
 import { normalizeUrlPath, splitNormalizedUrlPath, type NormalizeUrlPath } from '../utils/paths.js';
 import { UniqueArray } from '../utils/unique-array.js';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
@@ -18,15 +18,10 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number;
+	page: number[];
 	data: number[];
 	battery?: number;
 };
-
-const map =
-	<T, U>(fn: (arg: T) => U) =>
-	(arr: T[]) =>
-		arr.map(fn);
 
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
@@ -243,8 +238,8 @@ export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<
 	);
 	const loadedPageData = pages.map(({ page, data, type, url }) => {
 		const mappedData = data.map((index) => loadedFiles[index]);
-		const mappedPage = loadedFiles[page];
-		const mergedData = mergeOneLevelObjects(...mappedData, mappedPage);
+		const mappedPage = page.map((index) => loadedFiles[index]);
+		const mergedData = mergeOneLevelObjects(...mappedData, ...mappedPage);
 		return {
 			type,
 			url,

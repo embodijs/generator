@@ -57,11 +57,12 @@ async function createCollectionsMeta(): Promise<CollectionMeta[]> {
 		.flat();
 	return dataPerTag;
 }
+const dummyFunction: PreparedFunction = (d: CollectionMeta[]) => d;
 
 export const prepareFilter =
-	(keep: string[]): PreparedFunction =>
+	(keep?: string[]): PreparedFunction => keep ?
 	(collections: CollectionMeta[]) =>
-		collections.filter((collection) => keep.includes(collection.tag));
+		collections.filter((collection) => keep.includes(collection.tag)): dummyFunction;
 
 type CollectionTuple = [CollectionMeta, CollectionMeta];
 
@@ -88,9 +89,10 @@ export const compareDate =
 	};
 
 export const prepareSort = (
-	sortBy: keyof CollectionMeta,
+	sortBy?: keyof CollectionMeta,
 	direction: 'desc' | 'asc' = 'asc'
 ): PreparedFunction => {
+  if(!sortBy) return dummyFunction;
 	if (['page', 'tag'].includes(sortBy)) {
 		return (collections: CollectionMeta[]) => collections.sort(compareString(sortBy, direction));
 	} else {
@@ -98,16 +100,16 @@ export const prepareSort = (
 	}
 };
 
-export const prepareLocale = (locale: string) => (collections: CollectionMeta[]) =>
+export const prepareLocale = (locale?: string): PreparedFunction =>  locale ? (collections: CollectionMeta[]) =>
 	collections.filter(
 		(collection) =>
 			collection.data.locale &&
 			typeof collection.data.locale === 'string' &&
 			collection.data.locale?.toLowerCase() === locale.toLowerCase()
-	);
+	): dummyFunction;
 
 export const prepareLimit =
-	(limit?: number, skip: number = 0) =>
+	(limit?: number, skip: number = 0) => limit == null ? dummyFunction :
 	(collections: CollectionMeta[]) =>
 		collections.slice(skip, skip + (limit ?? collections.length - skip));
 
@@ -120,17 +122,15 @@ export const convertCollectionParamsToPreparedFunctions = (params: CollectionPar
 	return prepared;
 };
 
-const dummyFunction: PreparedFunction = (d: CollectionMeta[]) => d;
-const optional = <TV, TA>(value: TV | undefined, alternative: TA): NonNullable<TV> | TA =>
-	value == null ? alternative : value;
+
 
 export const initPipeline = (params: CollectionParams): PreparedFunction => {
 	const { locale, limit, skip, only, sortBy, sortDirection } = params;
 	return pipe(
-		optional(locale && prepareLocale(locale), dummyFunction),
-		optional(only && prepareFilter(only), dummyFunction),
-		optional(sortBy && prepareSort(sortBy, sortDirection), dummyFunction),
-		optional(limit == null || skip == null ? undefined : prepareLimit(limit, skip), dummyFunction)
+		prepareLocale(locale),
+		prepareFilter(only),
+		prepareSort(sortBy, sortDirection),
+		prepareLimit(limit, skip)
 	);
 };
 
