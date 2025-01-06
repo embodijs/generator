@@ -63,7 +63,7 @@
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
-		"pipe-and-combine": "^0.7.5",
+		"pipe-and-combine": "^0.7.7",
 		"vitest": "^2.1.8"
 	},
 	"repository": {

@@ -1,7 +1,7 @@
 import type { Directory, LoomFile } from '@loom-io/core';
 import { adapter, frontMatterConverter, converter } from '../utils/project-adapter.js';
 import { type PublicDirs } from '../utils/config.js';
-import { pipe } from 'pipe-and-combine';
+import { pipe, map } from 'pipe-and-combine';
 import { normalizeUrlPath, splitNormalizedUrlPath, type NormalizeUrlPath } from '../utils/paths.js';
 import { UniqueArray } from '../utils/unique-array.js';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
@@ -22,11 +22,6 @@ export type PageObject = {
 	data: number[];
 	battery?: number;
 };
-
-const map =
-	<T, U>(fn: (arg: T) => U) =>
-	(arr: T[]) =>
-		arr.map(fn);
 
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
