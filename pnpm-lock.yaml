@@ -18,8 +18,8 @@ importers:
         specifier: ^1.49.1
         version: 1.49.1
       '@types/node':
-        specifier: ^22.10.3
-        version: 22.10.3
+        specifier: ^22.10.4
+        version: 22.10.4
       playwright:
         specifier: ^1.49.1
         version: 1.49.1
@@ -28,7 +28,7 @@ importers:
         version: 0.2.12
       vitest:
         specifier: ^2.1.8
-        version: 2.1.8(@types/node@22.10.3)
+        version: 2.1.8(@types/node@22.10.4)
 
   packages/create-embodi:
     dependencies:
@@ -38,12 +38,18 @@ importers:
       '@loom-io/core':
         specifier: ^0.12.11
         version: 0.12.11
+      '@loom-io/fs-sync':
+        specifier: file:../../../../cotton-coding/loom-io/adapters/sync-fs
+        version: '@loom-io/sync-fs@file:../../cotton-coding/loom-io/adapters/sync-fs(pipe-and-combine@0.7.10)'
       '@loom-io/node-filesystem-adapter':
         specifier: ^0.12.11
         version: 0.12.11(@loom-io/core@0.12.11)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
+      pipe-and-combine:
+        specifier: ^0.7.10
+        version: 0.7.10
 
   packages/e2e:
     devDependencies:
@@ -76,10 +82,10 @@ importers:
         version: 0.12.11(@loom-io/converter@0.12.11(@loom-io/core@0.12.11))(@loom-io/core@0.12.11)
       '@modyfi/vite-plugin-yaml':
         specifier: ^1.1.0
-        version: 1.1.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.10.3))
+        version: 1.1.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.10.4))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^4.0.4
-        version: 4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3))
+        version: 4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4))
       front-matter:
         specifier: ^4.0.2
         version: 4.0.2
@@ -90,8 +96,8 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8
       pipe-and-combine:
-        specifier: ^0.7.5
-        version: 0.7.5
+        specifier: ^0.7.10
+        version: 0.7.10
       svelte:
         specifier: ^5.16.0
         version: 5.16.0
@@ -100,10 +106,10 @@ importers:
         version: 5.7.2
       vite:
         specifier: ^5.2.11
-        version: 5.4.11(@types/node@22.10.3)
+        version: 5.4.11(@types/node@22.10.4)
       vitest:
         specifier: ^2.1.8
-        version: 2.1.8(@types/node@22.10.3)
+        version: 2.1.8(@types/node@22.10.4)
     devDependencies:
       '@loom-io/in-memory-adapter':
         specifier: 0.12.11
@@ -397,6 +403,11 @@ packages:
     peerDependencies:
       '@loom-io/core': ^0.12.11
 
+  '@loom-io/sync-fs@file:../../cotton-coding/loom-io/adapters/sync-fs':
+    resolution: {directory: ../../cotton-coding/loom-io/adapters/sync-fs, type: directory}
+    peerDependencies:
+      pipe-and-combine: ^0.7.10
+
   '@loom-io/yaml-converter@0.12.11':
     resolution: {integrity: sha512-GX64dIJeZB8qnMUJWdS/rV9iECXz2vas5fq4JZHRtF84Ql3+rqCSVaKrQkpU043Zp7xAr7cU6ASuUN/pB5QUhA==}
     peerDependencies:
@@ -580,8 +591,8 @@ packages:
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
 
-  '@types/node@22.10.3':
-    resolution: {integrity: sha512-DifAyw4BkrufCILvD3ucnuN8eydUfc/C1GlyrnI+LK6543w5/L3VeVgf05o3B4fqSXP1dKYLOZsKfutpxPzZrw==}
+  '@types/node@22.10.4':
+    resolution: {integrity: sha512-99l6wv4HEzBQhvaU/UGoeBoCK61SCROQaCCGyQSgX2tEQ3rKkNZ2S7CEWnS/4s1LV+8ODdK21UeyR1fHP2mXug==}
 
   '@vitest/expect@2.1.8':
     resolution: {integrity: sha512-8ytZ/fFHq2g4PJVAtDX57mayemKgDR6X3Oa2Foro+EygiOJHUXhCqBAAKQYYajZpFoIfvBCF1j6R6IYRSIUFuw==}
@@ -1025,8 +1036,8 @@ packages:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
 
-  pipe-and-combine@0.7.5:
-    resolution: {integrity: sha512-vHYheJx2pkrDlfpsNpuo7XZijOQOkEDZVLtpJRXppug6nr7IjCXAuIDXcq51G8nE9czZgbIaqnhd8UM4AjgF9Q==}
+  pipe-and-combine@0.7.10:
+    resolution: {integrity: sha512-SaH41iq7Vx20CyAGTUHikJDnB/J2Sa4yfGw05d4QgZxcwMrOrAiDtzNZZJKovnHK2kPDrWgqmUPMLfbZy2Fvsw==}
 
   playwright-core@1.49.1:
     resolution: {integrity: sha512-BzmpVcs4kE2CH15rWfzpjzVGhWERJfmnXmniSyKeRZUs9Ws65m+RGIi7mjJK/euCegfn3i7jvqWeWyHe9y3Vgg==}
@@ -1580,6 +1591,10 @@ snapshots:
       '@loom-io/common': 1.0.2
       '@loom-io/core': 0.12.11
 
+  '@loom-io/sync-fs@file:../../cotton-coding/loom-io/adapters/sync-fs(pipe-and-combine@0.7.10)':
+    dependencies:
+      pipe-and-combine: 0.7.10
+
   '@loom-io/yaml-converter@0.12.11(@loom-io/converter@0.12.11(@loom-io/core@0.12.11))(@loom-io/core@0.12.11)':
     dependencies:
       yaml: 2.7.0
@@ -1603,12 +1618,12 @@ snapshots:
       globby: 11.1.0
       read-yaml-file: 1.1.0
 
-  '@modyfi/vite-plugin-yaml@1.1.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.10.3))':
+  '@modyfi/vite-plugin-yaml@1.1.0(rollup@4.29.1)(vite@5.4.11(@types/node@22.10.4))':
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.29.1)
       js-yaml: 4.1.0
       tosource: 2.0.0-alpha.3
-      vite: 5.4.11(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
     transitivePeerDependencies:
       - rollup
 
@@ -1704,25 +1719,25 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@sveltejs/vite-plugin-svelte-inspector@3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3)))(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3))':
+  '@sveltejs/vite-plugin-svelte-inspector@3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4)))(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3))
+      '@sveltejs/vite-plugin-svelte': 4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4))
       debug: 4.4.0
       svelte: 5.16.0
-      vite: 5.4.11(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3))':
+  '@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4))':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3)))(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.3))
+      '@sveltejs/vite-plugin-svelte-inspector': 3.0.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4)))(svelte@5.16.0)(vite@5.4.11(@types/node@22.10.4))
       debug: 4.4.0
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.17
       svelte: 5.16.0
-      vite: 5.4.11(@types/node@22.10.3)
-      vitefu: 1.0.4(vite@5.4.11(@types/node@22.10.3))
+      vite: 5.4.11(@types/node@22.10.4)
+      vitefu: 1.0.4(vite@5.4.11(@types/node@22.10.4))
     transitivePeerDependencies:
       - supports-color
 
@@ -1741,7 +1756,7 @@ snapshots:
 
   '@types/node@12.20.55': {}
 
-  '@types/node@22.10.3':
+  '@types/node@22.10.4':
     dependencies:
       undici-types: 6.20.0
 
@@ -1752,13 +1767,13 @@ snapshots:
       chai: 5.1.2
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.8(vite@5.4.11(@types/node@22.10.3))':
+  '@vitest/mocker@2.1.8(vite@5.4.11(@types/node@22.10.4))':
     dependencies:
       '@vitest/spy': 2.1.8
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 5.4.11(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
 
   '@vitest/pretty-format@2.1.8':
     dependencies:
@@ -2165,7 +2180,7 @@ snapshots:
 
   pify@4.0.1: {}
 
-  pipe-and-combine@0.7.5: {}
+  pipe-and-combine@0.7.10: {}
 
   playwright-core@1.49.1: {}
 
@@ -2334,13 +2349,13 @@ snapshots:
 
   universalify@0.1.2: {}
 
-  vite-node@2.1.8(@types/node@22.10.3):
+  vite-node@2.1.8(@types/node@22.10.4):
     dependencies:
       cac: 6.7.14
       debug: 4.4.0
       es-module-lexer: 1.6.0
       pathe: 1.1.2
-      vite: 5.4.11(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -2352,23 +2367,23 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.4.11(@types/node@22.10.3):
+  vite@5.4.11(@types/node@22.10.4):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.49
       rollup: 4.29.1
     optionalDependencies:
-      '@types/node': 22.10.3
+      '@types/node': 22.10.4
       fsevents: 2.3.3
 
-  vitefu@1.0.4(vite@5.4.11(@types/node@22.10.3)):
+  vitefu@1.0.4(vite@5.4.11(@types/node@22.10.4)):
     optionalDependencies:
-      vite: 5.4.11(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
 
-  vitest@2.1.8(@types/node@22.10.3):
+  vitest@2.1.8(@types/node@22.10.4):
     dependencies:
       '@vitest/expect': 2.1.8
-      '@vitest/mocker': 2.1.8(vite@5.4.11(@types/node@22.10.3))
+      '@vitest/mocker': 2.1.8(vite@5.4.11(@types/node@22.10.4))
       '@vitest/pretty-format': 2.1.8
       '@vitest/runner': 2.1.8
       '@vitest/snapshot': 2.1.8
@@ -2384,11 +2399,11 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.0.2
       tinyrainbow: 1.2.0
-      vite: 5.4.11(@types/node@22.10.3)
-      vite-node: 2.1.8(@types/node@22.10.3)
+      vite: 5.4.11(@types/node@22.10.4)
+      vite-node: 2.1.8(@types/node@22.10.4)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 22.10.3
+      '@types/node': 22.10.4
     transitivePeerDependencies:
       - less
       - lightningcss
