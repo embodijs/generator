@@ -35,15 +35,15 @@ importers:
       '@clack/prompts':
         specifier: ^0.7.0
         version: 0.7.0
-      '@loom-io/core':
-        specifier: ^0.12.11
-        version: 0.12.11
-      '@loom-io/node-filesystem-adapter':
-        specifier: ^0.12.11
-        version: 0.12.11(@loom-io/core@0.12.11)
+      '@loom-io/fs-sync':
+        specifier: ^0.14.0-beta.0
+        version: 0.14.0-beta.0(pipe-and-combine@0.8.0-next.2)
       kleur:
         specifier: ^4.1.5
         version: 4.1.5
+      pipe-and-combine:
+        specifier: ^0.8.0-next.2
+        version: 0.8.0-next.2
 
   packages/e2e:
     devDependencies:
@@ -375,6 +375,11 @@ packages:
         optional: true
       '@loom-io/core':
         optional: true
+
+  '@loom-io/fs-sync@0.14.0-beta.0':
+    resolution: {integrity: sha512-TJEGGxDhOQXFf5BYQSQ9HU+Tehwp2IgQUa34BRDYbeavtfLcFZ+LdOjCGdOLkmgwJJqJ0zgGMPP7/3NfiGxPug==}
+    peerDependencies:
+      pipe-and-combine: ^0.8.0-next.0
 
   '@loom-io/in-memory-adapter@0.12.11':
     resolution: {integrity: sha512-hc1vZDskyQVDXHbNpnsBjQIqifmAc8PKVaaRgddiqtq8pF648tcU2+rl+VIKDSMEJqShtSRlXB6CJ83y+VJIYQ==}
@@ -1174,6 +1179,9 @@ packages:
   pipe-and-combine@0.5.7:
     resolution: {integrity: sha512-lBhkELmVxyWWTnmO85uha2XgVwn86e5QzMiAvqO2HO0uvpEQVlhfjgELTdVUgVs/PNrjohCbh3G+Qbatro2Qcw==}
 
+  pipe-and-combine@0.8.0-next.2:
+    resolution: {integrity: sha512-G6/tOf+MdlcUxJyGJY3ZltpYO/uek3eIj1EfKSDov/d1BmBlzAd7hcECa2DrkWle1hnukO+Dub8fn0DvrOnJdg==}
+
   playwright-core@1.49.1:
     resolution: {integrity: sha512-BzmpVcs4kE2CH15rWfzpjzVGhWERJfmnXmniSyKeRZUs9Ws65m+RGIi7mjJK/euCegfn3i7jvqWeWyHe9y3Vgg==}
     engines: {node: '>=18'}
@@ -1791,6 +1799,10 @@ snapshots:
     optionalDependencies:
       '@loom-io/converter': 0.12.11(@loom-io/core@0.12.11)
       '@loom-io/core': 0.12.11
+
+  '@loom-io/fs-sync@0.14.0-beta.0(pipe-and-combine@0.8.0-next.2)':
+    dependencies:
+      pipe-and-combine: 0.8.0-next.2
 
   '@loom-io/in-memory-adapter@0.12.11(@loom-io/core@0.12.11)':
     dependencies:
@@ -2510,6 +2522,8 @@ snapshots:
   pify@4.0.1: {}
 
   pipe-and-combine@0.5.7: {}
+
+  pipe-and-combine@0.8.0-next.2: {}
 
   playwright-core@1.49.1: {}
 

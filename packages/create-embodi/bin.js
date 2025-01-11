@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-import { intro, text, outro, isCancel } from "@clack/prompts";
-import { FilesystemAdapter } from "@loom-io/node-filesystem-adapter";
+import { intro, text, outro, isCancel, confirm } from "@clack/prompts";
+import * as fs from "@loom-io/fs-sync";
+import { pipe, run } from "pipe-and-combine";
 import { bold, cyan, grey, yellow } from "kleur/colors";
-import { resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const adapter = new FilesystemAdapter("/");
-const currentDir = await adapter.dir(
-  fileURLToPath(new URL(".", import.meta.url)),
+const currentDir = fs.dir(fileURLToPath(new URL(".", import.meta.url)));
+const { version } = run(
+  fs.resolveTo(currentDir),
+  fs.goto(fs.file("package.json")),
+  fs.readFile("utf-8"),
+  fs.json.getContent()
 );
 
-const { version } = JSON.parse(await currentDir.file("package.json").text());
 let cwdString = process.argv[2] || ".";
 console.info(`
 ${grey(`create-embodi version ${version}`)}
@@ -26,11 +29,9 @@ if (cwdString === ".") {
 
   isCancel(cwdString) && process.exit(1);
 }
-
-const templateDir = await currentDir.subDir("templates");
-const cwd = await adapter.dir(resolve(cwdString));
-
-if (await cwd.exists()) {
+//const templateDir = await currentDir.subDir("templates");
+const cwd = run(fs.resolveTo(currentDir), fs.goto(fs.dir(cwdString)));
+if (run(() => cwd, fs.exists())) {
   const force = await confirm({
     message: `Directory ${cwdString} is not empty. Continue anyway?`,
     initialValue: false,
@@ -40,20 +41,26 @@ if (await cwd.exists()) {
     process.exit(1);
   }
 } else {
-  await cwd.create();
+  run(() => cwd, fs.create(true));
 }
 
-const embodiTemplate = await templateDir.subDir("skeleton");
-const listOfEmbodiElements = await embodiTemplate.list();
-for (const element of listOfEmbodiElements) {
-  await element.copyTo(cwd);
-}
+run(
+  fs.resolveTo(currentDir),
+  fs.goto("templates/skeleton"),
+  fs.copyDirContent(cwd)
+);
 
-const packageJsonTemplate = await cwd.file("package.template.json");
-const packageJson = JSON.parse(await packageJsonTemplate.text());
-packageJson.name = cwdString;
-await cwd.file("package.json").write(JSON.stringify(packageJson, null, 2));
-await packageJsonTemplate.delete();
+run(
+  fs.resolveTo(cwd),
+  fs.goto("package.template.json"),
+  fs.readFile("utf-8"),
+  fs.json.update((json) => ({
+    ...json,
+    name: cwdString,
+  })),
+  fs.writeFile("utf-8"),
+  fs.renameFile("package.json")
+);
 
 outro(`
 Your project directory has been created at ${cwdString}.

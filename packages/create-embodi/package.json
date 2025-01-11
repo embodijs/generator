@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@clack/prompts": "^0.7.0",
-    "@loom-io/fs-sync": "^0.13.0",
+    "@loom-io/fs-sync": "^0.14.0-beta.0",
     "pipe-and-combine": "^0.8.0-next.2",
     "kleur": "^4.1.5"
   },
