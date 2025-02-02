@@ -5,7 +5,6 @@
     import Input from './comp/Input.svelte';
     import Button from './comp/Button.svelte';
     import { Send, Mail } from 'lucide-svelte';
-    import { FORMURL } from '$env/private/static'
     import "../app.css";
 
     let { data, children } = $props();
@@ -17,7 +16,7 @@
     <div class="markdown">
     {@render children?.()}
     </div>
-    <form method="POST" action={FORMURL}>
+    <form method="POST" action={import.meta.env.VITE_FORMURL}>
         <InputFrame>
             <Mail />
             <Input name="email" placeholder="Your mail address" />
