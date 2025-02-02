@@ -5,6 +5,7 @@
     import Input from './comp/Input.svelte';
     import Button from './comp/Button.svelte';
     import { Send, Mail } from 'lucide-svelte';
+    import { FORMURL } from '$env/private/static'
     import "../app.css";
 
     let { data, children } = $props();
@@ -16,7 +17,7 @@
     <div class="markdown">
     {@render children?.()}
     </div>
-    <form method="POST" action="">
+    <form method="POST" action={FORMURL}>
         <InputFrame>
             <Mail />
             <Input name="email" placeholder="Your mail address" />
@@ -41,6 +42,10 @@
     }
 
     :global(h1) {
+        @apply text-5xl font-bold mb-4;
+    }
+
+    :global(h2) {
         @apply text-3xl font-bold mb-4;
     }
 </style>
