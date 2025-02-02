@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build Embodi
+        env:
+          #TODO: Change this later
+          VITE_FORMURL: http://localhost:3011/f/random
         run: pnpm run build
       - name: Install Playwright Browsers
         run: pnpm run test:e2e:init
