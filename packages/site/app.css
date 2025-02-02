@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  @apply font-mono;
+  @apply flex flex-col;
+  @apply bg-zinc-100 text-zinc-800;
+  @apply mx-auto min-h-screen max-w-5xl;
+}
+
+.dark body {
+  @apply bg-zinc-800 text-zinc-200;
+}
+
+#app {
+  @apply contents;
+}
+
+main {
+  @apply flex-grow;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px #0000 inset;
+  box-shadow: 0 0 0px 1000px #0000 inset;
+  transition: background-color 5000s ease-in-out 0s;
+  color: white;
+}
