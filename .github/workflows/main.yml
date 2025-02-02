@@ -44,7 +44,7 @@ jobs:
       - name: Build && publint
         env:
           #TODO: Change this later
-          FORMURL: http://localhost:3011/f/random
+          VITE_FORMURL: http://localhost:3011/f/random
         run: pnpm run prepublishOnly
       - name: Publish Dry Run
         run: pnpm -r publish --dry-run --no-git-checks
