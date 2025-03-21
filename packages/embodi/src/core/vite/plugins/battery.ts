@@ -1,9 +1,10 @@
 import { normalize } from 'node:path';
 import type { Plugin } from 'vite';
 
+
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
-export function embodiBattery() {
+export function embodiBattery(): Plugin {
 	return {
 		name: 'vite-embodi-battery',
 
@@ -18,5 +19,5 @@ export function embodiBattery() {
 				return `export * from '${normalizeImportPath(id.slice(1, -10))}';`;
 			}
 		}
-	} satisfies Plugin;
+	};
 }
