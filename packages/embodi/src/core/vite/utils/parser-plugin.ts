@@ -15,7 +15,7 @@ export interface ContentParserPluginConfig {
 	convertContent: (content: string, data: unknown) => string;
 }
 
-export function createContentParserPlugin(config: ContentParserPluginConfig) {
+export function createContentParserPlugin(config: ContentParserPluginConfig): Plugin {
 	const { name, fileType, convertContent } = config;
 	const embodiFormat = `.${fileType}.embodi`;
 	const format = `.${fileType}`;
@@ -39,6 +39,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 				//@ts-ignore
 				const { attributes, body } = fm<PageData>(code);
 				const content = convertContent(body, attributes);
+				console.log('load Markdown id:', id);
 				const { layout } = attributes;
 				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(content)};`;
 				if (layout) {
@@ -51,5 +52,5 @@ export function createContentParserPlugin(config: ContentParserPluginConfig) {
 				};
 			}
 		}
-	} satisfies Plugin;
+	};
 }

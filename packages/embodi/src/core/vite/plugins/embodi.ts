@@ -29,43 +29,43 @@ import { generateInternalStores, generateReadableStores } from '../code-builder/
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
 
-export const configPlugin = () =>
-	({
-		name: 'embodi-config-plugin',
-		async config(config, env) {
-			const projectConfig = await loadConfig(cwd);
-			const ssr = env.isSsrBuild;
-			const distBase = projectConfig.dist ?? 'dist';
-			const newConfig: UserConfig = {
-				...config,
-				...projectConfig.viteConfig,
-				root: cwd,
-				resolve: {
-					...config.resolve,
-					alias: {
-						'$embodi/*': resolve(cf, './virtual-modules/embodi/*'),
-						$layout: resolve(cwd, projectConfig.inputDirs.layout)
-					}
-				},
-				build: {
-					target: 'ES2022',
-					emptyOutDir: true,
-					ssr,
-					ssrManifest: !ssr,
-					manifest: !ssr,
-					outDir: ssr ? join(distBase, 'server') : join(distBase, 'static'),
-					rollupOptions: {
-						input: ssr
-							? resolve(cf, '../app/entry-server.js')
-							: { client: resolve(cf, '../app/entry-client.js') }
-					}
-				}
-			};
-			return newConfig;
-		}
-	}) satisfies Plugin;
+export const configPlugin = (): Plugin =>
+({
+  name: 'embodi-config-plugin',
+  async config(config, env) {
+    const projectConfig = await loadConfig(cwd);
+    const ssr = env.isSsrBuild;
+    const distBase = projectConfig.dist ?? 'dist';
+    const newConfig: UserConfig = {
+      ...config,
+      ...projectConfig.viteConfig,
+      root: cwd,
+      resolve: {
+        ...config.resolve,
+        alias: {
+          '$embodi/*': resolve(cf, './virtual-modules/embodi/*'),
+          $layout: resolve(cwd, projectConfig.inputDirs.layout)
+        }
+      },
+      build: {
+        target: 'ES2022',
+        emptyOutDir: true,
+        ssr,
+        ssrManifest: !ssr,
+        manifest: !ssr,
+        outDir: ssr ? join(distBase, 'server') : join(distBase, 'static'),
+        rollupOptions: {
+          input: ssr
+            ? resolve(cf, '../app/entry-server.js')
+            : { client: resolve(cf, '../app/entry-client.js') }
+        }
+      }
+    };
+    return newConfig;
+  }
+});
 
-export const virtualPlugin = () =>
+export const virtualPlugin = (): Plugin =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
@@ -139,9 +139,9 @@ export const virtualPlugin = () =>
 				}
 			});
 		}
-	}) satisfies Plugin;
+	});
 
-export const prerenderPlugin = () => {
+export const prerenderPlugin = (): Plugin => {
 	let isSsr = false;
 	return {
 		name: 'embodi-prerender-plugin',
@@ -160,10 +160,10 @@ export const prerenderPlugin = () => {
 				statics
 			});
 		}
-	} satisfies Plugin;
+	};
 };
 
-export const devServerPlugin = () =>
+export const devServerPlugin = (): Plugin =>
 	({
 		name: 'embodi-dev-server-plugin',
 
@@ -219,4 +219,4 @@ export const devServerPlugin = () =>
 
 			server.middlewares.use(devServer);
 		}
-	}) satisfies Plugin;
+	});

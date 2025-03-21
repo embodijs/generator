@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite';
 
-export function embodiSvelte() {
+export function embodiSvelte(): Plugin {
 	return {
 		name: 'vite-embodi-svelte',
 
@@ -14,5 +14,5 @@ export function embodiSvelte() {
 				return `export { default as Component } from '/${id.slice(2, -7)}';`;
 			}
 		}
-	} satisfies Plugin;
+	};
 }
