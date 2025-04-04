@@ -17,6 +17,7 @@ import {
 import { loadAppHtml, loadData } from '../code-builder/load-data.js';
 import {
 	generateContentMap,
+	generatePageCode,
 	generatePageImportCode,
 	generateRoutesCode
 } from '../code-builder/load-content.js';
@@ -69,6 +70,9 @@ export const virtualPlugin = (): Plugin =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
+		if(id.startsWith('embodi-page')) {
+		  return `\0${id}`
+		}
 			return validateResolveId(
 				id,
 				'pages',
@@ -82,7 +86,13 @@ export const virtualPlugin = (): Plugin =>
 			);
 		},
 		async load(id, options) {
-			if (isValidLoadId(id, 'pages')) {
+		if(id.startsWith('\0embodi-page')) {
+		  const config = await loadConfig(cwd);
+			const pageMap = await generateContentMap(config.inputDirs);
+			const pageCode = await generatePageCode(...pageMap, id.slice('\0embodi-page:'.length));
+			return pageCode;
+		}
+		if (isValidLoadId(id, 'pages')) {
 				const config = await loadConfig(cwd);
 				const contentMap = await generateContentMap(config.inputDirs);
 				const pagesCode = await generatePageImportCode(...contentMap);

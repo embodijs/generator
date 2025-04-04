@@ -39,7 +39,6 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				//@ts-ignore
 				const { attributes, body } = fm<PageData>(code);
 				const content = convertContent(body, attributes);
-				console.log('load Markdown id:', id);
 				const { layout } = attributes;
 				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(content)};`;
 				if (layout) {
