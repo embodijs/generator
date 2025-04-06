@@ -1,6 +1,11 @@
 import { describe, test, expect } from 'vitest';
-import { validateResolveId, isValidLoadId, VIRTUAL_MODULE_PREFIX } from './virtuals.js';
+import { prepareGetPath, prepareLoadIdValidator, prepareResolveIdValidator } from './virtuals.js';
 import { faker } from '@faker-js/faker';
+
+const MODULE_NAME = 'LOREM/';
+const isValidLoadId = prepareLoadIdValidator(MODULE_NAME);
+const validateResolveId = prepareResolveIdValidator(MODULE_NAME);
+const getPath = prepareGetPath(MODULE_NAME);
 
 describe('validations', () => {
 	test.each([
@@ -10,7 +15,7 @@ describe('validations', () => {
 		{ id: 'cotton-coding', types: ['foo', 'bar', 'cotton', 'cotton-coding', 'coding'] },
 		{ id: 'cotton_coding', types: ['foo', 'bar', 'cotton', 'cotton_coding', 'coding'] }
 	])('validateResolveId resolve with id %s', ({id, types}) => {
-		id = `${VIRTUAL_MODULE_PREFIX}/${id}`;
+		id = `${MODULE_NAME}${id}`;
 		expect(validateResolveId(id, ...types)).toBe(`\0${id}`);
 	});
 
@@ -21,7 +26,7 @@ describe('validations', () => {
 		{ id: 'cotton-coding', types: ['foo', 'bar', 'cotton', 'coding'] },
 		{ id: 'cotton_coding', types: ['foo', 'bar', 'cotton', 'coding'] }
 	])('validateResolveId resolve with null %s', ({id, types}) => {
-		id = `${VIRTUAL_MODULE_PREFIX}/${id}`;
+		id = `${MODULE_NAME}${id}`;
 		expect(validateResolveId(id, ...types)).toBeNull();
 	});
 
@@ -32,11 +37,29 @@ describe('validations', () => {
 		{ id: 'grape', types: ['fruit', 'purple', 'grape'] },
 		{ id: 'watermelon', types: ['fruit', 'green', 'juicy', 'watermelon'] }
 	])('validateResolveId resolve with id %s', ({id, types}) => {
-		const fullId = `${VIRTUAL_MODULE_PREFIX}/${id}`;
+		const fullId = `${MODULE_NAME}${id}`;
 		const resolvedId = validateResolveId(fullId, ...types)!;
 		expect(isValidLoadId(resolvedId, id)).toBe(true);
 		const randomId = faker.animal.dog();
 		expect(isValidLoadId(resolvedId, randomId)).toBe(false);
 	});
+
+	test('resolve without module', () => {
+	  const fullId = `${MODULE_NAME}${faker.animal.dog()}`;
+		const resolvedId = validateResolveId(fullId)!;
+    expect(resolvedId).not.toBeNull();
+		expect(isValidLoadId(resolvedId)).toBe(true);
+	})
+
+	test('getPath', () => {
+	  const path = faker.system.directoryPath();
+		const fullId = `${MODULE_NAME}${path}`;
+		const resolvedId = validateResolveId(fullId)!;
+		expect(resolvedId).not.toBeNull();
+		expect(isValidLoadId(resolvedId)).toBe(true);
+		expect(getPath(resolvedId)).toBe(path);
+	})
+
+
 
 });

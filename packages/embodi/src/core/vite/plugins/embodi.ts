@@ -7,19 +7,19 @@ import { prerender } from '../utils/prerender.js';
 import packageJson from '../../../../package.json' with { type: 'json' };
 import {
 	getVirtualParams,
-	invalidateEmbodiModule,
 	invalidateStoredCollection,
 	isHotUpdate,
-	isValidLoadId,
+	prepareIdValidator,
+	resolvePipe,
 	storeLoadId,
-	validateResolveId
 } from '../utils/virtuals.js';
 import { loadAppHtml, loadData } from '../code-builder/load-data.js';
 import {
 	generateContentMap,
 	generatePageCode,
 	generatePageImportCode,
-	generateRoutesCode
+	generateRoutesCode,
+  VIRTUAL_PAGE_PREFIX
 } from '../code-builder/load-content.js';
 import { type ServerResponse } from 'node:http';
 import { generateCollectionsImportsCode } from '../code-builder/collections.js';
@@ -29,6 +29,9 @@ import { generateInternalStores, generateReadableStores } from '../code-builder/
 
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
+
+const validateEmbodiId = prepareIdValidator('$embodi/');
+const validatePageId = prepareIdValidator(VIRTUAL_PAGE_PREFIX);
 
 export const configPlugin = (): Plugin =>
 ({
@@ -70,46 +73,45 @@ export const virtualPlugin = (): Plugin =>
 	({
 		name: 'embodi-virtual-plugin',
 		async resolveId(id) {
-		if(id.startsWith('embodi-page')) {
-		  return `\0${id}`
-		}
-			return validateResolveId(
-				id,
-				'pages',
-				'paths',
-				'data',
-				'collections',
-				'hooks',
-				'env',
-				'stores',
-				'stores/internal'
-			);
+			return resolvePipe(
+			  validatePageId.resolve(id),
+  			validateEmbodiId.resolve(
+  				id,
+  				'pages',
+  				'paths',
+  				'data',
+  				'collections',
+  				'hooks',
+  				'env',
+  				'stores',
+  				'stores/internal'
+  			)
+			)
 		},
 		async load(id, options) {
-		if(id.startsWith('\0embodi-page')) {
-		  const config = await loadConfig(cwd);
-			const pageMap = await generateContentMap(config.inputDirs);
-			const pageCode = await generatePageCode(...pageMap, id.slice('\0embodi-page:'.length));
-			return pageCode;
-		}
-		if (isValidLoadId(id, 'pages')) {
+  		if(validatePageId.load(id)) {
+  		  const config = await loadConfig(cwd);
+  			const pageMap = await generateContentMap(config.inputDirs);
+  			const pageCode = await generatePageCode(...pageMap, validatePageId.getPath(id));
+  			return pageCode;
+  		} else if (validateEmbodiId.load(id, 'pages')) {
 				const config = await loadConfig(cwd);
 				const contentMap = await generateContentMap(config.inputDirs);
 				const pagesCode = await generatePageImportCode(...contentMap);
 				const routesCode = await generateRoutesCode(config.inputDirs);
-				return `${pagesCode}\n${routesCode}\nexport const source = "${config.inputDirs.content}";`;
-			} else if (isValidLoadId(id, 'paths')) {
+				return `${pagesCode}\n${routesCode}\nexport const source = "${config.inputDirs.content}";export const VIRTUAL_PREFIX = "${VIRTUAL_PAGE_PREFIX}";`;
+			} else if (validateEmbodiId.load(id, 'paths')) {
 				const { statics } = await loadConfig(cwd);
 				const relativPathToClientEntry = relative(cwd, resolve(cf, '../app/entry-client.js'));
 
 				return `export const entryClient = "${relativPathToClientEntry}"; export const statics = "${statics}";`;
-			} else if (isValidLoadId(id, 'data')) {
+			} else if (validateEmbodiId.load(id, 'data')) {
 				const projectConfig = await loadConfig(cwd);
 
 				const dataDirectoryPath = projectConfig.inputDirs.data;
 				const data = await loadData(dataDirectoryPath);
 				return `export const data = ${JSON.stringify(data)};`;
-			} else if (isValidLoadId(id, 'collections')) {
+			} else if (validateEmbodiId.load(id, 'collections')) {
 				storeLoadId('collections', id);
 				const params = getVirtualParams(id);
 
@@ -117,19 +119,19 @@ export const virtualPlugin = (): Plugin =>
 					...params,
 					only: params.only ? params.only.split(';') : undefined
 				});
-			} else if (isValidLoadId(id, 'hooks')) {
+			} else if (validateEmbodiId.load(id, 'hooks')) {
 				return generateHooksCode();
-			} else if (isValidLoadId(id, 'env')) {
+			} else if (validateEmbodiId.load(id, 'env')) {
 				return `export const browser = ${JSON.stringify(!options?.ssr)};`;
-			} else if (isValidLoadId(id, 'stores/internal')) {
+			} else if (validateEmbodiId.load(id, 'stores/internal')) {
 				return generateInternalStores();
-			} else if (isValidLoadId(id, 'stores')) {
+			} else if (validateEmbodiId.load(id, 'stores')) {
 				return generateReadableStores('$embodi/stores/internal');
 			}
 		},
 		async handleHotUpdate({ server, file }) {
 			if (await isHotUpdate(file, 'data')) {
-				await invalidateEmbodiModule(server, 'data');
+				await validateEmbodiId.invalidate(server, 'data');
 				server.ws.send({
 					type: 'full-reload'
 				});
@@ -144,8 +146,8 @@ export const virtualPlugin = (): Plugin =>
 			// Invalidate pages and paths when content changes
 			server.watcher.on('add', async (file: string) => {
 				if (await isHotUpdate(file, 'content')) {
-					await invalidateEmbodiModule(server, 'pages');
-					await invalidateEmbodiModule(server, 'paths');
+					await validateEmbodiId.invalidate(server, 'pages');
+					await validateEmbodiId.invalidate(server, 'paths');
 				}
 			});
 		}

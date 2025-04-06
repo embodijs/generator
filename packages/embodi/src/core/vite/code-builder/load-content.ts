@@ -25,6 +25,8 @@ export type PageObject = {
 	battery?: number;
 };
 
+export const VIRTUAL_PAGE_PREFIX = 'virtual-page:'
+
 const map =
 	<T, U>(fn: (arg: T) => U) =>
 	(arr: T[]) =>
@@ -87,7 +89,7 @@ const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
   return code;
 }
 
-const snippetPageImportLink = (url: string) => `() => import("embodi-page:${addTrailingSlash(url)}")`;
+const snippetPageImportLink = (url: string) => `() => import("${VIRTUAL_PAGE_PREFIX}${addTrailingSlash(url)}")`;
 
 const snippetObjectChunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
 const snippetFile = (name: string, content: string) =>

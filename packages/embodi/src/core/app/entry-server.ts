@@ -6,6 +6,7 @@ import type { Manifest } from 'vite';
 import { addLeadingSlash } from './utils/paths.js';
 import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
+import { VIRTUAL_PREFIX } from '$embodi/pages';
 
 const router = createRouter();
 
@@ -54,7 +55,7 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 };
 
 export async function render(source: string, url: string, manifest?: Manifest) {
-	const head = manifest ? createHeadFromManifest(manifest, `embodi-page:${url.slice(0,-1)}`) : '';
+	const head = manifest ? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0,-1)}`) : '';
 	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const pageData = await router.load(url);
