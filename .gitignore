@@ -8,3 +8,5 @@ packages/e2e/playwright-report/
 packages/e2e/test-results/
 
 .env*
+
+**/dist
