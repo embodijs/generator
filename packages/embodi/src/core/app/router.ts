@@ -10,7 +10,7 @@ const getPageFromUrl = async (url: string) => {
 	const pageImportFu = pages[addTrailingSlash(url)];
 	if (!pageImportFu) return;
 
-	const page = await pageImportFu();
+	const {default: page} = await pageImportFu();
 	const mergedData = {
 		...data,
 		...page.data

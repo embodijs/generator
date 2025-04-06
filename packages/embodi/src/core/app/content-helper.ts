@@ -5,9 +5,9 @@ export const loadPages = async <T extends string>(
 	urls: T[]
 ) => {
 	return Promise.all(
-		urls.map((url) => {
+		urls.map(async (url) => {
 			const page = pages[url];
-			return page();
+			return (await page()).default;
 		})
 	);
 };

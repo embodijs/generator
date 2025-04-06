@@ -39,6 +39,6 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	}
 
 	// done, delete .vite directory including ssr manifest
-	await fs.dir('/dist/static/.vite').delete(true);
-	await fs.dir('/dist/server').delete(true);
+	// await fs.dir('/dist/static/.vite').delete(true);
+	// await fs.dir('/dist/server').delete(true);
 };

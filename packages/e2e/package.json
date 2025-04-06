@@ -11,6 +11,6 @@
   },
   "devDependencies": {
     "embodi": "workspace:*",
-    "svelte": "^5.23.2"
+    "svelte": "^5.25.7"
   }
 }

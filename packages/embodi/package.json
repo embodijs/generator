@@ -44,7 +44,7 @@
 		"@sveltejs/package": "^2.3.10",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
-		"rollup": "^4.36.0"
+		"rollup": "^4.39.0"
 	},
 	"peerDependencies": {
 		"svelte": "^5.23.0",
@@ -63,8 +63,8 @@
 		"front-matter": "^4.0.2",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
-		"pipe-and-combine": "^0.5.7",
-		"vitest": "^3.0.9"
+		"pipe-and-combine": "^0.7.11",
+		"vitest": "^3.1.1"
 	},
 	"repository": {
 		"type": "git",
