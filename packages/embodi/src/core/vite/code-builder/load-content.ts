@@ -8,6 +8,8 @@ import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { mergeOneLevelObjects } from '../utils/data.js';
 import type { AnyObject } from '../../definitions/types.js';
 import { normalize } from 'node:path';
+import { normalizePath } from 'vite';
+import { addTrailingSlash } from '../utils/paths.js';
 
 enum FILE_TYPE {
 	INDEX,
@@ -18,10 +20,12 @@ enum FILE_TYPE {
 export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
-	page: number;
+	page: number[];
 	data: number[];
 	battery?: number;
 };
+
+export const VIRTUAL_PAGE_PREFIX = 'virtual-page:'
 
 const map =
 	<T, U>(fn: (arg: T) => U) =>
@@ -39,10 +43,12 @@ const snippetImport = (path: string) => `import('${normalizeImportPath(path)}')`
 const snippetObjectChunk = (name: string, value: string) => `"${name}": ${value}`;
 const snippetArray = (items: string[]) => `[${items.join(',')}]`;
 const snippetExport = (name: string, value: string) => `export const ${name} = ${value}`;
-const snippetPromiseAll = (items?: string[]) =>
+const snippetPromiseAll = (items?: string[]): string =>
 	items?.length ? `Promise.all(${snippetArray(items)})` : '[]';
 const snippetDataImports = pipe(resolveLinks, map(snippetImport), snippetPromiseAll);
 const snippetContentImports = pipe(resolveLinks, map(snippetImportEmbodi), snippetPromiseAll);
+const generateIdMap = (link: string): [string, string] => [`i_${crypto.randomUUID().replaceAll('-', '_')}`, link];
+const snippetImportMap = pipe(resolveLinks, map(generateIdMap));
 const snippetPageImport = (page: PageObject, ref: UniqueArray<string>) =>
 	`async function () {
   const data = await ${snippetDataImports(ref, ...page.data)}
@@ -56,6 +62,35 @@ const snippetPageImport = (page: PageObject, ref: UniqueArray<string>) =>
     data: mergedData
   }
 }`;
+
+const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
+  const snippetMapPages = snippetImportMap(ref, ...page.page);
+  const snippetMapData = snippetImportMap(ref, ...page.data);
+  const dataIds = snippetMapData.map(([id]) => id)
+  const pageIds = snippetMapPages.map(([id]) => id)
+  const code = `
+  import { mergeOneLevelObjects } from 'embodi/utils';
+  ${snippetMapData.map(([id, link]) => `import ${id} from "${normalizePath(link)}";`).join(';\n')}
+  ${snippetMapPages.map(([id, link]) => `import * as ${id} from "${snippetPathEmdodi(link)}";`).join(';\n')}
+
+  const defaultData = [
+  ${dataIds.join(',\n')}
+  ];
+  const pages = [
+  ${pageIds.join(',\n')}
+  ];
+  const page = mergeOneLevelObjects(...pages);
+  const mergedData = mergeOneLevelObjects(...defaultData, page.data);
+  export default {
+    ...page,
+    data: mergedData
+  };
+`;
+  return code;
+}
+
+const snippetPageImportLink = (url: string) => `() => import("${VIRTUAL_PAGE_PREFIX}${addTrailingSlash(url)}")`;
+
 const snippetObjectChunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
 const snippetFile = (name: string, content: string) =>
 	`import { mergeOneLevelObjects } from 'embodi/utils';
@@ -219,12 +254,21 @@ export const generateContentMap = async (
 export const generatePageImportCode = async (pages: PageObject[], linkRef: string[]) => {
   // TODO: snippet
 	const pagesCodeSnippets = pages.map((page) => {
-		const pageCodeFunction = snippetPageImport(page, linkRef);
+
+	  //const pageCodeFunction = snippetPageImport(page, linkRef);
+		const pageCodeFunction = snippetPageImportLink(page.url)
 		// rename it to chunk
 		return snippetObjectChunk(page.url, pageCodeFunction);
 	});
 	const pagesCodeObject = snippetObjectChunkWrapper(pagesCodeSnippets);
 	return snippetFile('pages', pagesCodeObject);
+};
+
+export const generatePageCode = async (pages: PageObject[], linkRef: string[], url: string) => {
+  // TODO: snippet
+	const pageData = pages.find((page) => page.url === url);
+	if(!pageData) return ``;
+	return snippetPage(pageData, linkRef)
 };
 
 export type PageData<T extends AnyObject = AnyObject> = {
@@ -243,8 +287,8 @@ export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<
 	);
 	const loadedPageData = pages.map(({ page, data, type, url }) => {
 		const mappedData = data.map((index) => loadedFiles[index]);
-		const mappedPage = loadedFiles[page];
-		const mergedData = mergeOneLevelObjects(...mappedData, mappedPage);
+		const mappedPage = page.map((page) => loadedFiles[page]);
+		const mergedData = mergeOneLevelObjects(...mappedData, ...mappedPage);
 		return {
 			type,
 			url,

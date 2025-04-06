@@ -2,8 +2,7 @@ import { join } from 'path';
 import { loadConfig, type PublicDirs } from '../utils/config.js';
 import type { ViteDevServer } from 'vite';
 
-export const VIRTUAL_MODULE_PREFIX = '$embodi';
-const VIRTUAL_MODULE_ID = `\0${VIRTUAL_MODULE_PREFIX}`;
+const LOAD_ID_PREFIX = `\0`;
 
 const loadIdStorage: Record<string, Set<string>> = {};
 
@@ -19,24 +18,40 @@ export function getVirtualParams(id: string): { [key: string]: string } {
 	return Object.fromEntries(new URLSearchParams(params).entries());
 }
 
-export function validateResolveId(id: string, ...modules: string[]) {
-	const moduleName = getIdWithoutParams(id);
+export const prepareResolveIdValidator = (prefix: string) => (id: string, ...modules: string[]) => {
+ 	const moduleName = getIdWithoutParams(id);
 	if (
-		moduleName.startsWith(VIRTUAL_MODULE_PREFIX) &&
-		modules.includes(moduleName.slice(VIRTUAL_MODULE_PREFIX.length + 1))
+		moduleName.startsWith(prefix) &&
+		(modules.length === 0 || modules.includes(moduleName.slice(prefix.length)))
 	) {
-		return `\0${id}`;
+		return `${LOAD_ID_PREFIX}${id}`;
 	}
 	return null;
 }
 
-export function isValidLoadId(id: string, ...modules: string[]) {
-	const moduleName = getIdWithoutParams(id);
+export const resolvePipe =
+  (...validated: ReturnType<ReturnType<typeof prepareResolveIdValidator>>[]): string | null =>
+  validated.find((validated) => validated != null) ?? null;
+
+
+
+export const prepareLoadIdValidator = (prefix: string) => (id: string, ...modules: string[]) => {
+  const moduleName = getIdWithoutParams(id);
+  const fullModulePrefix = `${LOAD_ID_PREFIX}${prefix}`;
 	return (
-		moduleName.startsWith(VIRTUAL_MODULE_ID) &&
-		modules.includes(moduleName.slice(VIRTUAL_MODULE_ID.length + 1))
+		moduleName.startsWith(fullModulePrefix) &&
+		(modules.length === 0 || modules.includes(moduleName.slice(fullModulePrefix.length)))
 	);
 }
+
+export const prepareGetPath = (prefix: string) => (id: string, ...modules: string[]) => {
+  if(id.startsWith(LOAD_ID_PREFIX)) {
+    return id.slice(prefix.length + LOAD_ID_PREFIX.length)
+  } else {
+    return id.slice(prefix.length)
+  }
+}
+
 export async function storeLoadId(collection: string, id: string) {
 	if (!loadIdStorage[collection]) {
 		loadIdStorage[collection] = new Set();
@@ -60,9 +75,10 @@ export async function invalidateModule(server: ViteDevServer, module: string) {
 	}
 }
 
-export async function invalidateEmbodiModule(server: ViteDevServer, module: string) {
-	invalidateModule(server, `${VIRTUAL_MODULE_ID}/${module}`);
+export const prepareInvalidateModule = (prefix: string) => async (server: ViteDevServer, module: string) => {
+  invalidateModule(server, `${LOAD_ID_PREFIX}${prefix}${module}`);
 }
+
 
 export async function isHotUpdate(id: string, publicDir: keyof PublicDirs) {
 	const cwd = process.cwd();
@@ -79,3 +95,10 @@ export function getUniqueAttributeName(prefix: string = 'u') {
 	const uniqueName = unique.replaceAll('-', '_');
 	return `${prefix}${uniqueName}`;
 }
+
+export const prepareIdValidator = (prefix: string) => ({
+ resolve: prepareResolveIdValidator(prefix),
+ load: prepareLoadIdValidator(prefix),
+ invalidate: prepareInvalidateModule(prefix),
+ getPath: prepareGetPath(prefix)
+})
