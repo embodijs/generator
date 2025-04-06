@@ -59,7 +59,6 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const pageData = await router.load(url);
-	console.log({ pageData })
 	if (!pageData) return;
 	const { html, Component, Layout } = pageData;
 	const data = await runLoadAction(pageData);
