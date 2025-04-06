@@ -1,5 +1,4 @@
 import { createRouter } from './router.js';
-import { entryClient } from '$embodi/paths';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';
@@ -7,7 +6,6 @@ import type { Manifest } from 'vite';
 import { addLeadingSlash } from './utils/paths.js';
 import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
-import { addTrailingSlash } from './utils/paths.js';
 
 const router = createRouter();
 
