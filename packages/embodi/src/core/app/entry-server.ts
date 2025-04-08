@@ -71,6 +71,7 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	return {
 		head: `${rendered.head ?? ''}\n${head}`,
 		// css: data.css.code === '' ? undefined : `<style>${data.css.code}</style>`,
-		html: rendered.body
+		html: rendered.body,
+		data
 	};
 }
