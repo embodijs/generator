@@ -10,6 +10,7 @@ import type { AnyObject } from '../../definitions/types.js';
 import { normalize } from 'node:path';
 import { normalizePath } from 'vite';
 import { addTrailingSlash } from '../utils/paths.js';
+import { importCodeString } from '../utils/virtuals.js';
 
 enum FILE_TYPE {
 	INDEX,
@@ -265,10 +266,11 @@ export const generatePageImportCode = async (pages: PageObject[], linkRef: strin
 };
 
 export const generatePageCode = async (pages: PageObject[], linkRef: string[], url: string) => {
-  // TODO: snippet
+
 	const pageData = pages.find((page) => page.url === url);
 	if(!pageData) return ``;
-	return snippetPage(pageData, linkRef)
+	const snippet = snippetPage(pageData, linkRef)
+  return snippet;
 };
 
 export type PageData<T extends AnyObject = AnyObject> = {

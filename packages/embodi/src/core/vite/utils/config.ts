@@ -4,6 +4,7 @@ import { buildSync } from 'esbuild';
 import { Dirent, readdirSync } from 'node:fs';
 import * as v from 'valibot';
 import assert from 'node:assert';
+import { importCodeString } from './virtuals.js';
 
 export const VitePluginSchema = v.custom<VitePlugin>(
   (value) => value != null && typeof value === 'object' && 'name' in value,
@@ -48,9 +49,9 @@ const getFullPath = (file: Dirent) => {
   return path;
 }
 
-const isFileType = (file: Dirent, type: string) => file.isFile() && file.name.endsWith(type);
+export const isFileType = (file: Dirent, type: string) => file.isFile() && file.name.endsWith(type);
 
-const importConfigFile = (name: string, path: string = process.cwd()) => {
+export const importConfigFile = (name: string, path: string = process.cwd()) => {
   const dir = readdirSync(path, { withFileTypes: true });
   const file = dir.find((file) => file.isFile() && (file.name === `${name}.js` || file.name === `${name}.ts`));
 
@@ -70,10 +71,7 @@ const importConfigFile = (name: string, path: string = process.cwd()) => {
     });
     const code = result.outputFiles[0].text;
 
-
-    // Create a data URL for dynamic import
-     const dataUrl = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`
-     return import(dataUrl)
+    return importCodeString(code);
   } else {
     return;
   }

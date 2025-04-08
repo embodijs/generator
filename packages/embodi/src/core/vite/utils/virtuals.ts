@@ -102,3 +102,6 @@ export const prepareIdValidator = (prefix: string) => ({
  invalidate: prepareInvalidateModule(prefix),
  getPath: prepareGetPath(prefix)
 })
+
+
+export const importCodeString = (code: string) => import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
