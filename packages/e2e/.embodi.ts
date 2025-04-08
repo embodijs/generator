@@ -1,4 +1,4 @@
-import { defineConfig } from "embodi";
+import { defineConfig } from "embodi/config";
 
 export default defineConfig({
   publicDir: "./public",
