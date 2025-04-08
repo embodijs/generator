@@ -1,16 +1,32 @@
 import { join } from 'node:path';
 import type { Plugin as VitePlugin, UserConfig as ViteConfig } from 'vite';
-import { pathToFileURL } from 'node:url';
+import { buildSync } from 'esbuild';
+import { Dirent, readdirSync } from 'node:fs';
+import * as v from 'valibot';
+import assert from 'node:assert';
 
-export interface EmbodiUserConfig {
-	base?: string;
-	dist?: string;
-	dataDir?: string;
-	source?: `/${string}`;
-	layoutDir?: string;
-	publicDir?: string;
-	plugins?: VitePlugin[];
-}
+export const VitePluginSchema = v.custom<VitePlugin>(
+  (value) => value != null && typeof value === 'object' && 'name' in value,
+  'Invalid Vite plugin'
+);
+
+export const FullPathSchema = v.custom<`/${string}`>(
+  (value) => value != null && typeof value === 'string' && value.startsWith('/'),
+  'Invalid full path'
+);
+
+export const EmbodiUserConfigSchema = v.object({
+  base: v.optional(v.string()),
+  dist: v.optional(v.string()),
+  dataDir: v.optional(v.string()),
+  source: v.optional(FullPathSchema),
+  layoutDir: v.optional(v.string()),
+  publicDir: v.optional(v.string()),
+  plugins: v.optional(v.array(VitePluginSchema)),
+});
+
+export type EmbodiUserConfig = v.InferOutput<typeof EmbodiUserConfigSchema>;
+
 
 export interface PublicDirs {
 	public: string;
@@ -27,18 +43,55 @@ export interface EmbodiConfig {
 	viteConfig: ViteConfig;
 }
 
-export const defineConfig = (config: EmbodiUserConfig): EmbodiUserConfig => config;
+const getFullPath = (file: Dirent) => {
+  const path = join(file.parentPath, file.name);
+  return path;
+}
+
+const isFileType = (file: Dirent, type: string) => file.isFile() && file.name.endsWith(type);
+
+const importConfigFile = (name: string, path: string = process.cwd()) => {
+  const dir = readdirSync(path, { withFileTypes: true });
+  const file = dir.find((file) => file.isFile() && (file.name === `${name}.js` || file.name === `${name}.ts`));
+
+  if(!file) {
+    return;
+  }
+  const filePath = getFullPath(file)
+  if(isFileType(file, 'js')) {
+    return import (filePath)
+  } else if (isFileType(file, 'ts')) {
+    const result = buildSync({
+      entryPoints: [filePath],
+      bundle: true,
+      format: 'esm',
+      platform: 'node',
+      write: false, // output to memory
+    });
+    const code = result.outputFiles[0].text;
+
+
+    // Create a data URL for dynamic import
+     const dataUrl = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`
+     return import(dataUrl)
+  } else {
+    return;
+  }
+}
+
 
 export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiConfig> => {
-	const { default: config } = (await import(pathToFileURL(join(cwd, '.embodi.js')).href)) as {
-		default: EmbodiUserConfig;
-	};
+
+  const fileImport = await importConfigFile('.embodi', cwd);
+
+  //TODO: Maybe check if any config file is listed in the directory before importing
+  assert(fileImport.default);
+
+  const config = v.parse(EmbodiUserConfigSchema, fileImport.default);
 
 	const publicDir = config.publicDir ?? 'public';
-	const mixedConfig = {
-		dataDir: config.dataDir ?? '__data',
+	const mixedConfig: EmbodiConfig = {
 		statics: '',
-		base: config.base ? config.base : '/',
 		dist: config.dist ? config.dist : 'dist',
 		plugins: config.plugins ?? [],
 		inputDirs: {
@@ -48,7 +101,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 			layout: config.layoutDir ?? './__layout'
 		},
 		viteConfig: {
-			plugins: config.plugins ?? [],
+			plugins: (config.plugins ?? []) as VitePlugin[],
 			publicDir,
 			base: config.base ?? '/'
 		}

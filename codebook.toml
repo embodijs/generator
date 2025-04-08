@@ -1,5 +1,10 @@
 dictionaries = []
-words = ["embodi"]
+words = [
+    "embodi",
+    "esbuild",
+    "valibot",
+    "vite",
+]
 flag_words = []
 ignore_paths = []
 ignore_patterns = []
