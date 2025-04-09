@@ -26,6 +26,7 @@ import { generateCollectionsImportsCode } from '../code-builder/collections.js';
 import { generateHooksCode } from '../code-builder/hooks.js';
 import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
+import assert from 'node:assert';
 
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
@@ -198,17 +199,32 @@ export const devServerPlugin = (): Plugin => ({
 			// TODO: add static file route here
 			try {
 				const { inputDirs, statics } = await loadConfig(cwd);
+				let url = req.originalUrl;
+        assert(url);
+        const dataFileName = 'data.json';
+        const isDataUrl = url.endsWith(dataFileName);
+        if(isDataUrl) {
+          url = url.slice(0, -dataFileName.length)
+        }
 
 				const rawTemplate = await loadAppHtml(statics);
-				const template = await server.transformIndexHtml(req.originalUrl!, rawTemplate);
+				const template = await server.transformIndexHtml(url, rawTemplate);
 				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
 				const { render } = await server.ssrLoadModule(
 					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
 				);
 
-				const rendered = await render(inputDirs.content, req.originalUrl);
+				const rendered = await render(inputDirs.content, url);
 				if (!rendered) {
 					return next();
+				} else if(isDataUrl) {
+          const {data} = rendered;
+          const jsonStr = JSON.stringify(data);
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Content-Length': jsonStr.length
+					});
+					return res.end(jsonStr);
 				}
 
 				const html = template
