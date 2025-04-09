@@ -18,39 +18,43 @@ export function getVirtualParams(id: string): { [key: string]: string } {
 	return Object.fromEntries(new URLSearchParams(params).entries());
 }
 
-export const prepareResolveIdValidator = (prefix: string) => (id: string, ...modules: string[]) => {
- 	const moduleName = getIdWithoutParams(id);
-	if (
-		moduleName.startsWith(prefix) &&
-		(modules.length === 0 || modules.includes(moduleName.slice(prefix.length)))
-	) {
-		return `${LOAD_ID_PREFIX}${id}`;
-	}
-	return null;
-}
+export const prepareResolveIdValidator =
+	(prefix: string) =>
+	(id: string, ...modules: string[]) => {
+		const moduleName = getIdWithoutParams(id);
+		if (
+			moduleName.startsWith(prefix) &&
+			(modules.length === 0 || modules.includes(moduleName.slice(prefix.length)))
+		) {
+			return `${LOAD_ID_PREFIX}${id}`;
+		}
+		return null;
+	};
 
-export const resolvePipe =
-  (...validated: ReturnType<ReturnType<typeof prepareResolveIdValidator>>[]): string | null =>
-  validated.find((validated) => validated != null) ?? null;
+export const resolvePipe = (
+	...validated: ReturnType<ReturnType<typeof prepareResolveIdValidator>>[]
+): string | null => validated.find((validated) => validated != null) ?? null;
 
+export const prepareLoadIdValidator =
+	(prefix: string) =>
+	(id: string, ...modules: string[]) => {
+		const moduleName = getIdWithoutParams(id);
+		const fullModulePrefix = `${LOAD_ID_PREFIX}${prefix}`;
+		return (
+			moduleName.startsWith(fullModulePrefix) &&
+			(modules.length === 0 || modules.includes(moduleName.slice(fullModulePrefix.length)))
+		);
+	};
 
-
-export const prepareLoadIdValidator = (prefix: string) => (id: string, ...modules: string[]) => {
-  const moduleName = getIdWithoutParams(id);
-  const fullModulePrefix = `${LOAD_ID_PREFIX}${prefix}`;
-	return (
-		moduleName.startsWith(fullModulePrefix) &&
-		(modules.length === 0 || modules.includes(moduleName.slice(fullModulePrefix.length)))
-	);
-}
-
-export const prepareGetPath = (prefix: string) => (id: string, ...modules: string[]) => {
-  if(id.startsWith(LOAD_ID_PREFIX)) {
-    return id.slice(prefix.length + LOAD_ID_PREFIX.length)
-  } else {
-    return id.slice(prefix.length)
-  }
-}
+export const prepareGetPath =
+	(prefix: string) =>
+	(id: string, ...modules: string[]) => {
+		if (id.startsWith(LOAD_ID_PREFIX)) {
+			return id.slice(prefix.length + LOAD_ID_PREFIX.length);
+		} else {
+			return id.slice(prefix.length);
+		}
+	};
 
 export async function storeLoadId(collection: string, id: string) {
 	if (!loadIdStorage[collection]) {
@@ -75,10 +79,10 @@ export async function invalidateModule(server: ViteDevServer, module: string) {
 	}
 }
 
-export const prepareInvalidateModule = (prefix: string) => async (server: ViteDevServer, module: string) => {
-  invalidateModule(server, `${LOAD_ID_PREFIX}${prefix}${module}`);
-}
-
+export const prepareInvalidateModule =
+	(prefix: string) => async (server: ViteDevServer, module: string) => {
+		invalidateModule(server, `${LOAD_ID_PREFIX}${prefix}${module}`);
+	};
 
 export async function isHotUpdate(id: string, publicDir: keyof PublicDirs) {
 	const cwd = process.cwd();
@@ -97,11 +101,11 @@ export function getUniqueAttributeName(prefix: string = 'u') {
 }
 
 export const prepareIdValidator = (prefix: string) => ({
- resolve: prepareResolveIdValidator(prefix),
- load: prepareLoadIdValidator(prefix),
- invalidate: prepareInvalidateModule(prefix),
- getPath: prepareGetPath(prefix)
-})
+	resolve: prepareResolveIdValidator(prefix),
+	load: prepareLoadIdValidator(prefix),
+	invalidate: prepareInvalidateModule(prefix),
+	getPath: prepareGetPath(prefix)
+});
 
-
-export const importCodeString = (code: string) => import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`)
+export const importCodeString = (code: string) =>
+	import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);

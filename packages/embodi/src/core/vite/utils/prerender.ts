@@ -34,11 +34,11 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 		// const filePath = `dist/static${url === '/' ? '/index' : url.slice(0, -1)}.html`;
 		const filePath = `dist/static${url}index.html`;
 		const dir = fs.dir(`dist/static${url}`);
-    await dir.create();
-    const htmlFile = dir.file('index.html');
-    const dataFile = dir.file('data.json');
-    await htmlFile.write(html);
-    await dataFile.write(JSON.stringify(data));
+		await dir.create();
+		const htmlFile = dir.file('index.html');
+		const dataFile = dir.file('data.json');
+		await htmlFile.write(html);
+		await dataFile.write(JSON.stringify(data));
 	}
 
 	// done, delete .vite directory including ssr manifest

@@ -35,8 +35,8 @@ jobs:
         with:
           node-version: latest
           registry-url: https://registry.npmjs.org/
-          scope: "@embodi"
-          cache: "pnpm"
+          scope: '@embodi'
+          cache: 'pnpm'
       - name: Install
         run: pnpm install
       - name: Unit Test

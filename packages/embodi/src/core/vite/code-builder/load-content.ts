@@ -25,7 +25,7 @@ export type PageObject = {
 	battery?: number;
 };
 
-export const VIRTUAL_PAGE_PREFIX = 'virtual-page:'
+export const VIRTUAL_PAGE_PREFIX = 'virtual-page:';
 
 const map =
 	<T, U>(fn: (arg: T) => U) =>
@@ -47,16 +47,18 @@ const snippetPromiseAll = (items?: string[]): string =>
 	items?.length ? `Promise.all(${snippetArray(items)})` : '[]';
 const snippetDataImports = pipe(resolveLinks, map(snippetImport), snippetPromiseAll);
 const snippetContentImports = pipe(resolveLinks, map(snippetImportEmbodi), snippetPromiseAll);
-const generateIdMap = (link: string): [string, string] => [`i_${crypto.randomUUID().replaceAll('-', '_')}`, link];
+const generateIdMap = (link: string): [string, string] => [
+	`i_${crypto.randomUUID().replaceAll('-', '_')}`,
+	link
+];
 const snippetImportMap = pipe(resolveLinks, map(generateIdMap));
 
-
 const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
-  const snippetMapPages = snippetImportMap(ref, ...page.page);
-  const snippetMapData = snippetImportMap(ref, ...page.data ?? []);
-  const dataIds = snippetMapData.map(([id]) => id)
-  const pageIds = snippetMapPages.map(([id]) => id)
-  const code = `
+	const snippetMapPages = snippetImportMap(ref, ...page.page);
+	const snippetMapData = snippetImportMap(ref, ...(page.data ?? []));
+	const dataIds = snippetMapData.map(([id]) => id);
+	const pageIds = snippetMapPages.map(([id]) => id);
+	const code = `
   import { mergeOneLevelObjects } from 'embodi/utils'
   ${snippetMapData.map(([id, link]) => `import ${id} from "${normalizePath(link)}";`).join(';\n')}
   ${snippetMapPages.map(([id, link]) => `import * as ${id} from "${snippetPathEmdodi(link)}";`).join(';\n')}
@@ -71,14 +73,14 @@ const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
   ${page.data === null ? '' : 'const mergedData = mergeOneLevelObjects(...defaultData, page.data);'}
   ${page.data === null ? 'export default { ...page }' : 'export default { ...page, data: mergedData }'}
 `;
-  return code;
-}
+	return code;
+};
 
-const snippetPageImportLink = (url: string) => `() => import("${VIRTUAL_PAGE_PREFIX}${addTrailingSlash(url)}")`;
+const snippetPageImportLink = (url: string) =>
+	`() => import("${VIRTUAL_PAGE_PREFIX}${addTrailingSlash(url)}")`;
 
 const snippetObjectChunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
-const snippetFile = (name: string, content: string) =>
-	`export const ${name} = ${content};`;
+const snippetFile = (name: string, content: string) => `export const ${name} = ${content};`;
 
 export const transformPathToUrl = (
 	dir: Directory,
@@ -236,11 +238,10 @@ export const generateContentMap = async (
 };
 
 export const generatePageImportCode = async (pages: PageObject[], linkRef: string[]) => {
-  // TODO: snippet
+	// TODO: snippet
 	const pagesCodeSnippets = pages.map((page) => {
-
-	  //const pageCodeFunction = snippetPageImport(page, linkRef);
-		const pageCodeFunction = snippetPageImportLink(page.url)
+		//const pageCodeFunction = snippetPageImport(page, linkRef);
+		const pageCodeFunction = snippetPageImportLink(page.url);
 		// rename it to chunk
 		return snippetObjectChunk(page.url, pageCodeFunction);
 	});
@@ -249,11 +250,10 @@ export const generatePageImportCode = async (pages: PageObject[], linkRef: strin
 };
 
 export const generatePageCode = async (pages: PageObject[], linkRef: string[], url: string) => {
-
 	const pageData = pages.find((page) => page.url === url);
-	if(!pageData) return ``;
-	const snippet = snippetPage(pageData, linkRef)
-  return snippet;
+	if (!pageData) return ``;
+	const snippet = snippetPage(pageData, linkRef);
+	return snippet;
 };
 
 export type PageData<T extends AnyObject = AnyObject> = {

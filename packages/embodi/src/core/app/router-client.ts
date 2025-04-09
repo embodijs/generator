@@ -10,11 +10,11 @@ const getPageFromUrl = async (url: string) => {
 	const pageImportFu = pages[addTrailingSlash(url)];
 	if (!pageImportFu) return;
 
-	const loadData = async (url: string) => (await fetch(`${url}data.json`)).json()
-	const [{default: page}, data] = await Promise.all([pageImportFu(), loadData(url)]);
+	const loadData = async (url: string) => (await fetch(`${url}data.json`)).json();
+	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
 		...globalData,
-		...data,
+		...data
 	};
 
 	return {

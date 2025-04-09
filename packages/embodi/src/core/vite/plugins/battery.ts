@@ -1,7 +1,6 @@
 import { normalize } from 'node:path';
 import type { Plugin } from 'vite';
 
-
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
 export function embodiBattery(): Plugin {
@@ -15,9 +14,8 @@ export function embodiBattery(): Plugin {
 			}
 		},
 		load(id, config) {
-
 			if (id.endsWith('.js.embodi') || id.endsWith('.ts.embodi')) {
-			  if (!config?.ssr) return ``;
+				if (!config?.ssr) return ``;
 				return `export * from '${normalizeImportPath(id.slice(1, -10))}';`;
 			}
 		}

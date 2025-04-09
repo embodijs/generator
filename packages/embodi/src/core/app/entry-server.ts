@@ -29,7 +29,6 @@ const followImports = (
 	imports.add(current.file);
 	if (current.imports) {
 		current.imports.forEach((url: string) => {
-
 			followImports(manifest, url, imports, css);
 		});
 	}
@@ -55,7 +54,9 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 };
 
 export async function render(source: string, url: string, manifest?: Manifest) {
-	const head = manifest ? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0,-1)}`) : '';
+	const head = manifest
+		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
+		: '';
 	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const pageData = await router.load(url);

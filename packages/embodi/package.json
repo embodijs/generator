@@ -38,8 +38,8 @@
 			"types": "./client.d.ts"
 		},
 		"./config": {
-      "types": "./dist/exports/config.d.ts",
-      "import": "./dist/exports/config.js"
+			"types": "./dist/exports/config.d.ts",
+			"import": "./dist/exports/config.js"
 		}
 	},
 	"type": "module",

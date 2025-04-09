@@ -1,11 +1,11 @@
-import { defineWorkspace } from "vitest/config";
+import { defineWorkspace } from 'vitest/config';
 
 export default defineWorkspace([
-	{
-		test: {
-			include: ["packages/embodi/**/*.spec.ts"],
-			name: "packages",
-			environment: "node",
-		},
-	},
+  {
+    test: {
+      include: ['packages/embodi/**/*.spec.ts'],
+      name: 'packages',
+      environment: 'node'
+    }
+  }
 ]);

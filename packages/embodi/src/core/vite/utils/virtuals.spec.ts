@@ -14,7 +14,7 @@ describe('validations', () => {
 		{ id: 'cotton', types: ['foo', 'bar', 'cotton', 'coding'] },
 		{ id: 'cotton-coding', types: ['foo', 'bar', 'cotton', 'cotton-coding', 'coding'] },
 		{ id: 'cotton_coding', types: ['foo', 'bar', 'cotton', 'cotton_coding', 'coding'] }
-	])('validateResolveId resolve with id %s', ({id, types}) => {
+	])('validateResolveId resolve with id %s', ({ id, types }) => {
 		id = `${MODULE_NAME}${id}`;
 		expect(validateResolveId(id, ...types)).toBe(`\0${id}`);
 	});
@@ -25,7 +25,7 @@ describe('validations', () => {
 		{ id: 'cotton', types: ['foo', 'bar', 'coding'] },
 		{ id: 'cotton-coding', types: ['foo', 'bar', 'cotton', 'coding'] },
 		{ id: 'cotton_coding', types: ['foo', 'bar', 'cotton', 'coding'] }
-	])('validateResolveId resolve with null %s', ({id, types}) => {
+	])('validateResolveId resolve with null %s', ({ id, types }) => {
 		id = `${MODULE_NAME}${id}`;
 		expect(validateResolveId(id, ...types)).toBeNull();
 	});
@@ -36,7 +36,7 @@ describe('validations', () => {
 		{ id: 'orange', types: ['fruit', 'orange', 'orange'] },
 		{ id: 'grape', types: ['fruit', 'purple', 'grape'] },
 		{ id: 'watermelon', types: ['fruit', 'green', 'juicy', 'watermelon'] }
-	])('validateResolveId resolve with id %s', ({id, types}) => {
+	])('validateResolveId resolve with id %s', ({ id, types }) => {
 		const fullId = `${MODULE_NAME}${id}`;
 		const resolvedId = validateResolveId(fullId, ...types)!;
 		expect(isValidLoadId(resolvedId, id)).toBe(true);
@@ -45,21 +45,18 @@ describe('validations', () => {
 	});
 
 	test('resolve without module', () => {
-	  const fullId = `${MODULE_NAME}${faker.animal.dog()}`;
+		const fullId = `${MODULE_NAME}${faker.animal.dog()}`;
 		const resolvedId = validateResolveId(fullId)!;
-    expect(resolvedId).not.toBeNull();
+		expect(resolvedId).not.toBeNull();
 		expect(isValidLoadId(resolvedId)).toBe(true);
-	})
+	});
 
 	test('getPath', () => {
-	  const path = faker.system.directoryPath();
+		const path = faker.system.directoryPath();
 		const fullId = `${MODULE_NAME}${path}`;
 		const resolvedId = validateResolveId(fullId)!;
 		expect(resolvedId).not.toBeNull();
 		expect(isValidLoadId(resolvedId)).toBe(true);
 		expect(getPath(resolvedId)).toBe(path);
-	})
-
-
-
+	});
 });

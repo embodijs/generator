@@ -1,4 +1,4 @@
-import type { SvelteComponent } from "svelte";
+import type { SvelteComponent } from 'svelte';
 
 export type MaybePromise<T> = T | Promise<T>;
 export type AnyObject = Record<string | number | Symbol, any>;
@@ -11,7 +11,7 @@ export type LoadEvent = {
 export type LoadAction = (event: LoadEvent) => Record<string, any>;
 
 export type PageData = {
-  Component?: SvelteComponent;
+	Component?: SvelteComponent;
 	html?: string;
 	Layout?: SvelteComponent;
 	data: Record<string, any>;

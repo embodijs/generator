@@ -31,11 +31,11 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 		},
 		load(id, config) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
-        if (!config?.ssr) {
-          return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
-        } else {
-          return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
-        }
+				if (!config?.ssr) {
+					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
+				} else {
+					return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+				}
 			}
 		},
 		async transform(code, id) {
@@ -48,7 +48,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				if (layout) {
 					result = `export { default as Layout } from '${layout}';\n` + result;
 				} else {
-				  result = `export const Layout = undefined;\n` + result;
+					result = `export const Layout = undefined;\n` + result;
 				}
 
 				return {
