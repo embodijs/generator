@@ -61,7 +61,9 @@ const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
 	const code = `
   import { mergeOneLevelObjects } from 'embodi/utils'
   ${snippetMapData.map(([id, link]) => `import ${id} from "${normalizePath(link)}";`).join(';\n')}
-  ${snippetMapPages.map(([id, link]) => `import * as ${id} from "${snippetPathEmdodi(link)}";`).join(';\n')}
+  ${snippetMapPages
+		.map(([id, link]) => `import * as ${id} from "${snippetPathEmdodi(link)}";`)
+		.join(';\n')}
 
   const defaultData = [
   ${dataIds.join(',\n')}
@@ -71,7 +73,11 @@ const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
   ];
   const page = mergeOneLevelObjects(...pages);
   ${page.data === null ? '' : 'const mergedData = mergeOneLevelObjects(...defaultData, page.data);'}
-  ${page.data === null ? 'export default { ...page }' : 'export default { ...page, data: mergedData }'}
+  ${
+		page.data === null
+			? 'export default { ...page }'
+			: 'export default { ...page, data: mergedData }'
+	}
 `;
 	return code;
 };
@@ -271,9 +277,9 @@ export const loadData = async (pages: PageObject[], linkRef: string[]): Promise<
 		})
 	);
 	const loadedPageData = pages.map(({ page, data, type, url }) => {
-		const mappedData = data.map((index) => loadedFiles[index]);
+		const mappedData = data?.map((index) => loadedFiles[index]);
 		const mappedPage = page.map((page) => loadedFiles[page]);
-		const mergedData = mergeOneLevelObjects(...mappedData, ...mappedPage);
+		const mergedData = mergeOneLevelObjects(...(mappedData ?? []), ...mappedPage);
 		return {
 			type,
 			url,
