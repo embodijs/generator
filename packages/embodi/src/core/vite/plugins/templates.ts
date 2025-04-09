@@ -30,10 +30,14 @@ export const templatePlugin = (): Plugin => {
 
 				const layout = layouts[path];
 				if (!layout) throw new Error(`Layout not found for id ${id}`);
-				const snippet = `export * from '${join(cwd, layoutRoot, layout.component)}';`;
+				const snippet = `export { default as Layout} from '${join(
+					cwd,
+					layoutRoot,
+					layout.component
+				)}';`;
 				if (options?.ssr) {
 					return `${snippet}\n
-					import {layouts} from '${join(cwd, layoutRoot, './layout.config.js')}';
+					import { layouts } from '${join(cwd, layoutRoot, './layout.config.js')}';
 					export const schema = layouts['${path}'].schema;`;
 				}
 				return snippet;

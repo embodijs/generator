@@ -51,7 +51,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 					result =
 						`
 					import * as l from '${layout}';\n
-					const { default: Layout, ...layoutDefinition } = l;\n
+					const { Layout, ...layoutDefinition } = l;\n
 					export { Layout, layoutDefinition };\n
 					` + result;
 				} else {
