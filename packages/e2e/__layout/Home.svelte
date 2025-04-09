@@ -10,3 +10,9 @@
   <div>{data.loadContent}</div>
   {@render children?.()}
 </main>
+
+<style>
+    h2 {
+        font-size: 3rem;
+    }
+</style>

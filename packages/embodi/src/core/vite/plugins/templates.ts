@@ -3,15 +3,14 @@ import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
 import { loadLayouts } from '../utils/template.js';
 import assert from 'assert';
+import { join } from 'path';
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
 	let projectConfig: EmbodiConfig;
 	let layoutValidator = prepareIdValidator('$layout/');
-
 	return {
 		name: 'vite-embodi-template-plugin',
-		apply: 'build',
 		async configResolved(config) {
 			cwd = config.root;
 			projectConfig = await loadConfig(cwd);
@@ -19,17 +18,25 @@ export const templatePlugin = (): Plugin => {
 		resolveId(id) {
 			return resolvePipe(layoutValidator.resolve(id));
 		},
-		async load(id) {
+		async load(id, options) {
 			if (layoutValidator.load(id)) {
 				assert(projectConfig);
+				const layoutRoot = projectConfig.inputDirs.layout;
 				const layouts = await loadLayouts(cwd, projectConfig);
+
 				if (!layouts)
 					throw new Error(`No layouts found. Create a layouts config in the layouts directory.`);
 				const path = layoutValidator.getPath(id);
 
 				const layout = layouts[path];
 				if (!layout) throw new Error(`Layout not found for id ${id}`);
-				return `export default ${JSON.stringify(layout, (key, value) => (typeof value === 'function' ? value.toString() : value))}`;
+				const snippet = `export * from '${join(cwd, layoutRoot, layout.component)}';`;
+				if (options?.ssr) {
+					return `${snippet}\n
+					import {layouts} from '${join(cwd, layoutRoot, './layout.config.js')}';
+					export const schema = layouts['${path}'].schema;`;
+				}
+				return snippet;
 			}
 		}
 	};

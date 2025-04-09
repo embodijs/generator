@@ -44,9 +44,16 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				const { attributes, body } = fm<PageData>(code);
 				const content = convertContent(body, attributes);
 				const { layout } = attributes;
-				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(content)};`;
+				let result = `export const data = ${JSON.stringify(
+					attributes
+				)}; export const html = ${JSON.stringify(content)};`;
 				if (layout) {
-					result = `export { default as Layout } from '${layout}';\n` + result;
+					result =
+						`
+					import * as l from '${layout}';\n
+					const { default: Layout, ...layoutDefinition } = l;\n
+					export { Layout, layoutDefinition };\n
+					` + result;
 				} else {
 					result = `export const Layout = undefined;\n` + result;
 				}

@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "embodi": "workspace:*",
-    "svelte": "^5.25.7"
+    "svelte": "^5.25.7",
+    "valibot": "^1.0.0"
   }
 }

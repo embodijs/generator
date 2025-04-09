@@ -1,6 +1,6 @@
 ---
 title: Welcome to Embodi
-layout: $layout/Home.svelte
+layout: $layout/home
 ---
 
 ## Introduction

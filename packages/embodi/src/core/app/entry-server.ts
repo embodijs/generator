@@ -7,6 +7,7 @@ import { addLeadingSlash } from './utils/paths.js';
 import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 import { VIRTUAL_PREFIX } from '$embodi/pages';
+import * as v from 'valibot';
 
 const router = createRouter();
 
@@ -61,13 +62,16 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
 	const pageData = await router.load(url);
 	if (!pageData) return;
-	const { html, Component, Layout } = pageData;
+	const { html, Component, Layout, layoutDefinition } = pageData;
 	const data = await runLoadAction(pageData);
+	v.assert(layoutDefinition.schema, data);
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
 	// @ts-ignore
-	const rendered = renderSvelte(SvelteRoot, { props: { html, Component, Layout, data } });
+	const rendered = renderSvelte(SvelteRoot, {
+		props: { html, Component, Layout, data }
+	});
 	if (!rendered) return;
 	return {
 		head: `${rendered.head ?? ''}\n${head}`,
