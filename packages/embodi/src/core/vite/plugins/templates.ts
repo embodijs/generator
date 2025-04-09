@@ -3,7 +3,7 @@ import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
 import { loadLayouts } from '../utils/template.js';
 import assert from 'assert';
-import { join } from 'path';
+import { join } from 'path/posix';
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
