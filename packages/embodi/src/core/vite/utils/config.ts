@@ -7,7 +7,7 @@ import assert from 'node:assert';
 import { importCodeString } from './virtuals.js';
 
 export const VitePluginSchema = v.custom<VitePlugin>(
-  (value) => value != null && typeof value === 'object' && 'name' in value,
+  (value) => value != null,
   'Invalid Vite plugin'
 );
 

@@ -1,4 +1,4 @@
-import { createRouter } from './router.js';
+import { createRouter } from './router-server.js';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { render as renderSvelte } from 'svelte/server';

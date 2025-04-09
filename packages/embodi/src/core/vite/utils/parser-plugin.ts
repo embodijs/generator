@@ -29,9 +29,13 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				return `\0${id}`;
 			}
 		},
-		load(id) {
+		load(id, config) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
-				return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+        if (!config?.ssr) {
+          return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
+        } else {
+          return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+        }
 			}
 		},
 		async transform(code, id) {
@@ -43,6 +47,8 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(content)};`;
 				if (layout) {
 					result = `export { default as Layout } from '${layout}';\n` + result;
+				} else {
+				  result = `export const Layout = undefined;\n` + result;
 				}
 
 				return {

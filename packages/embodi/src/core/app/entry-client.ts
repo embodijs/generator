@@ -2,7 +2,6 @@ import { createRouter } from './router-client.js';
 import { hydrate } from 'svelte';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
-import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 
 const currentUrl = new URL(window.location.href).pathname;

@@ -91,8 +91,8 @@ export const virtualPlugin = (): Plugin =>
 		async load(id, options) {
   		if(validatePageId.load(id)) {
   		  const config = await loadConfig(cwd);
-  			const pageMap = await generateContentMap(config.inputDirs);
-  			const pageCode = await generatePageCode(...pageMap, validatePageId.getPath(id));
+  			const [pageMap, linkRef] = await generateContentMap(config.inputDirs);
+        const pageCode = await generatePageCode(pageMap.map(({ data, ...page }) => ({ ...page, data: options?.ssr ? data : null })), linkRef, validatePageId.getPath(id));
   			return pageCode;
   		} else if (validateEmbodiId.load(id, 'pages')) {
 				const config = await loadConfig(cwd);

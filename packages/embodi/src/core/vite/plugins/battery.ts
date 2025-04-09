@@ -14,8 +14,10 @@ export function embodiBattery(): Plugin {
 				return `\0${id}`;
 			}
 		},
-		load(id) {
+		load(id, config) {
+
 			if (id.endsWith('.js.embodi') || id.endsWith('.ts.embodi')) {
+			  if (!config?.ssr) return ``;
 				return `export * from '${normalizeImportPath(id.slice(1, -10))}';`;
 			}
 		}

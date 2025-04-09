@@ -10,7 +10,6 @@ import type { AnyObject } from '../../definitions/types.js';
 import { normalize } from 'node:path';
 import { normalizePath } from 'vite';
 import { addTrailingSlash } from '../utils/paths.js';
-import { importCodeString } from '../utils/virtuals.js';
 
 enum FILE_TYPE {
 	INDEX,
@@ -22,7 +21,7 @@ export type PageObject = {
 	type: FILE_TYPE;
 	url: NormalizeUrlPath;
 	page: number[];
-	data: number[];
+	data: number[] | null;
 	battery?: number;
 };
 
@@ -50,27 +49,15 @@ const snippetDataImports = pipe(resolveLinks, map(snippetImport), snippetPromise
 const snippetContentImports = pipe(resolveLinks, map(snippetImportEmbodi), snippetPromiseAll);
 const generateIdMap = (link: string): [string, string] => [`i_${crypto.randomUUID().replaceAll('-', '_')}`, link];
 const snippetImportMap = pipe(resolveLinks, map(generateIdMap));
-const snippetPageImport = (page: PageObject, ref: UniqueArray<string>) =>
-	`async function () {
-  const data = await ${snippetDataImports(ref, ...page.data)}
-  const pages = await ${snippetContentImports(ref, ...page.page)};
 
-  const defaultData = data.map(d => d.default);
-  const page = mergeOneLevelObjects(...pages);
-  const mergedData = mergeOneLevelObjects(...defaultData, page.data);
-  return {
-    ...page,
-    data: mergedData
-  }
-}`;
 
 const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
   const snippetMapPages = snippetImportMap(ref, ...page.page);
-  const snippetMapData = snippetImportMap(ref, ...page.data);
+  const snippetMapData = snippetImportMap(ref, ...page.data ?? []);
   const dataIds = snippetMapData.map(([id]) => id)
   const pageIds = snippetMapPages.map(([id]) => id)
   const code = `
-  import { mergeOneLevelObjects } from 'embodi/utils';
+  import { mergeOneLevelObjects } from 'embodi/utils'
   ${snippetMapData.map(([id, link]) => `import ${id} from "${normalizePath(link)}";`).join(';\n')}
   ${snippetMapPages.map(([id, link]) => `import * as ${id} from "${snippetPathEmdodi(link)}";`).join(';\n')}
 
@@ -81,11 +68,8 @@ const snippetPage = (page: PageObject, ref: UniqueArray<string>) => {
   ${pageIds.join(',\n')}
   ];
   const page = mergeOneLevelObjects(...pages);
-  const mergedData = mergeOneLevelObjects(...defaultData, page.data);
-  export default {
-    ...page,
-    data: mergedData
-  };
+  ${page.data === null ? '' : 'const mergedData = mergeOneLevelObjects(...defaultData, page.data);'}
+  ${page.data === null ? 'export default { ...page }' : 'export default { ...page, data: mergedData }'}
 `;
   return code;
 }
@@ -94,8 +78,7 @@ const snippetPageImportLink = (url: string) => `() => import("${VIRTUAL_PAGE_PRE
 
 const snippetObjectChunkWrapper = (imports: string[]) => `({${imports.join(',')}})`;
 const snippetFile = (name: string, content: string) =>
-	`import { mergeOneLevelObjects } from 'embodi/utils';
-export const ${name} = ${content};`;
+	`export const ${name} = ${content};`;
 
 export const transformPathToUrl = (
 	dir: Directory,
