@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "embodi dev",
+    "build": "embodi generate",
     "render:e2e": "embodi generate",
     "test:e2e:init": "playwright install --with-deps",
     "test:e2e": "playwright test",
