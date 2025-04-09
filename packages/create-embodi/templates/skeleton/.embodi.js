@@ -1,7 +1,7 @@
-import { defineConfig } from "embodi";
+import { defineConfig } from 'embodi';
 
 export default defineConfig({
-  publicDir: "./public",
-  layoutDir: "./__layout",
-  source: "/content",
+  publicDir: './public',
+  layoutDir: './__layout',
+  source: '/content'
 });

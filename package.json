@@ -15,6 +15,8 @@
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.0",
     "playwright": "^1.51.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-svelte": "^3.3.3",
     "publint": "^0.3.10",
     "vitest": "^3.1.1"
   }

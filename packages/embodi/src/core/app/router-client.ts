@@ -1,6 +1,6 @@
 import { addTrailingSlash } from './utils/paths.js';
 import { routes, pages } from '$embodi/pages';
-import { data } from '$embodi/data';
+import { data as globalData } from '$embodi/data';
 
 const convertUrlToPath = async (url: string) => {
 	return routes[url];
@@ -10,10 +10,11 @@ const getPageFromUrl = async (url: string) => {
 	const pageImportFu = pages[addTrailingSlash(url)];
 	if (!pageImportFu) return;
 
-	const {default: page} = await pageImportFu();
+	const loadData = async (url: string) => (await fetch(`${url}data.json`)).json();
+	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
-		...data,
-		...page.data
+		...globalData,
+		...data
 	};
 
 	return {

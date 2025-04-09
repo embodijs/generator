@@ -23,6 +23,12 @@ importers:
       playwright:
         specifier: ^1.51.1
         version: 1.51.1
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
+      prettier-plugin-svelte:
+        specifier: ^3.3.3
+        version: 3.3.3(prettier@3.5.3)(svelte@5.25.7)
       publint:
         specifier: ^0.3.10
         version: 0.3.10
@@ -53,6 +59,9 @@ importers:
       svelte:
         specifier: ^5.25.7
         version: 5.25.7
+      valibot:
+        specifier: ^1.0.0
+        version: 1.0.0(typescript@5.8.2)
 
   packages/embodi:
     dependencies:
@@ -1231,9 +1240,20 @@ packages:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  prettier-plugin-svelte@3.3.3:
+    resolution: {integrity: sha512-yViK9zqQ+H2qZD1w/bH7W8i+bVfKrD8GIFjkFe4Thl6kCT9SlAsXVNmt3jCvQOCsnOhcvYgsoVlRV/Eu6x5nNw==}
+    peerDependencies:
+      prettier: ^3.0.0
+      svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
+
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
+    hasBin: true
+
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
     hasBin: true
 
   publint@0.3.10:
@@ -2564,7 +2584,14 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  prettier-plugin-svelte@3.3.3(prettier@3.5.3)(svelte@5.25.7):
+    dependencies:
+      prettier: 3.5.3
+      svelte: 5.25.7
+
   prettier@2.8.8: {}
+
+  prettier@3.5.3: {}
 
   publint@0.3.10:
     dependencies:

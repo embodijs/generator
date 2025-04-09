@@ -26,16 +26,19 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	for (const url of routesToPrerender) {
 		const rendered = await render(contentDir, url, manifest);
 		if (!rendered) continue;
-		const { html: appHtml, head } = rendered;
+		const { html: appHtml, head, data } = rendered;
 		const html = template
 			.replace(`<!--app-head-->`, head ?? '')
 			.replace(`<!--app-html-->`, appHtml ?? '');
 
 		// const filePath = `dist/static${url === '/' ? '/index' : url.slice(0, -1)}.html`;
 		const filePath = `dist/static${url}index.html`;
-		const file = fs.file(filePath);
-		await file.create();
-		await file.write(html);
+		const dir = fs.dir(`dist/static${url}`);
+		await dir.create();
+		const htmlFile = dir.file('index.html');
+		const dataFile = dir.file('data.json');
+		await htmlFile.write(html);
+		await dataFile.write(JSON.stringify(data));
 	}
 
 	// done, delete .vite directory including ssr manifest

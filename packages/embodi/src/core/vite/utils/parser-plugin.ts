@@ -1,12 +1,12 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
 import { normalize } from 'node:path';
+import * as v from 'valibot';
 interface PageData {
 	layout?: string;
 	[key: string]: any;
 }
 
-const cwd = process.cwd();
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
 export interface ContentParserPluginConfig {
@@ -29,9 +29,13 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				return `\0${id}`;
 			}
 		},
-		load(id) {
+		load(id, config) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
-				return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+				if (!config?.ssr) {
+					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
+				} else {
+					return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+				}
 			}
 		},
 		async transform(code, id) {
@@ -40,9 +44,18 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				const { attributes, body } = fm<PageData>(code);
 				const content = convertContent(body, attributes);
 				const { layout } = attributes;
-				let result = `export const data = ${JSON.stringify(attributes)}; export const html = ${JSON.stringify(content)};`;
+				let result = `export const data = ${JSON.stringify(
+					attributes
+				)}; export const html = ${JSON.stringify(content)};`;
 				if (layout) {
-					result = `export { default as Layout } from '${layout}';\n` + result;
+					result =
+						`
+					import * as l from '${layout}';\n
+					const { Layout, ...layoutDefinition } = l;\n
+					export { Layout, layoutDefinition };\n
+					` + result;
+				} else {
+					result = `export const Layout = undefined;\n` + result;
 				}
 
 				return {
