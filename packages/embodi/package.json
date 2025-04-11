@@ -69,6 +69,7 @@
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
 		"pipe-and-combine": "^0.7.11",
+		"sharp": "^0.34.1",
 		"valibot": "^1.0.0",
 		"vitest": "^3.1.1"
 	},
