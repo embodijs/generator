@@ -8,6 +8,8 @@ import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 import { VIRTUAL_PREFIX } from '$embodi/pages';
 import * as v from 'valibot';
+import sharp from 'sharp';
+import { resolve } from 'path/posix';
 
 const router = createRouter();
 
@@ -54,6 +56,17 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 	return heads.flat().join('\n');
 };
 
+export const e = {
+	image: () =>
+		v.transform(async (value: string) => {
+			const path = value.slice('$assets/'.length);
+			const buffer = await sharp(resolve(process.cwd(), './assets', path))
+				.resize(100, 100)
+				.toBuffer();
+			return buffer;
+		})
+};
+
 export async function render(source: string, url: string, manifest?: Manifest) {
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
@@ -63,8 +76,14 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const pageData = await router.load(url);
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
-	const data = await runLoadAction(pageData);
-	v.assert(layoutDefinition.schema, data);
+	const unevaluatedData = await runLoadAction(pageData);
+	const data = v.parse(
+		layoutDefinition.schema({
+			v,
+			e
+		}),
+		unevaluatedData
+	);
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));

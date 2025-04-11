@@ -95,7 +95,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 		plugins: config.plugins ?? [],
 		inputDirs: {
 			public: publicDir,
-			assets: config.assetsDir ?? '/assets',
+			assets: config.assetsDir ?? './assets',
 			data: config.dataDir ?? '__data',
 			content: config.source ?? '/content',
 			layout: config.layoutDir ?? './__layout'
