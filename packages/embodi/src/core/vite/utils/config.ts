@@ -109,3 +109,19 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 
 	return mixedConfig;
 };
+
+export const getSrcDestDirs = (config: EmbodiConfig) => {
+	const { inputDirs, dist } = config;
+	return {
+		src: {
+			public: inputDirs.public,
+			assets: inputDirs.assets,
+			data: inputDirs.data,
+			content: inputDirs.content,
+			layout: inputDirs.layout
+		},
+		dest: {
+			pages: dist
+		}
+	};
+};

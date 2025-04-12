@@ -10,6 +10,7 @@ import { VIRTUAL_PREFIX } from '$embodi/pages';
 import * as v from 'valibot';
 import sharp from 'sharp';
 import { resolve } from 'path/posix';
+import { FileManager } from '../vite/utils/FileManager.js';
 
 const router = createRouter();
 
@@ -56,31 +57,32 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 	return heads.flat().join('\n');
 };
 
-export const e = {
+export const prepareE = (fileManager: FileManager) => ({
 	image: () =>
-		v.transform(async (value: string) => {
+		v.transformAsync(async (value: string) => {
 			const path = value.slice('$assets/'.length);
 			const buffer = await sharp(resolve(process.cwd(), './assets', path))
 				.resize(100, 100)
-				.toBuffer();
-			return buffer;
-		})
-};
+				.toBuffer()
+			const assetPath = fileManager.addAsset(path, buffer);
+			console.log({ assetPath });
+			return [[100, assetPath]];
+		});
+});
 
-export async function render(source: string, url: string, manifest?: Manifest) {
+export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
 		: '';
-	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
-	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
+
 	const pageData = await router.load(url);
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
 	const unevaluatedData = await runLoadAction(pageData);
-	const data = v.parse(
+	const data = await v.parseAsync(
 		layoutDefinition.schema({
 			v,
-			e
+			e: prepareE(fileManager)
 		}),
 		unevaluatedData
 	);
@@ -91,11 +93,11 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const rendered = renderSvelte(SvelteRoot, {
 		props: { html, Component, Layout, data }
 	});
-	if (!rendered) return;
-	return {
-		head: `${rendered.head ?? ''}\n${head}`,
-		// css: data.css.code === '' ? undefined : `<style>${data.css.code}</style>`,
+	if (!rendered) return false;
+	fileManager.addPage(url, {
+		head: rendered.head ?? '',
 		html: rendered.body,
 		data
-	};
+	});
+	return true;
 }
