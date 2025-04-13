@@ -1,4 +1,5 @@
-import { join } from 'path/posix';
+import { join as joinUrl } from 'path/posix';
+import { join as joinPath } from 'path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { basename, extname } from 'node:path';
@@ -45,8 +46,8 @@ export class FileManager {
 
 	addPage(url: string, data: FileManagerPageData) {
 		assert(this.template, 'Template is not set');
-		const htmlPath = join(url, 'index.html');
-		const dataPath = join(url, 'data.json');
+		const htmlPath = joinUrl(url, 'index.html');
+		const dataPath = joinUrl(url, 'data.json');
 		const html = this.template
 			.replace(`<!--app-head-->`, (data.head ?? '') + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
@@ -80,7 +81,7 @@ export class FileManager {
 
 	addAsset(name: string, content: string | Buffer) {
 		const hash = this.hash(content.toString());
-		const path = join('/assets', this.addHashToFileName(name, hash));
+		const path = joinUrl('/assets', this.addHashToFileName(name, hash));
 		this.files.set(path, content);
 		return path;
 	}
@@ -90,7 +91,7 @@ export class FileManager {
 	}
 
 	getPage(url: string): string | Buffer | undefined {
-		return this.files.get(join(url, 'index.html'));
+		return this.files.get(joinUrl(url, 'index.html'));
 	}
 
 	protected write(path: string, content: string | Buffer) {
@@ -103,7 +104,7 @@ export class FileManager {
 		assert(dest);
 		this.files.forEach((content, path) => {
 			//TODO: get paths from config
-			this.write(join(dest.pages, 'static', path), content);
+			this.write(joinPath(dest.pages, 'static', path), content);
 		});
 	}
 }
