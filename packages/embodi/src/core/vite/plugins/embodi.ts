@@ -198,7 +198,9 @@ export const devServerPlugin = (): Plugin => ({
 		};
 	},
 	configureServer(server) {
-		const fileManager = new FileManager(`<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`);
+		const fileManager = new FileManager({
+		  head: `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
+		});
 		const devServer = async (
 			req: Connect.IncomingMessage,
 			res: ServerResponse,
@@ -209,21 +211,8 @@ export const devServerPlugin = (): Plugin => ({
 				const { inputDirs, statics } = await loadConfig(cwd);
 				let url = req.originalUrl;
         assert(url);
-        const dataFileName = 'data.json';
-        const isDataUrl = url.endsWith(dataFileName);
-        if(isDataUrl) {
+        if(fileManager.has(url)) {
           const data = fileManager.getFile(url);
-          if(!data) {
-            res.writeHead(404, {
-              'Content-Type': 'application/json',
-              'Content-Length': 0
-            });
-            return res.end();
-          }
-          res.writeHead(200, {
-            'Content-Type': 'application/json',
-            'Content-Length': data.length
-          });
           return res.end(data);
         }
 

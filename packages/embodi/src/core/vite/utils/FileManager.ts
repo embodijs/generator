@@ -57,6 +57,10 @@ export class FileManager {
 		return [htmlPath, dataPath];
 	}
 
+	has(url: string) {
+		return this.files.has(url);
+	}
+
 	protected hash(content: string) {
 		const fullHash = crypto.createHash('md5').update(content).digest();
 		// Encode in Base64 and remove any padding (and non-URL friendly characters, if needed)
@@ -87,7 +91,7 @@ export class FileManager {
 	}
 
 	getPage(url: string): string | Buffer | undefined {
-		return this.files.get(join(url, 'data.json'));
+		return this.files.get(join(url, 'index.html'));
 	}
 
 	protected write(path: string, content: string | Buffer) {
