@@ -12,6 +12,7 @@ import sharp, { type Sharp } from 'sharp';
 import { resolve } from 'path/posix';
 import { FileManager } from '../vite/utils/FileManager.js';
 import { extname } from 'path';
+import { src, dest } from '$embodi/config';
 
 const router = createRouter();
 
@@ -90,7 +91,7 @@ const replaceFileType = (path: string, newFormat: string) => {
 };
 
 const loadImage = (path: string) => {
-	const image = sharp(resolve(process.cwd(), './assets', path));
+	const image = sharp(resolve(process.cwd(), src.assets, path));
 	return image;
 };
 
@@ -148,6 +149,7 @@ export const prepareE = (fileManager: FileManager) => ({
 });
 
 export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
+  fileManager.setBasePath({src, dest})
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
 		: '';
@@ -172,7 +174,7 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 	});
 	if (!rendered) return false;
 	fileManager.addPage(url, {
-		head: rendered.head ?? '',
+		head: head ?? '',
 		html: rendered.body,
 		data
 	});

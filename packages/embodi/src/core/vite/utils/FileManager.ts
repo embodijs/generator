@@ -3,29 +3,47 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { basename, extname } from 'node:path';
 import assert from 'node:assert';
+import type { getSrcDestDirs } from './config.js';
 
-type FileManagerOptions = {
+type FileManagerPageData = {
 	html: string;
 	data: Record<string, unknown>;
 	head: string;
 };
 
+type BaseSrc = ReturnType<typeof getSrcDestDirs>['src'];
+type BaseDest = ReturnType<typeof getSrcDestDirs>['dest'];
+
+type FileManagerOptions = {
+	head?: string;
+	template?: string;
+	src?: BaseSrc;
+	dest?: BaseDest;
+}
+
 export class FileManager {
 	protected files: Map<string, string | Buffer>;
 	protected template: string | undefined;
 	protected head: string;
+	protected baseSrc: BaseSrc | undefined;
+	protected baseDest: BaseDest | undefined;
 
-	constructor(head?: string, template?: string) {
+	constructor(options: FileManagerOptions = {}) {
 		this.files = new Map();
-		this.template = template;
-		this.head = head ?? '';
+		this.template = options.template;
+		this.head = options.head ?? '';
 	}
 
 	setTemplate(template: string) {
 		this.template = template;
 	}
 
-	addPage(url: string, data: FileManagerOptions) {
+	setBasePath(basePaths: Pick<FileManagerOptions, 'src' | 'dest'>) {
+		this.baseSrc = basePaths.src;
+		this.baseDest = basePaths.dest;
+	}
+
+	addPage(url: string, data: FileManagerPageData) {
 		assert(this.template, 'Template is not set');
 		console.log({ url, data });
 		const htmlPath = join(url, 'index.html');
@@ -59,7 +77,7 @@ export class FileManager {
 
 	addAsset(name: string, content: string | Buffer) {
 		const hash = this.hash(content.toString());
-		const path = join('assets', this.addHashToFileName(name, hash));
+		const path = join('/assets', this.addHashToFileName(name, hash));
 		this.files.set(path, content);
 		return path;
 	}
@@ -78,10 +96,11 @@ export class FileManager {
 	}
 
 	writeFiles() {
-		console.log(this.files.size);
+    const dest = this.baseDest;
+		assert(dest);
 		this.files.forEach((content, path) => {
 			//TODO: get paths from config
-			this.write(join('dist', 'static', path), content);
+			this.write(join(dest.pages, 'static', path), content);
 		});
 	}
 }
