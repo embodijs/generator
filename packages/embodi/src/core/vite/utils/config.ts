@@ -22,6 +22,7 @@ export const EmbodiUserConfigSchema = v.object({
 	dataDir: v.optional(v.string()),
 	source: v.optional(FullPathSchema),
 	layoutDir: v.optional(v.string()),
+	assetsDir: v.optional(v.string()),
 	publicDir: v.optional(v.string()),
 	plugins: v.optional(v.array(VitePluginSchema))
 });
@@ -31,6 +32,7 @@ export type EmbodiUserConfig = v.InferOutput<typeof EmbodiUserConfigSchema>;
 export interface PublicDirs {
 	public: string;
 	data: string;
+	assets: string;
 	content: `/${string}`;
 	layout: string;
 }
@@ -93,6 +95,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 		plugins: config.plugins ?? [],
 		inputDirs: {
 			public: publicDir,
+			assets: config.assetsDir ?? './assets',
 			data: config.dataDir ?? '__data',
 			content: config.source ?? '/content',
 			layout: config.layoutDir ?? './__layout'
@@ -105,4 +108,20 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 	};
 
 	return mixedConfig;
+};
+
+export const getSrcDestDirs = (config: EmbodiConfig) => {
+	const { inputDirs, dist } = config;
+	return {
+		src: {
+			public: inputDirs.public,
+			assets: inputDirs.assets,
+			data: inputDirs.data,
+			content: inputDirs.content,
+			layout: inputDirs.layout
+		},
+		dest: {
+			pages: dist
+		}
+	};
 };

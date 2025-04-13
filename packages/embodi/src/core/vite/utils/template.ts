@@ -1,31 +1,31 @@
-import * as v from 'valibot';
+import type { ObjectSchema, TransformAction } from 'valibot';
 import { importConfigFile, type EmbodiConfig } from './config.js';
 import { join } from 'node:path';
 
-export const ValibotSchema = v.custom<v.ObjectSchema<any, any>>(() => true);
-
-export const LayoutSchema = v.object({
-	component: v.string(),
-	schema: ValibotSchema
-});
-
-export type Layout = v.InferOutput<typeof LayoutSchema>;
-
-export const loadLayouts = async (
-	cwd: string = process.cwd(),
-	{ inputDirs: { layout } }: EmbodiConfig
-): Promise<Record<string, Layout> | undefined> => {
-	const fileImport = await importConfigFile('layout.config', join(cwd, layout));
-
-	if (!fileImport.layouts) {
-		return;
-	}
-
-	const layouts = v.parse(v.record(v.string(), LayoutSchema), fileImport.layouts);
-
-	return layouts;
+export type Layout = {
+	component: string;
+	schema: (validate: {
+		v: typeof import('valibot');
+		e: {
+			image: () => TransformAction<string, [number, string][]>;
+		};
+	}) => ObjectSchema<any, any>;
 };
 
+export const prepareComponentLoad = async (
+	cwd: string = process.cwd(),
+	{ inputDirs: { layout } }: EmbodiConfig
+) => {
+	const fileImport = await importConfigFile('layout.config', join(cwd, layout));
+
+	return (component: string): string | undefined => {
+		if (!fileImport.layouts) {
+			return;
+		}
+
+		return fileImport.layouts[component].component;
+	};
+};
 export const getLayoutNames = async (layouts: Layout[]) => {
 	return Object.keys(layouts);
 };

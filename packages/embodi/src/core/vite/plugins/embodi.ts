@@ -2,7 +2,7 @@ import { type Connect, type Plugin, type UserConfig } from 'vite';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { relative } from 'node:path';
-import { loadConfig } from '../utils/config.js';
+import { getSrcDestDirs, loadConfig } from '../utils/config.js';
 import { prerender } from '../utils/prerender.js';
 import packageJson from '../../../../package.json' with { type: 'json' };
 import {
@@ -27,6 +27,7 @@ import { generateHooksCode } from '../code-builder/hooks.js';
 import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 import assert from 'node:assert';
+import { FileManager } from '../utils/FileManager.js';
 
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
@@ -48,6 +49,7 @@ export const configPlugin = (): Plugin => ({
 				...config.resolve,
 				alias: {
 					'$embodi/*': resolve(cf, './virtual-modules/embodi/*'),
+					$assets: resolve(cwd, projectConfig.inputDirs.assets),
 					// $layout: resolve(cwd, projectConfig.inputDirs.layout)
 				}
 			},
@@ -76,6 +78,7 @@ export const virtualPlugin = (): Plugin => ({
 			validatePageId.resolve(id),
 			validateEmbodiId.resolve(
 				id,
+				'config',
 				'pages',
 				'paths',
 				'data',
@@ -88,15 +91,19 @@ export const virtualPlugin = (): Plugin => ({
 		);
 	},
 	async load(id, options) {
-		if (validatePageId.load(id)) {
-			const config = await loadConfig(cwd);
-			const [pageMap, linkRef] = await generateContentMap(config.inputDirs);
-			const pageCode = await generatePageCode(
-				pageMap.map(({ data, ...page }) => ({ ...page, data: options?.ssr ? data : null })),
-				linkRef,
-				validatePageId.getPath(id)
-			);
-			return pageCode;
+    if (validatePageId.load(id)) {
+      const config = await loadConfig(cwd);
+      const [pageMap, linkRef] = await generateContentMap(config.inputDirs);
+      const pageCode = await generatePageCode(
+        pageMap.map(({ data, ...page }) => ({ ...page, data: options?.ssr ? data : null })),
+        linkRef,
+        validatePageId.getPath(id)
+      );
+      return pageCode;
+    } else if (validateEmbodiId.load(id, 'config')) {
+      const config = await loadConfig(cwd);
+      const { src, dest } = getSrcDestDirs(config);
+      return `export const src = ${JSON.stringify(src)};\nexport const dest = ${JSON.stringify(dest)};`
 		} else if (validateEmbodiId.load(id, 'pages')) {
 			const config = await loadConfig(cwd);
 			const contentMap = await generateContentMap(config.inputDirs);
@@ -191,6 +198,9 @@ export const devServerPlugin = (): Plugin => ({
 		};
 	},
 	configureServer(server) {
+		const fileManager = new FileManager({
+		  head: `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
+		});
 		const devServer = async (
 			req: Connect.IncomingMessage,
 			res: ServerResponse,
@@ -201,35 +211,23 @@ export const devServerPlugin = (): Plugin => ({
 				const { inputDirs, statics } = await loadConfig(cwd);
 				let url = req.originalUrl;
         assert(url);
-        const dataFileName = 'data.json';
-        const isDataUrl = url.endsWith(dataFileName);
-        if(isDataUrl) {
-          url = url.slice(0, -dataFileName.length)
+        if(fileManager.has(url)) {
+          const data = fileManager.getFile(url);
+          return res.end(data);
         }
 
 				const rawTemplate = await loadAppHtml(statics);
 				const template = await server.transformIndexHtml(url, rawTemplate);
-				const linkToClient = `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`;
+				fileManager.setTemplate(template)
 				const { render } = await server.ssrLoadModule(
 					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
 				);
 
-				const rendered = await render(inputDirs.content, url);
-				if (!rendered) {
-					return next();
-				} else if(isDataUrl) {
-          const {data} = rendered;
-          const jsonStr = JSON.stringify(data);
-					res.writeHead(200, {
-						'Content-Type': 'application/json',
-						'Content-Length': jsonStr.length
-					});
-					return res.end(jsonStr);
+				await render(url, fileManager);
+				const html = fileManager.getPage(url)
+				if(!html) {
+          return next();
 				}
-
-				const html = template
-					.replace(`<!--app-head-->`, (rendered.head ?? '') + linkToClient)
-					.replace(`<!--app-html-->`, rendered.html ?? '');
 				res.writeHead(200, {
 					'Content-Type': 'text/html',
 					'Content-Length': html.length

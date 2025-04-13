@@ -8,6 +8,11 @@ import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 import { VIRTUAL_PREFIX } from '$embodi/pages';
 import * as v from 'valibot';
+import sharp, { type Sharp } from 'sharp';
+import { resolve } from 'path';
+import { FileManager } from '../vite/utils/FileManager.js';
+import { extname } from 'path';
+import { src, dest } from '$embodi/config';
 
 const router = createRouter();
 
@@ -54,17 +59,112 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 	return heads.flat().join('\n');
 };
 
-export async function render(source: string, url: string, manifest?: Manifest) {
+type ImageFormat = {
+	width: number;
+	format: 'webp' | 'png' | 'jpg';
+};
+
+
+export type ImageFile = {
+	width: number;
+	src: string;
+};
+
+export type DefaultImageFile = {
+  original: true;
+	src: string;
+};
+
+export type ImageFiles = [
+  DefaultImageFile,
+  ...ImageFile[],
+]
+
+const generateImageWidths = (widths: number[], format: ImageFormat['format']): ImageFormat[] => {
+	return widths.map((width) => ({ width, format }));
+};
+
+const replaceFileType = (path: string, newFormat: string) => {
+	const ext = extname(path);
+	const regEx = new RegExp(`${ext}$`);
+	return path.replace(regEx, `.${newFormat}`);
+};
+
+const loadImage = (path: string) => {
+	const image = sharp(resolve(process.cwd(), src.assets, path));
+	return image;
+};
+
+const transformImage = async (path: string, imageFormat: ImageFormat) => {
+  const image = loadImage(path);
+  const steps = ['orient', ...Object.keys(imageFormat)]
+
+  return steps.reduce((image, step) => {
+    if (step === 'orient') {
+      return image.autoOrient();
+    } else if (step === 'width') {
+      return image.resize(imageFormat!.width);
+    } else if (step === 'format') {
+      return image.toFormat(imageFormat!.format);
+    }
+    return image;
+  }, image).toBuffer();
+}
+
+const transformImageWithStore = async (fileManager: FileManager, path: string, imageFormat: ImageFormat): Promise<ImageFile> => {
+  const transformedImage = await transformImage(path, imageFormat);
+  const newPath = replaceFileType(path, imageFormat.format);
+  const assetPath = fileManager.addAsset(newPath, transformedImage);
+  return {
+    width: imageFormat.width,
+    src: assetPath
+  };
+}
+
+const transformDefaultImageWithStore = async (fileManager: FileManager, path: string): Promise<DefaultImageFile> => {
+  const image = loadImage(path).autoOrient().resize({
+    width: 2000
+  });
+
+  const imageBuffer = await image.toBuffer();
+  const assetPath = fileManager.addAsset(path, imageBuffer);
+  return {
+    original: true,
+    src: assetPath
+  };
+}
+
+
+export const prepareE = (fileManager: FileManager) => ({
+	image: (formats: ImageFormat[] = generateImageWidths([300, 700, 1300, 2000], 'webp')) =>
+		v.transformAsync(async (value: string) => {
+		  const path = value.slice('$assets/'.length);
+			return [
+  			await transformDefaultImageWithStore(fileManager, path),
+  			...(await Promise.all(
+  				formats.map((format) => transformImageWithStore(fileManager, path, format))
+  			))
+			] satisfies ImageFiles;
+		})
+});
+
+export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
+  fileManager.setBasePath({src, dest})
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
 		: '';
-	//const entryHead = manifest ? createHeadFromManifest(manifest, entryClient) : '';
-	//const scripts = createScriptTags(manifes[router.path(url).slice(1)]);
+
 	const pageData = await router.load(url);
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
-	const data = await runLoadAction(pageData);
-	v.assert(layoutDefinition.schema, data);
+	const unevaluatedData = await runLoadAction(pageData);
+	const data = await v.parseAsync(
+		layoutDefinition.schema({
+			v,
+			e: prepareE(fileManager)
+		}),
+		unevaluatedData
+	);
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
@@ -72,11 +172,11 @@ export async function render(source: string, url: string, manifest?: Manifest) {
 	const rendered = renderSvelte(SvelteRoot, {
 		props: { html, Component, Layout, data }
 	});
-	if (!rendered) return;
-	return {
-		head: `${rendered.head ?? ''}\n${head}`,
-		// css: data.css.code === '' ? undefined : `<style>${data.css.code}</style>`,
+	if (!rendered) return false;
+	fileManager.addPage(url, {
+		head: head ?? '',
 		html: rendered.body,
 		data
-	};
+	});
+	return true;
 }
