@@ -27,7 +27,6 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const fileManage = new FileManager();
 	fileManage.setTemplate(template);
 	await Promise.all(routesToPrerender.map((url) => render(url, fileManage, manifest)));
-	console.log('Write files!');
 	fileManage.writeFiles();
 
 	// done, delete .vite directory including ssr manifest

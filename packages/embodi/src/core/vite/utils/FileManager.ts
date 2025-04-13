@@ -45,7 +45,6 @@ export class FileManager {
 
 	addPage(url: string, data: FileManagerPageData) {
 		assert(this.template, 'Template is not set');
-		console.log({ url, data });
 		const htmlPath = join(url, 'index.html');
 		const dataPath = join(url, 'data.json');
 		const html = this.template
