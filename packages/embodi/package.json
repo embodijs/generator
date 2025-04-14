@@ -48,11 +48,11 @@
 	"type": "module",
 	"devDependencies": {
 		"@loom-io/in-memory-adapter": "0.12.11",
-		"@sveltejs/package": "^2.3.10",
+		"@sveltejs/package": "^2.3.11",
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
 		"esbuild": "^0.25.2",
-		"rollup": "^4.39.0"
+		"rollup": "^4.40.0"
 	},
 	"peerDependencies": {
 		"svelte": "^5.23.0",
