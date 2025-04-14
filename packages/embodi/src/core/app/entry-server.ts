@@ -158,13 +158,13 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
 	const unevaluatedData = await runLoadAction(pageData);
-	const data = await v.parseAsync(
-		layoutDefinition.schema({
-			v,
-			e: prepareE(fileManager)
-		}),
-		unevaluatedData
-	);
+  const data = layoutDefinition.hasOwnProperty('schema') ? await v.parseAsync(
+    layoutDefinition.schema({
+      v,
+      e: prepareE(fileManager)
+    }),
+    unevaluatedData
+  ) : unevaluatedData;
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
