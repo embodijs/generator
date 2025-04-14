@@ -52,7 +52,7 @@
 		"@types/markdown-it": "^14.1.2",
 		"@types/minimist": "^1.2.5",
 		"esbuild": "^0.25.2",
-		"rollup": "^4.39.0"
+		"rollup": "^4.40.0"
 	},
 	"peerDependencies": {
 		"svelte": "^5.23.0",
