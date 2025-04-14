@@ -6,16 +6,22 @@
 </script>
 
 <main>
+  <div class="img">
     <Image images={data.hero} alt="Hero" />
-
+  </div>
   <h1>{data.title}</h1>
   <h2>{data.subtitle}</h2>
-  <div>{data.loadContent}</div>
+  {#if data.loadContent}
+    <div>{data.loadContent}</div>
+  {/if}
   {@render children?.()}
 </main>
 
 <style>
-    h2 {
-        font-size: 3rem;
-    }
+  .img {
+    width: 50vw;
+  }
+  h2 {
+    font-size: 3rem;
+  }
 </style>

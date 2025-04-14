@@ -13,7 +13,7 @@
   "devDependencies": {
     "embodi": "workspace:*",
     "sharp": "^0.34.1",
-    "svelte": "^5.25.7",
+    "svelte": "^5.26.3",
     "valibot": "^1.0.0"
   }
 }

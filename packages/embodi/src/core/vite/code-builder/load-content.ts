@@ -11,7 +11,7 @@ import { normalize } from 'node:path';
 import { normalizePath } from 'vite';
 import { addTrailingSlash } from '../utils/paths.js';
 
-enum FILE_TYPE {
+export enum FILE_TYPE {
 	INDEX,
 	PAGE,
 	DATA
@@ -110,7 +110,7 @@ export const getAllFiles = async (publicDirs: PublicDirs) => {
 	const { content } = publicDirs;
 	const dir = adapter.dir(content);
 	const files = (await dir.files(true)).asArray();
-	const { pages, data, scripts } = splitPagesAndData(files);
+	const { pages, data, scripts } = groupFilesByType(files);
 
 	return {
 		contentDir: dir,
@@ -124,7 +124,7 @@ const isIngnoredFile = (file: LoomFile) => ['.DS_Store'].includes(file.name);
 const isDataFile = (file: LoomFile) => file.name.startsWith('+data.');
 const isScriptFile = (file: LoomFile) => file.extension === 'js' || file.extension === 'ts';
 
-export const splitPagesAndData = (files: LoomFile[]) => {
+export const groupFilesByType = (files: LoomFile[]) => {
 	return files.reduce(
 		(acc, file) => {
 			if (isIngnoredFile(file)) {
@@ -161,7 +161,7 @@ const readFileData = async (file: LoomFile): Promise<Record<string, unknown>> =>
 	}
 };
 
-type UrlMap = [NormalizeUrlPath, number, FILE_TYPE];
+export type UrlMap = [NormalizeUrlPath, number, FILE_TYPE];
 
 const mapUrlToArray = (
 	files: LoomFile[],
@@ -191,19 +191,16 @@ export const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): numbe
 	return importRef;
 };
 
-const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
+export const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
 	const rootUrl = '/';
 	const [pageUrl, pageRef, fileType] = pageMap;
-	const dataRef = getRefByUrl(pageUrl, dataMap);
 	const urlParts = splitNormalizedUrlPath(pageUrl);
 	fileType !== FILE_TYPE.INDEX && urlParts.pop(); // remove last if not index file
-	if (urlParts.length === 0) {
-		return dataRef != null ? [dataRef] : [];
-	}
 
-	const rootNode: [NormalizeUrlPath, number[]] = [rootUrl, dataRef ? [dataRef] : []];
-	const [, refs] = urlParts.reduce(([url, refs], part) => {
+	const rootNode: [NormalizeUrlPath, number[]] = ['' as NormalizeUrlPath, []];
+	const [, refs] = ['', ...urlParts].reduce(([url, refs], part) => {
 		const current: NormalizeUrlPath = `${url}${part}/`;
+
 		const dataRef = getRefByUrl(current, dataMap);
 		if (dataRef == null) {
 			return [current, refs];
