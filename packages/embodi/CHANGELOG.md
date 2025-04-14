@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.1
+
+### Patch Changes
+
+- f959b68: Set the new layout mechanism to layout2 and keep the old one to approve new mechanism. Old mechanism will be marked as depricted in near future
+
 ## 0.11.0
 
 ### Minor Changes
