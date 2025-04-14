@@ -59,11 +59,16 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 	return heads.flat().join('\n');
 };
 
-type ImageFormat = {
-	width: number;
-	format: 'webp' | 'png' | 'jpg';
-};
-
+type ImageFormat =
+	| {
+			width?: number;
+			format: 'png';
+	  }
+	| {
+			width?: number;
+			format: 'webp' | 'jpg';
+			quality?: number;
+	  };
 
 export type ImageFile = {
 	width: number;
@@ -71,14 +76,11 @@ export type ImageFile = {
 };
 
 export type DefaultImageFile = {
-  original: true;
+	original: true;
 	src: string;
 };
 
-export type ImageFiles = [
-  DefaultImageFile,
-  ...ImageFile[],
-]
+export type ImageFiles = [DefaultImageFile, ...ImageFile[]];
 
 const generateImageWidths = (widths: number[], format: ImageFormat['format']): ImageFormat[] => {
 	return widths.map((width) => ({ width, format }));
@@ -96,60 +98,77 @@ const loadImage = (path: string) => {
 };
 
 const transformImage = async (path: string, imageFormat: ImageFormat) => {
-  const image = loadImage(path);
-  const steps = ['orient', ...Object.keys(imageFormat)]
+	const { width, format } = imageFormat;
+	let image = loadImage(path).autoOrient();
 
-  return steps.reduce((image, step) => {
-    if (step === 'orient') {
-      return image.autoOrient();
-    } else if (step === 'width') {
-      return image.resize(imageFormat!.width);
-    } else if (step === 'format') {
-      return image.toFormat(imageFormat!.format);
-    }
-    return image;
-  }, image).toBuffer();
-}
+	if (width) {
+		image = image.resize({
+			width
+		});
+	}
 
-const transformImageWithStore = async (fileManager: FileManager, path: string, imageFormat: ImageFormat): Promise<ImageFile> => {
-  const transformedImage = await transformImage(path, imageFormat);
-  const newPath = replaceFileType(path, imageFormat.format);
-  const assetPath = fileManager.addAsset(newPath, transformedImage);
-  return {
-    width: imageFormat.width,
-    src: assetPath
-  };
-}
+	if (format) {
+		if (format === 'png') {
+			image = image.png();
+		} else if (format === 'webp') {
+			image = image.webp({
+				quality: imageFormat.quality ?? 80
+			});
+		} else if (format === 'jpg') {
+			image = image.jpeg({
+				quality: imageFormat.quality ?? 80
+			});
+		}
+	}
 
-const transformDefaultImageWithStore = async (fileManager: FileManager, path: string): Promise<DefaultImageFile> => {
-  const image = loadImage(path).autoOrient().resize({
-    width: 2000
-  });
+	return image.toBuffer();
+};
 
-  const imageBuffer = await image.toBuffer();
-  const assetPath = fileManager.addAsset(path, imageBuffer);
-  return {
-    original: true,
-    src: assetPath
-  };
-}
+const transformImageWithStore = async (
+	fileManager: FileManager,
+	path: string,
+	imageFormat: ImageFormat
+): Promise<ImageFile> => {
+	const transformedImage = await transformImage(path, imageFormat);
+	const newPath = replaceFileType(path, imageFormat.format);
+	const assetPath = fileManager.addAsset(newPath, transformedImage);
+	return {
+		width: imageFormat.width,
+		src: assetPath
+	};
+};
 
+const transformDefaultImageWithStore = async (
+	fileManager: FileManager,
+	path: string
+): Promise<DefaultImageFile> => {
+	const image = loadImage(path).autoOrient().resize({
+		width: 2000
+	});
+
+	const imageBuffer = await image.toBuffer();
+	const assetPath = fileManager.addAsset(path, imageBuffer);
+	return {
+		original: true,
+		src: assetPath
+	};
+};
 
 export const prepareE = (fileManager: FileManager) => ({
 	image: (formats: ImageFormat[] = generateImageWidths([300, 700, 1300, 2000], 'webp')) =>
 		v.transformAsync(async (value: string) => {
-		  const path = value.slice('$assets/'.length);
+			const path = value.slice('$assets/'.length);
 			return [
-  			await transformDefaultImageWithStore(fileManager, path),
-  			...(await Promise.all(
-  				formats.map((format) => transformImageWithStore(fileManager, path, format))
-  			))
+				await transformDefaultImageWithStore(fileManager, path),
+				...(await Promise.all(
+					formats.map((format) => transformImageWithStore(fileManager, path, format))
+				))
 			] satisfies ImageFiles;
 		})
 });
 
 export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
-  fileManager.setBasePath({src, dest})
+	fileManager.setBasePath({ src, dest });
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
 		: '';
@@ -158,13 +177,15 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
 	const unevaluatedData = await runLoadAction(pageData);
-  const data = layoutDefinition?.hasOwnProperty('schema') ? await v.parseAsync(
-    layoutDefinition.schema({
-      v,
-      e: prepareE(fileManager)
-    }),
-    unevaluatedData
-  ) : unevaluatedData;
+	const data = layoutDefinition?.hasOwnProperty('schema')
+		? await v.parseAsync(
+				layoutDefinition.schema({
+					v,
+					e: prepareE(fileManager)
+				}),
+				unevaluatedData
+			)
+		: unevaluatedData;
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
