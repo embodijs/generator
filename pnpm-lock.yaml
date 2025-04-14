@@ -152,7 +152,7 @@ importers:
         version: 4.0.15(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))
       embodi:
         specifier: ^0.10.0
-        version: 0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1)
+        version: 0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.39.0)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1)
       lucide-svelte:
         specifier: ^0.474.0
         version: 0.474.0(svelte@5.23.2)
@@ -2446,7 +2446,7 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
-  embodi@0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1):
+  embodi@0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.39.0)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1):
     dependencies:
       '@loom-io/converter': 0.12.11(@loom-io/core@0.12.11)
       '@loom-io/core': 0.12.11

@@ -8,7 +8,7 @@ import { join } from 'path/posix';
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
 	let projectConfig: EmbodiConfig;
-	let layoutValidator = prepareIdValidator('$layout/');
+	let layoutValidator = prepareIdValidator('$layout2/');
 	return {
 		name: 'vite-embodi-template-plugin',
 		async configResolved(config) {

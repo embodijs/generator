@@ -1,7 +1,7 @@
 ---
 title: Welcome to Embodi
 hero: $assets/chain.jpg
-layout: $layout/home
+layout: $layout2/home
 ---
 
 ## Introduction
