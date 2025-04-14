@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.5
+
+### Patch Changes
+
+- 44b941b: Fix +data load and some minor fixes
+
 ## 0.11.4
 
 ### Patch Changes
