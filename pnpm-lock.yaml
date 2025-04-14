@@ -151,8 +151,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.15(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))
       embodi:
-        specifier: ^0.10.0
-        version: 0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1)
+        specifier: ^0.11.0
+        version: 0.11.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.39.0)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1)
       lucide-svelte:
         specifier: ^0.474.0
         version: 0.474.0(svelte@5.23.2)
@@ -999,8 +999,8 @@ packages:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
 
-  embodi@0.10.0:
-    resolution: {integrity: sha512-J1rw7pbGSx9mFs5DtHA40QXdiL3aIWzw60efxK7HEzOVpF5xvKieiE+pZ5yqyTBpgtwMYYscIXjcT21x+Xjtmg==}
+  embodi@0.11.0:
+    resolution: {integrity: sha512-VYfU8QcjvUMFRp2m79ea3sWb87hSDu/x6nPNEJ7xWXlaFM5sCDooLx4HlhelpqaHwO52dsXwe82tk+W5+aqP8A==}
     hasBin: true
     peerDependencies:
       svelte: ^5.23.0
@@ -2446,7 +2446,7 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
-  embodi@0.10.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1):
+  embodi@0.11.0(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.39.0)(svelte@5.23.2)(typescript@5.8.2)(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1))(yaml@2.7.1):
     dependencies:
       '@loom-io/converter': 0.12.11(@loom-io/core@0.12.11)
       '@loom-io/core': 0.12.11
@@ -2460,8 +2460,10 @@ snapshots:
       markdown-it: 14.1.0
       minimist: 1.2.8
       pipe-and-combine: 0.7.11
+      sharp: 0.34.1
       svelte: 5.23.2
       typescript: 5.8.2
+      valibot: 1.0.0(typescript@5.8.2)
       vite: 6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1)
       vitest: 3.1.1(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.1)
     transitivePeerDependencies:
