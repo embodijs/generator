@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.6
+
+### Patch Changes
+
+- 0b5a48a: Set image quality to 80 by default and give option to set quatlity
+
 ## 0.11.5
 
 ### Patch Changes
