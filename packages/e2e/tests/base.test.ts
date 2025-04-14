@@ -20,4 +20,16 @@ test.describe('Embodi build and binding', () => {
     await page.goto('/');
     await expect(page.getByText('Hello, load action!')).toBeVisible();
   });
+
+  test('only markdown', async ({ page }) => {
+    await page.goto('/first/');
+    await expect(page.getByRole('heading', { name: 'Test' })).toBeVisible();
+  });
+
+  test('second level index', async ({ page }) => {
+    await page.goto('/second/');
+    await expect(page.getByRole('heading', { name: 'Welcome to Embodi' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Data subtitle' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'This is some random second page' })).toBeVisible();
+  });
 });

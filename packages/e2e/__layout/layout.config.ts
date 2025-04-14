@@ -7,7 +7,7 @@ const home = defineLayout({
       title: v.string(),
       hero: e.image(),
       subtitle: v.string(),
-      loadContent: v.string()
+      loadContent: v.optional(v.string())
     })
 });
 
