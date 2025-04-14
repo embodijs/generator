@@ -1,4 +1,4 @@
-import type { ObjectSchema, TransformAction } from 'valibot';
+import type { ObjectSchema, ObjectSchemaAsync, TransformAction } from 'valibot';
 import { importConfigFile, type EmbodiConfig } from './config.js';
 import { join } from 'node:path';
 
@@ -9,7 +9,7 @@ export type Layout = {
 		e: {
 			image: () => TransformAction<string, [number, string][]>;
 		};
-	}) => ObjectSchema<any, any>;
+	}) => ObjectSchema<any, any> | ObjectSchemaAsync<any, any>;
 };
 
 export const prepareComponentLoad = async (

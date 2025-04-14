@@ -2,7 +2,7 @@ import { join as joinUrl } from 'path/posix';
 import { join as joinPath } from 'path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import { basename, extname } from 'node:path';
+import { basename, dirname, extname } from 'node:path';
 import assert from 'node:assert';
 import type { getSrcDestDirs } from './config.js';
 
@@ -96,6 +96,7 @@ export class FileManager {
 
 	protected write(path: string, content: string | Buffer) {
 		console.info(`Write file ${path}`);
+		fs.mkdirSync(dirname(path), { recursive: true });
 		fs.writeFileSync(path, content);
 	}
 

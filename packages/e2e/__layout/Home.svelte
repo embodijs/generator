@@ -6,8 +6,9 @@
 </script>
 
 <main>
+    <div class="img">
     <Image images={data.hero} alt="Hero" />
-
+</div>
   <h1>{data.title}</h1>
   <h2>{data.subtitle}</h2>
   <div>{data.loadContent}</div>
@@ -15,6 +16,9 @@
 </main>
 
 <style>
+    .img {
+        width: 50vw;
+    }
     h2 {
         font-size: 3rem;
     }

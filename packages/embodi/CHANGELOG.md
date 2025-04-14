@@ -1,5 +1,23 @@
 # embodi
 
+## 0.11.4
+
+### Patch Changes
+
+- mkdir before writing file
+
+## 0.11.3
+
+### Patch Changes
+
+- Fix undefined
+
+## 0.11.2
+
+### Patch Changes
+
+- d1fe2eb: for existing (old) $layout mechanism schema need to be optional
+
 ## 0.11.1
 
 ### Patch Changes

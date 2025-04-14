@@ -158,7 +158,7 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 	if (!pageData) return;
 	const { html, Component, Layout, layoutDefinition } = pageData;
 	const unevaluatedData = await runLoadAction(pageData);
-  const data = layoutDefinition.hasOwnProperty('schema') ? await v.parseAsync(
+  const data = layoutDefinition?.hasOwnProperty('schema') ? await v.parseAsync(
     layoutDefinition.schema({
       v,
       e: prepareE(fileManager)
