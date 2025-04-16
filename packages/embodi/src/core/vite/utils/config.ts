@@ -125,3 +125,10 @@ export const getSrcDestDirs = (config: EmbodiConfig) => {
 		}
 	};
 };
+
+type EmbodiConfigModule = ReturnType<typeof getSrcDestDirs>;
+
+declare module '$embodi/config' {
+	export const src: EmbodiConfigModule['src'];
+	export const dest: EmbodiConfigModule['dest'];
+}
