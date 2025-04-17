@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.8
+
+### Patch Changes
+
+- 2479aa3: Rendered head of svelte is missing in prerendering head
+
 ## 0.11.7
 
 ### Patch Changes
