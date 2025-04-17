@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.7
+
+### Patch Changes
+
+- 3c1011e: Add url to collection record
+
 ## 0.11.6
 
 ### Patch Changes
