@@ -195,7 +195,7 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 	});
 	if (!rendered) return false;
 	fileManager.addPage(url, {
-		head: head ?? '',
+		head: `${rendered.head ?? ''}\n${head}`,
 		html: rendered.body,
 		data
 	});
