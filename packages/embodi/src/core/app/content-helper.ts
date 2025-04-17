@@ -7,7 +7,10 @@ export const loadPages = async <T extends string>(
 	return Promise.all(
 		urls.map(async (url) => {
 			const page = pages[url];
-			return (await page()).default;
+			return {
+				...(await page()).default,
+				url
+			};
 		})
 	);
 };
