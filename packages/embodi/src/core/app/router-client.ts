@@ -9,8 +9,12 @@ const convertUrlToPath = async (url: string) => {
 const getPageFromUrl = async (url: string) => {
 	const pageImportFu = pages[addTrailingSlash(url)];
 	if (!pageImportFu) return;
-
-	const loadData = async (url: string) => (await fetch(`${url}data.json`)).json();
+	const controller = new AbortController();
+	const loadData = async (url: string) =>
+		(await fetch(`${url}data.json`, { signal: controller.signal })).json();
+	window.addEventListener('pagehide', () => {
+		controller.abort();
+	});
 	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
 		...globalData,
