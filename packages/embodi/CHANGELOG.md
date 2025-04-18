@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.9
+
+### Patch Changes
+
+- 1be22a8: abort load of data from frontend on pagehide
+
 ## 0.11.8
 
 ### Patch Changes
