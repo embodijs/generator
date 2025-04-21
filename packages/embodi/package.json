@@ -49,8 +49,8 @@
 	"devDependencies": {
 		"@loom-io/in-memory-adapter": "0.12.11",
 		"@sveltejs/package": "^2.3.11",
+		"@types/html-minifier-terser": "^7.0.2",
 		"@types/markdown-it": "^14.1.2",
-		"@types/minimist": "^1.2.5",
 		"esbuild": "^0.25.2",
 		"rollup": "^4.40.0"
 	},
@@ -69,6 +69,7 @@
 		"@modyfi/vite-plugin-yaml": "^1.1.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"front-matter": "^4.0.2",
+		"html-minifier-terser": "^7.2.0",
 		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
 		"pipe-and-combine": "^0.7.11",
