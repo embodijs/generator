@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { intro, text, outro, isCancel } from '@clack/prompts';
+import { intro, text, outro, isCancel, confirm } from '@clack/prompts';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { bold, cyan, grey, yellow } from 'kleur/colors';
 import { resolve } from 'node:path';
@@ -29,7 +29,7 @@ const templateDir = await currentDir.subDir('templates');
 const cwd = await adapter.dir(resolve(cwdString));
 
 if (await cwd.exists()) {
-  const force = await confirm({
+  const force = confirm({
     message: `Directory ${cwdString} is not empty. Continue anyway?`,
     initialValue: false
   });
