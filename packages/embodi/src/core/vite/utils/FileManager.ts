@@ -20,7 +20,7 @@ type FileManagerOptions = {
 	template?: string;
 	src?: BaseSrc;
 	dest?: BaseDest;
-}
+};
 
 export class FileManager {
 	protected files: Map<string, string | Buffer>;
@@ -48,8 +48,9 @@ export class FileManager {
 		assert(this.template, 'Template is not set');
 		const htmlPath = joinUrl(url, 'index.html');
 		const dataPath = joinUrl(url, 'data.json');
+		const preloadDataSnippet = `<link rel="preload" type="application/json" href="${dataPath}" as="fetch" crossorigin="anonymous"></script>`;
 		const html = this.template
-			.replace(`<!--app-head-->`, (data.head ?? '') + this.head)
+			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
 		this.files.set(htmlPath, html);
 		this.files.set(dataPath, JSON.stringify(data.data));
@@ -101,7 +102,7 @@ export class FileManager {
 	}
 
 	writeFiles() {
-    const dest = this.baseDest;
+		const dest = this.baseDest;
 		assert(dest);
 		this.files.forEach((content, path) => {
 			//TODO: get paths from config
