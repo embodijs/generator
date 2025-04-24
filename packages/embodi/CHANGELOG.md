@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.11
+
+### Patch Changes
+
+- 1057fdd: simplify hydration
+
 ## 0.11.10
 
 ### Patch Changes
