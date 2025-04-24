@@ -5,6 +5,7 @@ import type { PublicDirs } from './config.js';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { FileManager } from './FileManager.js';
+import { minify } from 'html-minifier-terser';
 
 export interface PrerenderOptions {
 	statics: string;
@@ -21,11 +22,17 @@ export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
 	const { content: contentDir } = inputDirs;
 	const manifest = JSON.parse(await fs.file('/dist/static/.vite/manifest.json').text('utf-8'));
 	const template = await loadAppHtml(statics);
+	const minifiedTemplate = await minify(template, {
+		collapseWhitespace: true,
+		removeComments: false,
+		removeRedundantAttributes: true,
+		useShortDoctype: true
+	});
 	const { render } = await import(toAbsolute('dist/server/entry-server.js'));
 	// pre-render each route...
 	const routesToPrerender = await getRoutesToPrerender(inputDirs);
 	const fileManage = new FileManager();
-	fileManage.setTemplate(template);
+	fileManage.setTemplate(minifiedTemplate);
 	await Promise.all(routesToPrerender.map((url) => render(url, fileManage, manifest)));
 	fileManage.writeFiles();
 

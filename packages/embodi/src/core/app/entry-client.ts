@@ -4,9 +4,8 @@ import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { page as pageStore } from '$embodi/stores/internal';
 
-const currentUrl = new URL(window.location.href).pathname;
-
 const hydrateClient = async () => {
+	const currentUrl = window.location.pathname;
 	const pageData = await createRouter().load(currentUrl);
 	if (!pageData) return;
 	const { html, Component, Layout, data } = pageData;
