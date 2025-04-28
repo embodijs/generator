@@ -19,7 +19,6 @@ const toAbsolute = (p: string) => {
 const fs = new FilesystemAdapter();
 
 export const prerender = async ({ statics, inputDirs }: PrerenderOptions) => {
-	const { content: contentDir } = inputDirs;
 	const manifest = JSON.parse(await fs.file('/dist/static/.vite/manifest.json').text('utf-8'));
 	const template = await loadAppHtml(statics);
 	const minifiedTemplate = await minify(template, {
