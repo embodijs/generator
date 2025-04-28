@@ -1,5 +1,11 @@
 # embodi
 
+## 0.11.12
+
+### Patch Changes
+
+- d36fd92: Add templating for index file
+
 ## 0.11.11
 
 ### Patch Changes
