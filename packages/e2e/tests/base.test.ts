@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Embodi build and binding', () => {
+  test('lang attribute in html', async ({ page }) => {
+    await page.goto('/');
+    expect(page.getAttribute('lang', 'en')).toBeTruthy();
+  });
+
   test('render front-matter', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Welcome to Embodi' })).toBeVisible();

@@ -22,6 +22,18 @@ type FileManagerOptions = {
 	dest?: BaseDest;
 };
 
+export function getValue(data: Record<string, any>, attr: string[]) {
+	const value = data[attr[0]];
+	console.log({ value, attr });
+	if (!value) {
+		return '';
+	} else if (attr.length === 1) {
+		return value;
+	} else {
+		return getValue(value, attr.slice(1));
+	}
+}
+
 export class FileManager {
 	protected files: Map<string, string | Buffer>;
 	protected template: string | undefined;
@@ -50,6 +62,7 @@ export class FileManager {
 		const dataPath = joinUrl(url, 'data.json');
 		const preloadDataSnippet = `<link rel="preload" type="application/json" href="${dataPath}" as="fetch" crossorigin="anonymous"></script>`;
 		const html = this.template
+			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.data, key.split('.')))
 			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
 		this.files.set(htmlPath, html);
