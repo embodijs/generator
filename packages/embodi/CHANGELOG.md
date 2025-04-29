@@ -1,5 +1,11 @@
 # embodi
 
+## 0.12.2
+
+### Patch Changes
+
+- 9f2ea58: Allow Comonent pages
+
 ## 0.12.1
 
 ### Patch Changes
