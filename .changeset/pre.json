@@ -1,0 +1,9 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "create-embodi": "0.4.2",
+    "embodi": "0.11.12"
+  },
+  "changesets": []
+}
