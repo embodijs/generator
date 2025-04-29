@@ -1,5 +1,11 @@
 # embodi
 
+## 0.12.0
+
+### Minor Changes
+
+- require layout for prerender
+
 ## 0.11.12
 
 ### Patch Changes
