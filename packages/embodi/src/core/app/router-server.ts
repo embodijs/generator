@@ -15,7 +15,7 @@ const getPageFromUrl = async (url: string) => {
 		...data,
 		...page.data
 	};
-
+	if (!page.Layout) return;
 	return {
 		...page,
 		data: mergedData

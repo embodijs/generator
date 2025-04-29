@@ -27,9 +27,9 @@ test.describe('Embodi build and binding', () => {
     await expect(page.getByText('Hello, load action!')).toBeVisible();
   });
 
-  test('only markdown', async ({ page }) => {
+  test('require layout for pages', async ({ page }) => {
     await page.goto('/first/');
-    await expect(page.getByRole('heading', { name: 'Test' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Test' })).not.toBeVisible();
   });
 
   test('second level index', async ({ page }) => {
