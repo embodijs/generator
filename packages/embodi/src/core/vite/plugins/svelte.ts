@@ -13,7 +13,7 @@ export function embodiSvelte(): Plugin {
 		},
 		load(id) {
 			if (id.endsWith('.svelte.embodi')) {
-				return `export { default as Component } from '/${normalizeImportPath(id.slice(2, -7))}';`;
+				return `export { default as Component } from '${normalizeImportPath(id.slice(1, -7))}';`;
 			}
 		}
 	};
