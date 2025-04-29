@@ -8,7 +8,7 @@ import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 import { VIRTUAL_PREFIX } from '$embodi/pages';
 import * as v from 'valibot';
-import sharp, { type Sharp } from 'sharp';
+import sharp from 'sharp';
 import { resolve } from 'path';
 import { FileManager } from '../vite/utils/FileManager.js';
 import { extname } from 'path';
