@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite';
+import { normalize } from 'node:path';
 
 const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
