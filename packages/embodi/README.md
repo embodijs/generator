@@ -1,6 +1,8 @@
 # embodi
 
 > Version 0.11.x and 0.12.x are under development and currently not stable at all. Please keep using version 0.10.x.
+>
+> Documentation is still for version 0.10.x.
 
 Welcome to Embodi, a static website generator based on [Svelte](https://svlete.dev) and [Vite](https://vitejs.dev). Embodi renders your pages for a fast load and hydrates them to a Single Page Application (SPA).
 

@@ -7,6 +7,11 @@ test.describe('Embodi build and binding', () => {
     expect(lang).toBe('en');
   });
 
+  test('render components', async ({ page }) => {
+    await page.goto('/comp/');
+    await expect(page.getByRole('heading', { name: 'Render Component' })).toBeVisible();
+  });
+
   test('render front-matter', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'Welcome to Embodi' })).toBeVisible();

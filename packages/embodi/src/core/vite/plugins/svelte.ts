@@ -1,4 +1,7 @@
 import type { Plugin } from 'vite';
+import { normalize } from 'node:path';
+
+const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '\\\\');
 
 export function embodiSvelte(): Plugin {
 	return {
@@ -11,7 +14,7 @@ export function embodiSvelte(): Plugin {
 		},
 		load(id) {
 			if (id.endsWith('.svelte.embodi')) {
-				return `export { default as Component } from '/${id.slice(2, -7)}';`;
+				return `export { default as Component } from '${normalizeImportPath(id.slice(1, -7))}';`;
 			}
 		}
 	};

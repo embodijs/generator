@@ -52,7 +52,7 @@
 		"@types/html-minifier-terser": "^7.0.2",
 		"@types/markdown-it": "^14.1.2",
 		"esbuild": "^0.25.3",
-		"rollup": "^4.40.0"
+		"rollup": "^4.40.1"
 	},
 	"peerDependencies": {
 		"svelte": "^5.23.0",
