@@ -1,5 +1,11 @@
 # embodi
 
+## 0.12.1
+
+### Patch Changes
+
+- add note to readme to not use version 0.11 and 0.12
+
 ## 0.12.0
 
 ### Minor Changes

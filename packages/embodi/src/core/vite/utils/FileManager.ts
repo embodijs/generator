@@ -24,7 +24,6 @@ type FileManagerOptions = {
 
 export function getValue(data: Record<string, any>, attr: string[]) {
 	const value = data[attr[0]];
-	console.log({ value, attr });
 	if (!value) {
 		return '';
 	} else if (attr.length === 1) {
