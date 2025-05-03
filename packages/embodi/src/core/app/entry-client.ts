@@ -3,6 +3,7 @@ import { hydrate } from 'svelte';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { page as pageStore } from '$embodi/stores/internal';
+import { page, update } from './state.svelte.js';
 
 const hydrateClient = async () => {
 	const currentUrl = window.location.pathname;
@@ -11,9 +12,10 @@ const hydrateClient = async () => {
 	const { html, Component, Layout, data } = pageData;
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url: currentUrl }));
+	update(pageData);
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,
-		props: { Layout, data, html, Component }
+		props: { page }
 	});
 };
 
