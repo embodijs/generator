@@ -6,8 +6,9 @@ const convertUrlToPath = async (url: string) => {
 	return routes[url];
 };
 
-const getPageFromUrl = async (url: string) => {
-	const pageImportFu = pages[addTrailingSlash(url)];
+const getPageFromUrl = async (_url: string | URL) => {
+	const url = typeof _url === 'string' ? addTrailingSlash(_url) : _url.pathname;
+	const pageImportFu = pages[url];
 	if (!pageImportFu) return;
 	const controller = new AbortController();
 	const loadData = async (url: string) =>

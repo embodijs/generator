@@ -28,6 +28,8 @@ import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 import assert from 'node:assert';
 import { FileManager } from '../utils/FileManager.js';
+import { isDate } from 'node:util/types';
+import { addTrailingSlash } from '../utils/paths.js';
 
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
@@ -91,19 +93,19 @@ export const virtualPlugin = (): Plugin => ({
 		);
 	},
 	async load(id, options) {
-    if (validatePageId.load(id)) {
-      const config = await loadConfig(cwd);
-      const [pageMap, linkRef] = await generateContentMap(config.inputDirs);
-      const pageCode = await generatePageCode(
-        pageMap.map(({ data, ...page }) => ({ ...page, data: options?.ssr ? data : null })),
-        linkRef,
-        validatePageId.getPath(id)
-      );
-      return pageCode;
-    } else if (validateEmbodiId.load(id, 'config')) {
-      const config = await loadConfig(cwd);
-      const { src, dest } = getSrcDestDirs(config);
-      return `export const src = ${JSON.stringify(src)};\nexport const dest = ${JSON.stringify(dest)};`
+		if (validatePageId.load(id)) {
+			const config = await loadConfig(cwd);
+			const [pageMap, linkRef] = await generateContentMap(config.inputDirs);
+			const pageCode = await generatePageCode(
+				pageMap.map(({ data, ...page }) => ({ ...page, data: options?.ssr ? data : null })),
+				linkRef,
+				validatePageId.getPath(id)
+			);
+			return pageCode;
+		} else if (validateEmbodiId.load(id, 'config')) {
+			const config = await loadConfig(cwd);
+			const { src, dest } = getSrcDestDirs(config);
+			return `export const src = ${JSON.stringify(src)};\nexport const dest = ${JSON.stringify(dest)};`;
 		} else if (validateEmbodiId.load(id, 'pages')) {
 			const config = await loadConfig(cwd);
 			const contentMap = await generateContentMap(config.inputDirs);
@@ -199,7 +201,7 @@ export const devServerPlugin = (): Plugin => ({
 	},
 	configureServer(server) {
 		const fileManager = new FileManager({
-		  head: `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
+			head: `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
 		});
 		const devServer = async (
 			req: Connect.IncomingMessage,
@@ -209,30 +211,53 @@ export const devServerPlugin = (): Plugin => ({
 			// TODO: add static file route here
 			try {
 				const { inputDirs, statics } = await loadConfig(cwd);
-				let url = req.originalUrl;
-        assert(url);
-        if(fileManager.has(url)) {
-          const data = fileManager.getFile(url);
-          return res.end(data);
-        }
+				assert(req.url);
+				let url = req.url;
 
-				const rawTemplate = await loadAppHtml(statics);
-				const template = await server.transformIndexHtml(url, rawTemplate);
-				fileManager.setTemplate(template)
-				const { render } = await server.ssrLoadModule(
+				const isDataURL = url.endsWith('data.json');
+				const pageURL = isDataURL ? url.slice(0, -9) : addTrailingSlash(url);
+
+				const { render, hasRoute } = await server.ssrLoadModule(
 					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
 				);
-
-				await render(url, fileManager);
-				const html = fileManager.getPage(url)
-				if(!html) {
-          return next();
-				}
-				res.writeHead(200, {
-					'Content-Type': 'text/html',
-					'Content-Length': html.length
+				console.log({
+					has: hasRoute(pageURL),
+					pageURL,
+					isDataURL
 				});
-				return res.end(html);
+				if (!hasRoute(pageURL)) {
+					if (fileManager.has(url)) {
+						const content = fileManager.getFile(url);
+						return res.end(content);
+					}
+					return next();
+				}
+
+				const rawTemplate = await loadAppHtml(statics);
+				const template = await server.transformIndexHtml(pageURL, rawTemplate);
+				fileManager.setTemplate(template);
+
+				await render(pageURL, fileManager);
+
+				if (!fileManager.hasPage(pageURL)) {
+					return next();
+				}
+
+				const { html, data } = fileManager.getPage(pageURL)!;
+				if (isDataURL) {
+					res.writeHead(200, {
+						'content-type': 'application/json',
+						'content-length': data.length
+					});
+					console.log({ data });
+					return res.end(data);
+				} else {
+					res.writeHead(200, {
+						'Content-Type': 'text/html',
+						'Content-Length': html.length
+					});
+					return res.end(html);
+				}
 			} catch (e) {
 				if (isCompileException(e)) {
 					console.warn(`Error in ${e.loc.file}:${e.loc.line}:${e.loc.column}`);
