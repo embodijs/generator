@@ -6,6 +6,7 @@
 </script>
 
 <main>
+  <a href="/comp/">Link to comp</a>
   <div class="img">
     <Image images={data.hero} alt="Hero" />
   </div>

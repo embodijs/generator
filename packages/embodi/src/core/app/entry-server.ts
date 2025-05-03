@@ -168,6 +168,10 @@ export const prepareE = (fileManager: FileManager) => ({
 		})
 });
 
+export function hasRoute(url: string) {
+	return !!router.path(url);
+}
+
 export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
 	fileManager.setBasePath({ src, dest });
 	const head = manifest

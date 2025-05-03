@@ -1,6 +1,7 @@
 <script>
-	let { page } = $props();
-	console.log({ page });
+	import { onMount } from 'svelte';
+
+	let { page, onHydrated } = $props();
 </script>
 
 {#if page.Layout}

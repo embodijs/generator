@@ -103,8 +103,15 @@ export class FileManager {
 		return this.files.get(path);
 	}
 
-	getPage(url: string): string | Buffer | undefined {
-		return this.files.get(joinUrl(url, 'index.html'));
+	hasPage(url: string): boolean {
+		return this.files.has(joinUrl(url, 'index.html'));
+	}
+
+	getPage(url: string): { html: string; data: string } | undefined {
+		const html = this.files.get(joinUrl(url, 'index.html'));
+		const data = this.files.get(joinUrl(url, 'data.json'));
+		if (!html || !data) return;
+		return { html: html.toString(), data: data.toString() };
 	}
 
 	protected write(path: string, content: string | Buffer) {
