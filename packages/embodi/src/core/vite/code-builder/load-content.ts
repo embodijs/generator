@@ -122,6 +122,7 @@ export const getAllFiles = async (publicDirs: PublicDirs) => {
 
 const isIngnoredFile = (file: LoomFile) => ['.DS_Store'].includes(file.name);
 const isDataFile = (file: LoomFile) => file.name.startsWith('+data.');
+const isSpecialFile = (file: LoomFile) => file.name.startsWith('+') && !isDataFile(file);
 const isScriptFile = (file: LoomFile) => file.extension === 'js' || file.extension === 'ts';
 
 export const groupFilesByType = (files: LoomFile[]) => {
@@ -133,6 +134,8 @@ export const groupFilesByType = (files: LoomFile[]) => {
 				return { ...acc, data: [...acc.data, file] };
 			} else if (isScriptFile(file)) {
 				return { ...acc, scripts: [...acc.scripts, file] };
+			} else if (isSpecialFile(file)) {
+				return acc;
 			} else {
 				return { ...acc, pages: [...acc.pages, file] };
 			}
@@ -192,8 +195,7 @@ export const getRefByUrl = (url: NormalizeUrlPath, dataImports: UrlMap[]): numbe
 };
 
 export const mapDataToPage = (pageMap: UrlMap, dataMap: UrlMap[]): number[] => {
-	const rootUrl = '/';
-	const [pageUrl, pageRef, fileType] = pageMap;
+	const [pageUrl, _, fileType] = pageMap;
 	const urlParts = splitNormalizedUrlPath(pageUrl);
 	fileType !== FILE_TYPE.INDEX && urlParts.pop(); // remove last if not index file
 

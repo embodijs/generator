@@ -20,7 +20,7 @@
   </nav>
 </header>
 
-<style>
+<style lang="postcss">
   @reference "tailwindcss/theme";
   header {
     @apply flex items-center justify-end gap-3 p-3;

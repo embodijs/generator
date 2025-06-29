@@ -13,6 +13,7 @@ import { resolve } from 'path';
 import { FileManager } from '../vite/utils/FileManager.js';
 import { extname } from 'path';
 import { src, dest } from '$embodi/config';
+import { page, update } from './state.svelte.js';
 
 const router = createRouter();
 
@@ -167,6 +168,10 @@ export const prepareE = (fileManager: FileManager) => ({
 		})
 });
 
+export function hasRoute(url: string) {
+	return !!router.path(url);
+}
+
 export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
 	fileManager.setBasePath({ src, dest });
 	const head = manifest
@@ -189,9 +194,16 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
+
+	update({
+		html,
+		Layout,
+		Component,
+		data
+	});
 	// @ts-ignore
 	const rendered = renderSvelte(SvelteRoot, {
-		props: { html, Component, Layout, data }
+		props: { page }
 	});
 	if (!rendered) return false;
 	fileManager.addPage(url, {

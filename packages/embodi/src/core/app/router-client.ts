@@ -1,19 +1,29 @@
 import { addTrailingSlash } from './utils/paths.js';
 import { routes, pages } from '$embodi/pages';
 import { data as globalData } from '$embodi/data';
+import type { PageData } from 'core/definitions/types.js';
 
 const convertUrlToPath = async (url: string) => {
 	return routes[url];
 };
 
-const getPageFromUrl = async (url: string) => {
-	const pageImportFu = pages[addTrailingSlash(url)];
-	if (!pageImportFu) return;
+const getPageImport = (url: string): (() => Promise<{ default: PageData }>) => {
+	if (pages.hasOwnProperty(url) && typeof pages[url] === 'function') {
+		return pages[url];
+	}
+
+	throw new Error('Page does not exist');
+};
+
+const getPageFromUrl = async (_url: string | URL) => {
+	const url = typeof _url === 'string' ? addTrailingSlash(_url) : _url.pathname;
+
+	const pageImportFu = getPageImport(url);
 	const controller = new AbortController();
 	const loadData = async (url: string) =>
-		(await fetch(`${url}data.json`, { signal: controller.signal })).json();
+		(await fetch(`${url}data.json`, { signal: controller.signal }))?.json();
 	window.addEventListener('pagehide', () => {
-		controller.abort();
+		controller.abort(); // Abort the fetch request when the page is hidden
 	});
 	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
