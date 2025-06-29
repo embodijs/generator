@@ -7,22 +7,31 @@ import { page, update } from './state.svelte.js';
 
 let clientRouter = createRouter();
 
-const goto = async (href: string | URL | Location) => {
+const goto = async (href: string | URL | Location, options?: { pushState?: boolean }) => {
 	try {
 		const current = typeof href === 'string' ? href : href.pathname;
 		const pageData = await clientRouter.load(current);
+		const { Layout, Component, html, data } = pageData;
 		await renderHook({ data: pageData.data });
 		pageStore.update((p) => ({ ...p, url: current }));
-		update(pageData);
-		window.history.pushState({}, '', current);
+		update({
+			Layout,
+			Component,
+			html,
+			data
+		});
+		if (!options || options.pushState) {
+			window.history.pushState({}, '', current);
+		}
 	} catch (error) {
 		console.error('Error during navigation:', error);
 	}
 };
 
 const addLinkEvents = () => {
-	window.addEventListener('popstate', () => goto(document.location));
-
+	window.addEventListener('popstate', () => {
+		goto(document.location, { pushState: false });
+	});
 	const linkElements = document.getElementsByTagName('a');
 	const origin = window.location.origin;
 	for (const el of linkElements) {
