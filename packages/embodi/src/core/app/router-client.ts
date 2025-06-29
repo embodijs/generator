@@ -8,11 +8,12 @@ const convertUrlToPath = async (url: string) => {
 
 const getPageFromUrl = async (_url: string | URL) => {
 	const url = typeof _url === 'string' ? addTrailingSlash(_url) : _url.pathname;
+	if (!Object.hasOwnProperty.call(pages, url)) return;
 	const pageImportFu = pages[url];
 	if (typeof pageImportFu !== 'function') return;
 	const controller = new AbortController();
 	const loadData = async (url: string) =>
-		(await fetch(`${url}data.json`, { signal: controller.signal })).json();
+		(await fetch(`${url}data.json`, { signal: controller.signal }))?.json();
 	window.addEventListener('pagehide', () => {
 		controller.abort();
 	});
