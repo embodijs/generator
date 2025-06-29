@@ -11,16 +11,9 @@ const goto = async (href: string | URL | Location) => {
 	try {
 		const current = typeof href === 'string' ? href : href.pathname;
 		const pageData = await clientRouter.load(current);
-		if (!pageData) return;
-		const { Layout, Component, html, data } = pageData;
 		await renderHook({ data: pageData.data });
 		pageStore.update((p) => ({ ...p, url: current }));
-		update({
-			Layout,
-			Component,
-			html,
-			data
-		});
+		update(pageData);
 		window.history.pushState({}, '', current);
 	} catch (error) {
 		console.error('Error during navigation:', error);
@@ -28,9 +21,8 @@ const goto = async (href: string | URL | Location) => {
 };
 
 const addLinkEvents = () => {
-	window.addEventListener('popstate', () => {
-		goto(document.location);
-	});
+	window.addEventListener('popstate', () => goto(document.location));
+
 	const linkElements = document.getElementsByTagName('a');
 	const origin = window.location.origin;
 	for (const el of linkElements) {

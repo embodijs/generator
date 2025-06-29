@@ -1,13 +1,13 @@
-<script>
-	import { onMount } from 'svelte';
+<script lang="ts">
+	import type { PageData } from '../definitions/types.js';
 
-	let { page, onHydrated } = $props();
+	let { page }: { page: PageData } = $props();
 </script>
 
 {#if page.Layout}
 	<page.Layout data={page.data}>
 		{#if page.Component}
-			<page.component data={page.data} />
+			<page.Component data={page.data} />
 		{:else if page.html}
 			{@html page.html}
 		{/if}

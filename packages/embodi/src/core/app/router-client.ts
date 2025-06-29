@@ -7,23 +7,23 @@ const convertUrlToPath = async (url: string) => {
 	return routes[url];
 };
 
-const getPage = (url: string): (() => Promise<{ default: PageData }>) => {
+const getPageImport = (url: string): (() => Promise<{ default: PageData }>) => {
 	if (Object.hasOwnProperty.call(pages, url) && typeof pages[url] === 'function') {
 		return pages[url];
 	}
 
-	throw new Error('Pages does not exist');
+	throw new Error('Page does not exist');
 };
 
 const getPageFromUrl = async (_url: string | URL) => {
 	const url = typeof _url === 'string' ? addTrailingSlash(_url) : _url.pathname;
 
-	const pageImportFu = getPage(url);
+	const pageImportFu = getPageImport(url);
 	const controller = new AbortController();
 	const loadData = async (url: string) =>
 		(await fetch(`${url}data.json`, { signal: controller.signal }))?.json();
 	window.addEventListener('pagehide', () => {
-		controller.abort();
+		controller.abort(); // Abort the fetch request when the page is hidden
 	});
 	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
