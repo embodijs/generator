@@ -4,11 +4,12 @@ import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { page as pageStore } from '$embodi/stores/internal';
 import { page, update } from './state.svelte.js';
-import { routes } from '$embodi/pages';
+
+let clientRouter = createRouter();
 
 const goto = async (href: string | URL | Location) => {
 	const current = typeof href === 'string' ? href : href.pathname;
-	const pageData = await createRouter().load(current);
+	const pageData = await clientRouter.load(current);
 	if (!pageData) return;
 	const { Layout, Component, html, data } = pageData;
 	await renderHook({ data: pageData.data });
@@ -27,11 +28,9 @@ const addLinkEvents = () => {
 		goto(document.location);
 	});
 	const linkElements = document.getElementsByTagName('a');
-	console.log({ linkElements });
 	const origin = window.location.origin;
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
-		console.log({ el, href });
 		if (el && href) {
 			const linkURL = new URL(href, origin);
 
@@ -39,7 +38,7 @@ const addLinkEvents = () => {
 				el.addEventListener('mousedown', async (e) => {
 					e.preventDefault();
 					console.log('mousedown');
-					await createRouter().load(linkURL.pathname);
+					await clientRouter.load(linkURL.pathname);
 				});
 
 				el.addEventListener('click', async (e) => {
