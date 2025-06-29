@@ -8,19 +8,23 @@ import { page, update } from './state.svelte.js';
 let clientRouter = createRouter();
 
 const goto = async (href: string | URL | Location) => {
-	const current = typeof href === 'string' ? href : href.pathname;
-	const pageData = await clientRouter.load(current);
-	if (!pageData) return;
-	const { Layout, Component, html, data } = pageData;
-	await renderHook({ data: pageData.data });
-	pageStore.update((p) => ({ ...p, url: current }));
-	update({
-		Layout,
-		Component,
-		html,
-		data
-	});
-	window.history.pushState({}, '', current);
+	try {
+		const current = typeof href === 'string' ? href : href.pathname;
+		const pageData = await clientRouter.load(current);
+		if (!pageData) return;
+		const { Layout, Component, html, data } = pageData;
+		await renderHook({ data: pageData.data });
+		pageStore.update((p) => ({ ...p, url: current }));
+		update({
+			Layout,
+			Component,
+			html,
+			data
+		});
+		window.history.pushState({}, '', current);
+	} catch (error) {
+		console.error('Error during navigation:', error);
+	}
 };
 
 const addLinkEvents = () => {
