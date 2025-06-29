@@ -8,7 +8,7 @@ const convertUrlToPath = async (url: string) => {
 };
 
 const getPageImport = (url: string): (() => Promise<{ default: PageData }>) => {
-	if (Object.hasOwnProperty.call(pages, url) && typeof pages[url] === 'function') {
+	if (pages.hasOwnProperty(url) && typeof pages[url] === 'function') {
 		return pages[url];
 	}
 
