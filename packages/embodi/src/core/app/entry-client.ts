@@ -42,7 +42,6 @@ const addLinkEvents = () => {
 			if (linkURL.origin === origin) {
 				el.addEventListener('mousedown', async (e) => {
 					e.preventDefault();
-					console.log('mousedown');
 					await clientRouter.load(linkURL.pathname);
 				});
 

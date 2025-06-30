@@ -5,7 +5,6 @@ export const imagePreprocess = () => {
 		name: 'svelte-preprocessor-name',
 		markup: ({ content, filename }) => {
 			if (content.includes('img:embodi')) {
-				console.log(filename);
 			}
 		}
 	} satisfies PreprocessorGroup;

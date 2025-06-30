@@ -34,6 +34,10 @@
 			"types": "./dist/exports/utils.d.ts",
 			"import": "./dist/exports/utils.js"
 		},
+		"./dev": {
+			"types": "./dist/exports/dev/index.d.ts",
+			"import": "./dist/exports/dev/index.js"
+		},
 		"./client": {
 			"types": "./client.d.ts"
 		},
@@ -79,6 +83,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/embodijs/generator/tree/main/packages/embodi"
+		"url": "git+https://github.com/embodijs/generator/tree/main/packages/embodi.git"
 	}
 }
