@@ -220,11 +220,7 @@ export const devServerPlugin = (): Plugin => ({
 				const { render, hasRoute } = await server.ssrLoadModule(
 					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
 				);
-				console.log({
-					has: hasRoute(pageURL),
-					pageURL,
-					isDataURL
-				});
+
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
 						const content = fileManager.getFile(url);
@@ -249,7 +245,7 @@ export const devServerPlugin = (): Plugin => ({
 						'content-type': 'application/json',
 						'content-length': data.length
 					});
-					console.log({ data });
+
 					return res.end(data);
 				} else {
 					res.writeHead(200, {

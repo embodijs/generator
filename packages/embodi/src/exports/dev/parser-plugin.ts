@@ -1,7 +1,6 @@
 import type { Plugin } from 'vite';
 import fm from 'front-matter';
 import { normalize } from 'node:path';
-import * as v from 'valibot';
 interface PageData {
 	layout?: string;
 	[key: string]: any;

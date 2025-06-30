@@ -1,0 +1,30 @@
+{
+  "name": "@embodi/html",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "module": "dist/plugin.js",
+  "types": "dist/plugin.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.11.1",
+  "peerDependencies": {
+    "embodi": "workspace:*",
+    "typescript": "^5.2.0",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "rehype-stringify": "^10.0.1",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.4",
+    "@types/mdast": "^4.0.4",
+    "tsup": "^8.5.0"
+  }
+}
