@@ -1,5 +1,4 @@
-import type { Plugin } from 'vite';
-import { createContentParserPlugin } from '../utils/parser-plugin.js';
+import { createContentParserPlugin, type Plugin } from 'embodi/dev';
 
 export function embodiHtml(): Plugin {
   return createContentParserPlugin({
