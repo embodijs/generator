@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "ci:publish": "pnpm publish -r",
+    "ci:publish": "pnpm publish --access public -r",
     "test:e2e:init": "pnpm run --recursive test:e2e:init",
     "test:e2e": "pnpm run --recursive test:e2e",
     "test": "vitest",
