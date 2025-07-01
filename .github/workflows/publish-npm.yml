@@ -5,7 +5,7 @@ on:
       - main
 env:
   CI: true
-  PNPM_CACHE_FOLDER: .pnpm-store
+  # PNPM_CACHE_FOLDER: .pnpm-store
 permissions:
   contents: write
   pull-requests: write
