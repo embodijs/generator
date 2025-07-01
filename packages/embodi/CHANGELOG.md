@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.1
+
+### Patch Changes
+
+- 4cc9bbc: Fix: Devmode load data.json ends in error. Fixed by setting header and content-type
+
 ## 0.13.0
 
 ### Minor Changes
