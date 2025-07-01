@@ -1,5 +1,13 @@
 # @embodi/markdown
 
+## 0.1.2
+
+### Patch Changes
+
+- 41b811f: make markdown plugin async
+- Updated dependencies [4db6ca0]
+  - embodi@0.13.3
+
 ## 0.1.1
 
 ### Patch Changes
