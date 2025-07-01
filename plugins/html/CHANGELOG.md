@@ -1,5 +1,11 @@
 # @embodi/html
 
+## 0.1.1
+
+### Patch Changes
+
+- 24c022c: Add prepublishOnly to validate the package
+
 ## 1.0.0
 
 ### Minor Changes
