@@ -9,6 +9,18 @@
     "build": "tsup",
     "prepublishOnly": "npm run build && publint"
   },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/plugin.d.ts",
+        "default": "./dist/plugin.js"
+      },
+      "require": {
+        "types": "./dist/plugin.d.cts",
+        "default": "./dist/plugin.cjs"
+      }
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "Apache-2.0",

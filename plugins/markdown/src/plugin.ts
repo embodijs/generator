@@ -1,4 +1,4 @@
-import { Pluggable, PluggableList, PluginTuple, type Preset, Plugin, unified, Processor } from 'unified';
+import { type Plugin, unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
@@ -22,13 +22,9 @@ export function embodiMarkdown(options: MarkdownPluginOptions = {}): VitePlugin 
 
   const processor = unified().use(remarkParse);
 
-  remarkPlugins?.forEach((plugin: PluginEntry | RehypePluginEntry) =>
-    Array.isArray(plugin) ? p.use(...plugin) : p.use(plugin)
-  );
+  remarkPlugins?.forEach((plugin) => (Array.isArray(plugin) ? processor.use(...plugin) : processor.use(plugin)));
   processor.use(remarkRehype);
-  rehypePlugins?.forEach((plugin: PluginEntry | RehypePluginEntry) =>
-    Array.isArray(plugin) ? p.use(...plugin) : p.use(plugin)
-  );
+  rehypePlugins?.forEach((plugin) => (Array.isArray(plugin) ? processor.use(...plugin) : processor.use(plugin)));
   processor.use(rehypeStringify);
 
   return createContentParserPlugin({

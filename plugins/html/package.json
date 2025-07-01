@@ -3,11 +3,24 @@
   "version": "0.1.0",
   "description": "",
   "type": "module",
+  "main": "dist/plugin.cjs",
   "module": "dist/plugin.js",
   "types": "dist/plugin.d.ts",
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "npm run build && publint"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/plugin.d.ts",
+        "default": "./dist/plugin.js"
+      },
+      "require": {
+        "types": "./dist/plugin.d.cts",
+        "default": "./dist/plugin.cjs"
+      }
+    }
   },
   "keywords": [],
   "author": "",
