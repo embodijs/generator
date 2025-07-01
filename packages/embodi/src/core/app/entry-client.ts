@@ -23,6 +23,7 @@ const goto = async (href: string | URL | Location, options?: { pushState?: boole
 		if (!options || options.pushState) {
 			window.history.pushState({}, '', current);
 		}
+		addLinkEvents();
 	} catch (error) {
 		console.error('Error during navigation:', error);
 	}
@@ -32,7 +33,7 @@ const addLinkEvents = () => {
 	window.addEventListener('popstate', () => {
 		goto(document.location, { pushState: false });
 	});
-	const linkElements = document.getElementsByTagName('a');
+	const linkElements = document.getElementsByTagName('a:not([data-embodi-reload])');
 	const origin = window.location.origin;
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
@@ -42,13 +43,11 @@ const addLinkEvents = () => {
 			if (linkURL.origin === origin) {
 				el.addEventListener('mousedown', async (e) => {
 					e.preventDefault();
-					console.log('Link mousedown:', linkURL.href);
 					await clientRouter.load(linkURL.pathname);
 				});
 
 				el.addEventListener('click', async (e) => {
 					e.preventDefault();
-					console.log('Link clicked:', linkURL.href);
 					goto(linkURL);
 				});
 			}
@@ -63,7 +62,6 @@ const hydrateClient = async () => {
 		target: document.getElementById('app')!,
 		props: { page }
 	});
-	addLinkEvents();
 };
 
 export default hydrateClient();
