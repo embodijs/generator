@@ -93,12 +93,17 @@ const replaceFileType = (path: string, newFormat: string) => {
 	return path.replace(regEx, `.${newFormat}`);
 };
 
+const getFileType = (path: string) => {
+	const ext = extname(path);
+	return ext.slice(1);
+};
+
 const loadImage = (path: string) => {
 	const image = sharp(resolve(process.cwd(), src.assets, path));
 	return image;
 };
 
-const transformImage = async (path: string, imageFormat: ImageFormat) => {
+const transformImage = (path: string, imageFormat: ImageFormat) => {
 	const { width, format } = imageFormat;
 	let image = loadImage(path).autoOrient();
 
@@ -122,7 +127,7 @@ const transformImage = async (path: string, imageFormat: ImageFormat) => {
 		}
 	}
 
-	return image.toBuffer();
+	return image;
 };
 
 const transformImageWithStore = async (
@@ -130,11 +135,16 @@ const transformImageWithStore = async (
 	path: string,
 	imageFormat: ImageFormat
 ): Promise<ImageFile> => {
-	const transformedImage = await transformImage(path, imageFormat);
+	const transformedImage = transformImage(path, imageFormat);
+	const metadata = await transformedImage.metadata();
 	const newPath = replaceFileType(path, imageFormat.format);
-	const assetPath = fileManager.addAsset(newPath, transformedImage);
+	const assetPath = fileManager.addAsset(
+		newPath,
+		await transformedImage.toBuffer(),
+		`image/${imageFormat.format}`
+	);
 	return {
-		width: imageFormat.width,
+		width: metadata.width!,
 		src: assetPath
 	};
 };
@@ -148,7 +158,7 @@ const transformDefaultImageWithStore = async (
 	});
 
 	const imageBuffer = await image.toBuffer();
-	const assetPath = fileManager.addAsset(path, imageBuffer);
+	const assetPath = fileManager.addAsset(path, imageBuffer, `image/${getFileType(path)}`);
 	return {
 		original: true,
 		src: assetPath

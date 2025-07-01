@@ -34,7 +34,7 @@ export function getValue(data: Record<string, any>, attr: string[]) {
 }
 
 export class FileManager {
-	protected files: Map<string, string | Buffer>;
+	protected files: Map<string, { content: string | Buffer; contentType: string; length: number }>;
 	protected template: string | undefined;
 	protected head: string;
 	protected baseSrc: BaseSrc | undefined;
@@ -64,8 +64,13 @@ export class FileManager {
 			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.data, key.split('.')))
 			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
-		this.files.set(htmlPath, html);
-		this.files.set(dataPath, JSON.stringify(data.data));
+		this.files.set(htmlPath, { content: html, contentType: 'text/html', length: html.length });
+		const stringifiedData = JSON.stringify(data.data);
+		this.files.set(dataPath, {
+			content: stringifiedData,
+			contentType: 'application/json',
+			length: stringifiedData.length
+		});
 
 		return [htmlPath, dataPath];
 	}
@@ -92,15 +97,29 @@ export class FileManager {
 		return `${baseName}-${hash}${extension}`;
 	}
 
-	addAsset(name: string, content: string | Buffer) {
+	addAsset(name: string, content: string | Buffer, contentType: string) {
 		const hash = this.hash(content.toString());
 		const path = joinUrl('/assets', this.addHashToFileName(name, hash));
-		this.files.set(path, content);
+		this.files.set(path, { content, contentType, length: content.length });
 		return path;
 	}
 
 	getFile(path: string): string | Buffer | undefined {
-		return this.files.get(path);
+		return this.files.get(path)?.content;
+	}
+
+	getHeaders(path: string):
+		| {
+				'content-type': string;
+				'content-length': number;
+		  }
+		| undefined {
+		const file = this.files.get(path);
+		if (!file) return;
+		return {
+			'content-type': file.contentType,
+			'content-length': file.length
+		};
 	}
 
 	hasPage(url: string): boolean {
@@ -108,8 +127,8 @@ export class FileManager {
 	}
 
 	getPage(url: string): { html: string; data: string } | undefined {
-		const html = this.files.get(joinUrl(url, 'index.html'));
-		const data = this.files.get(joinUrl(url, 'data.json'));
+		const html = this.files.get(joinUrl(url, 'index.html'))?.content;
+		const data = this.files.get(joinUrl(url, 'data.json'))?.content;
 		if (!html || !data) return;
 		return { html: html.toString(), data: data.toString() };
 	}
@@ -123,7 +142,7 @@ export class FileManager {
 	writeFiles() {
 		const dest = this.baseDest;
 		assert(dest);
-		this.files.forEach((content, path) => {
+		this.files.forEach(({ content }, path) => {
 			//TODO: get paths from config
 			this.write(joinPath(dest.pages, 'static', path), content);
 		});
