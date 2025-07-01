@@ -54,10 +54,10 @@ importers:
   packages/e2e:
     devDependencies:
       '@embodi/markdown':
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:../../plugins/markdown
       embodi:
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:../embodi
       sharp:
         specifier: ^0.34.2
@@ -175,7 +175,7 @@ importers:
   plugins/html:
     dependencies:
       embodi:
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:../../packages/embodi
       rehype-stringify:
         specifier: ^10.0.1
@@ -203,7 +203,7 @@ importers:
   plugins/markdown:
     dependencies:
       embodi:
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:../../packages/embodi
       rehype-stringify:
         specifier: ^10.0.1
