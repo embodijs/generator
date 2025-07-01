@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.3
+
+### Patch Changes
+
+- 4db6ca0: Allow async in convertContent for Plugin helper
+
 ## 0.13.2
 
 ### Patch Changes
