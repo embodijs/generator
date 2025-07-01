@@ -1,5 +1,12 @@
 # embodi
 
+## 0.13.0
+
+### Minor Changes
+
+- 6d4c096: Remove markdown from embodi core and moved it to a seperate plugin
+- 4b3bca1: Improve loading of pages by handle load with js if possible
+
 ## 0.12.2
 
 ### Patch Changes
