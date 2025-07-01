@@ -1,5 +1,5 @@
 import { createRouter } from './router-client.js';
-import { hydrate, onMount } from 'svelte';
+import { hydrate } from 'svelte';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { page as pageStore } from '$embodi/stores/internal';
@@ -42,11 +42,13 @@ const addLinkEvents = () => {
 			if (linkURL.origin === origin) {
 				el.addEventListener('mousedown', async (e) => {
 					e.preventDefault();
+					console.log('Link mousedown:', linkURL.href);
 					await clientRouter.load(linkURL.pathname);
 				});
 
 				el.addEventListener('click', async (e) => {
 					e.preventDefault();
+					console.log('Link clicked:', linkURL.href);
 					goto(linkURL);
 				});
 			}
@@ -56,7 +58,7 @@ const addLinkEvents = () => {
 
 const hydrateClient = async () => {
 	const currentUrl = window.location.pathname;
-	await goto(currentUrl);
+	await goto(currentUrl, { pushState: false });
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,
 		props: { page }

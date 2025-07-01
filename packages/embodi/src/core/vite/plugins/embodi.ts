@@ -28,7 +28,6 @@ import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 import assert from 'node:assert';
 import { FileManager } from '../utils/FileManager.js';
-import { isDate } from 'node:util/types';
 import { addTrailingSlash } from '../utils/paths.js';
 
 const cwd = process.cwd(); // Current working directory
@@ -224,6 +223,8 @@ export const devServerPlugin = (): Plugin => ({
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
 						const content = fileManager.getFile(url);
+						const headers = FileManager.getHeaders(url);
+						res.writeHead(200, headers);
 						return res.end(content);
 					}
 					return next();
