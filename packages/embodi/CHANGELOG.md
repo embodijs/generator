@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.2
+
+### Patch Changes
+
+- 9e61671: Fix load data in devmode: Handle data in Filemanger as Buffer
+
 ## 0.13.1
 
 ### Patch Changes
