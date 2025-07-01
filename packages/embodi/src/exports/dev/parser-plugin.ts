@@ -11,7 +11,7 @@ const normalizeImportPath = (path: string) => normalize(path).replaceAll('\\', '
 export interface ContentParserPluginConfig {
 	name: string;
 	fileType: string;
-	convertContent: (content: string, data: unknown) => string;
+	convertContent: (content: string, data: unknown) => Promise<string> | string;
 }
 
 export function createContentParserPlugin(config: ContentParserPluginConfig): Plugin {
@@ -41,7 +41,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 			if (id.endsWith(format)) {
 				//@ts-ignore
 				const { attributes, body } = fm<PageData>(code);
-				const content = convertContent(body, attributes);
+				const content = await convertContent(body, attributes);
 				const { layout } = attributes;
 				let result = `export const data = ${JSON.stringify(
 					attributes
