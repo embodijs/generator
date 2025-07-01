@@ -28,8 +28,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       # - name: setup pnpm config
       #   run: pnpm config set store-dir $PNPM_CACHE_FOLDER
-      - name: Setup npm auth for pnpm
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN_EMBODI }}" >> ~/.npmrc
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run test:ci
@@ -40,4 +38,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN_EMBODI }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_EMBODI }}
