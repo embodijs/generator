@@ -27,7 +27,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.11.1",
   "peerDependencies": {
-    "embodi": "workspace:*",
+    "embodi": ">=0.13.0",
     "typescript": "^5.2.0",
     "vite": "^6.2.0"
   },
