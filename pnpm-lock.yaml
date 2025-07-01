@@ -175,8 +175,8 @@ importers:
   plugins/html:
     dependencies:
       embodi:
-        specifier: workspace:*
-        version: link:../../packages/embodi
+        specifier: '>=0.13.0'
+        version: 0.13.0(@types/debug@4.1.12)(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.44.1)(svelte@5.34.9)(terser@5.43.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0))(yaml@2.8.0)
       rehype-stringify:
         specifier: ^10.0.1
         version: 10.0.1
@@ -203,8 +203,8 @@ importers:
   plugins/markdown:
     dependencies:
       embodi:
-        specifier: workspace:*
-        version: link:../../packages/embodi
+        specifier: '>=0.13.0'
+        version: 0.13.0(@types/debug@4.1.12)(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.44.1)(svelte@5.34.9)(terser@5.43.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0))(yaml@2.8.0)
       rehype-stringify:
         specifier: ^10.0.1
         version: 10.0.1
@@ -1216,6 +1216,14 @@ packages:
 
   embodi@0.10.0:
     resolution: {integrity: sha512-J1rw7pbGSx9mFs5DtHA40QXdiL3aIWzw60efxK7HEzOVpF5xvKieiE+pZ5yqyTBpgtwMYYscIXjcT21x+Xjtmg==}
+    hasBin: true
+    peerDependencies:
+      svelte: ^5.23.0
+      typescript: ^5.2.0
+      vite: ^6.2.0
+
+  embodi@0.13.0:
+    resolution: {integrity: sha512-LUxh9Op5MAoMaHBvzUUR1Y4AXv7fQayliPRJgP2RYZIGV0ZJswACoTP2xl1Fp/aIPuQJS3NPN1v0yXIVZM/p/w==}
     hasBin: true
     peerDependencies:
       svelte: ^5.23.0
@@ -3219,6 +3227,49 @@ snapshots:
       svelte: 5.23.2
       typescript: 5.8.3
       vite: 7.0.0(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0)
+      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0)
+    transitivePeerDependencies:
+      - '@edge-runtime/vm'
+      - '@types/debug'
+      - '@types/node'
+      - '@vitest/browser'
+      - '@vitest/ui'
+      - happy-dom
+      - jiti
+      - jsdom
+      - less
+      - lightningcss
+      - msw
+      - rollup
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  embodi@0.13.0(@types/debug@4.1.12)(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(rollup@4.44.1)(svelte@5.34.9)(terser@5.43.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0))(yaml@2.8.0):
+    dependencies:
+      '@loom-io/converter': 0.12.11(@loom-io/core@0.12.11)
+      '@loom-io/core': 0.12.11
+      '@loom-io/front-matter-converter': 0.12.11(@loom-io/converter@0.12.11(@loom-io/core@0.12.11))(@loom-io/core@0.12.11)
+      '@loom-io/json-converter': 0.12.11(@loom-io/converter@0.12.11(@loom-io/core@0.12.11))(@loom-io/core@0.12.11)
+      '@loom-io/node-filesystem-adapter': 0.12.11(@loom-io/core@0.12.11)
+      '@loom-io/yaml-converter': 0.12.11(@loom-io/converter@0.12.11(@loom-io/core@0.12.11))(@loom-io/core@0.12.11)
+      '@modyfi/vite-plugin-yaml': 1.1.1(rollup@4.44.1)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0))
+      '@sveltejs/vite-plugin-svelte': 5.1.0(svelte@5.34.9)(vite@6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0))
+      front-matter: 4.0.2
+      html-minifier-terser: 7.2.0
+      markdown-it: 14.1.0
+      minimist: 1.2.8
+      pipe-and-combine: 0.8.1
+      sharp: 0.34.2
+      svelte: 5.34.9
+      typescript: 5.8.3
+      valibot: 1.1.0(typescript@5.8.3)
+      vite: 6.3.5(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0)
       vitest: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.8)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.43.1)(yaml@2.8.0)
     transitivePeerDependencies:
       - '@edge-runtime/vm'
