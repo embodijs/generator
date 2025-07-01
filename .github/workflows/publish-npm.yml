@@ -26,8 +26,8 @@ jobs:
           node-version: '22.x'
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
-      - name: setup pnpm config
-        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+      # - name: setup pnpm config
+      #   run: pnpm config set store-dir $PNPM_CACHE_FOLDER
       - run: pnpm install
       - run: pnpm run build
       - run: pnpm run test:ci
