@@ -203,7 +203,7 @@ importers:
   plugins/markdown:
     dependencies:
       embodi:
-        specifier: workspace:>=0.13.3
+        specifier: workspace:^
         version: link:../../packages/embodi
       rehype-stringify:
         specifier: ^10.0.1
