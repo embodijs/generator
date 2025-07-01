@@ -223,7 +223,7 @@ export const devServerPlugin = (): Plugin => ({
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
 						const content = fileManager.getFile(url);
-						const headers = FileManager.getHeaders(url);
+						const headers = fileManager.getHeaders(url);
 						res.writeHead(200, headers);
 						return res.end(content);
 					}
@@ -241,18 +241,12 @@ export const devServerPlugin = (): Plugin => ({
 				}
 
 				const { html, data } = fileManager.getPage(pageURL)!;
-				if (isDataURL) {
-					res.writeHead(200, {
-						'content-type': 'application/json',
-						'content-length': data.length
-					});
+				const headers = fileManager.getHeaders(pageURL);
+				res.writeHead(200, headers);
 
+				if (isDataURL) {
 					return res.end(data);
 				} else {
-					res.writeHead(200, {
-						'Content-Type': 'text/html',
-						'Content-Length': html.length
-					});
 					return res.end(html);
 				}
 			} catch (e) {

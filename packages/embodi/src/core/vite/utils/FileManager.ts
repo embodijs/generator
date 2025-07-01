@@ -34,7 +34,7 @@ export function getValue(data: Record<string, any>, attr: string[]) {
 }
 
 export class FileManager {
-	protected files: Map<string, { content: string | Buffer; contentType: string; length: number }>;
+	protected files: Map<string, { content: Buffer; contentType: string; length: number }>;
 	protected template: string | undefined;
 	protected head: string;
 	protected baseSrc: BaseSrc | undefined;
@@ -64,15 +64,20 @@ export class FileManager {
 			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.data, key.split('.')))
 			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
-		this.files.set(htmlPath, { content: html, contentType: 'text/html', length: html.length });
-		const stringifiedData = JSON.stringify(data.data);
+		const htmlBuffer = Buffer.from(html);
+		this.files.set(htmlPath, {
+			content: htmlBuffer,
+			contentType: 'text/html',
+			length: htmlBuffer.length
+		});
+		const dataBuffer = Buffer.from(JSON.stringify(data.data));
 		this.files.set(dataPath, {
-			content: stringifiedData,
+			content: dataBuffer,
 			contentType: 'application/json',
-			length: stringifiedData.length
+			length: dataBuffer.length
 		});
 
-		return [htmlPath, dataPath];
+		return [htmlBuffer, dataBuffer];
 	}
 
 	has(url: string) {
@@ -100,7 +105,8 @@ export class FileManager {
 	addAsset(name: string, content: string | Buffer, contentType: string) {
 		const hash = this.hash(content.toString());
 		const path = joinUrl('/assets', this.addHashToFileName(name, hash));
-		this.files.set(path, { content, contentType, length: content.length });
+		const contentBuffer = Buffer.isBuffer(content) ? content : Buffer.from(content);
+		this.files.set(path, { content: contentBuffer, contentType, length: contentBuffer.length });
 		return path;
 	}
 
@@ -126,11 +132,11 @@ export class FileManager {
 		return this.files.has(joinUrl(url, 'index.html'));
 	}
 
-	getPage(url: string): { html: string; data: string } | undefined {
+	getPage(url: string): { html: Buffer; data: Buffer } | undefined {
 		const html = this.files.get(joinUrl(url, 'index.html'))?.content;
 		const data = this.files.get(joinUrl(url, 'data.json'))?.content;
 		if (!html || !data) return;
-		return { html: html.toString(), data: data.toString() };
+		return { html, data };
 	}
 
 	protected write(path: string, content: string | Buffer) {
