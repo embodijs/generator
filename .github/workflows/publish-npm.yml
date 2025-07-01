@@ -10,6 +10,7 @@ permissions:
   contents: write
   pull-requests: write
   attestations: write
+  id-token: write
 jobs:
   version:
     timeout-minutes: 15
