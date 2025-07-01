@@ -30,7 +30,10 @@ export function embodiMarkdown(options: MarkdownPluginOptions = {}): VitePlugin 
   return createContentParserPlugin({
     name: 'vite-embodi-markdown',
     fileType: 'md',
-    convertContent: (content) => String(processor.processSync(content))
+    convertContent: async (content) => {
+      const html = await processor.process(content);
+      return String(html);
+    }
   });
 }
 
