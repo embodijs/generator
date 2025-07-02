@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.4
+
+### Patch Changes
+
+- ab54fb7: Prepare links on site loaded with goto and add `data-embodi-reload` to do a full reload and not prepare link
+
 ## 0.13.3
 
 ### Patch Changes
