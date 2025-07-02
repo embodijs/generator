@@ -25,6 +25,7 @@ const goto = async (href: string | URL | Location, options?: { pushState?: boole
 			window.history.pushState({}, '', current);
 		}
 		await tick();
+		window.scrollTo(0, 0);
 		addLinkEvents();
 	} catch (error) {
 		console.error('Error during navigation:', error);
