@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.6
+
+### Patch Changes
+
+- dd58ab4: fix: await tick before set event listener on ticks to get the new laoded page
+
 ## 0.13.5
 
 ### Patch Changes
