@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.5
+
+### Patch Changes
+
+- 0311959: Fix load a tag selection: Use query selector
+
 ## 0.13.4
 
 ### Patch Changes
