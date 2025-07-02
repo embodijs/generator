@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.7
+
+### Patch Changes
+
+- d91af87: Fix scroll postion. Jump to top
+
 ## 0.13.6
 
 ### Patch Changes
