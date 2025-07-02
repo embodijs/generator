@@ -33,7 +33,7 @@ const addLinkEvents = () => {
 	window.addEventListener('popstate', () => {
 		goto(document.location, { pushState: false });
 	});
-	const linkElements = document.getElementsByTagName('a:not([data-embodi-reload])');
+	const linkElements = document.querySelectorAll('a:not([data-embodi-reload])');
 	const origin = window.location.origin;
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
