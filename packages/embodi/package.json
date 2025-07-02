@@ -1,6 +1,6 @@
 {
 	"name": "embodi",
-	"version": "0.13.3",
+	"version": "0.13.4",
 	"license": "Apache-2.0",
 	"module": "dist/exports/lib.js",
 	"types": "dist/exports/lib.d.ts",
