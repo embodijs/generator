@@ -4,6 +4,7 @@ import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
 import { page as pageStore } from '$embodi/stores/internal';
 import { page, update } from './state.svelte.js';
+import { tick } from 'svelte';
 
 let clientRouter = createRouter();
 
@@ -23,6 +24,7 @@ const goto = async (href: string | URL | Location, options?: { pushState?: boole
 		if (!options || options.pushState) {
 			window.history.pushState({}, '', current);
 		}
+		await tick();
 		addLinkEvents();
 	} catch (error) {
 		console.error('Error during navigation:', error);
