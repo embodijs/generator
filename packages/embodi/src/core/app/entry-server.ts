@@ -73,6 +73,7 @@ type ImageFormat =
 
 export type ImageFile = {
 	width: number;
+	height: number;
 	src: string;
 };
 
@@ -136,15 +137,13 @@ const transformImageWithStore = async (
 	imageFormat: ImageFormat
 ): Promise<ImageFile> => {
 	const transformedImage = transformImage(path, imageFormat);
-	const metadata = await transformedImage.metadata();
+
 	const newPath = replaceFileType(path, imageFormat.format);
-	const assetPath = fileManager.addAsset(
-		newPath,
-		await transformedImage.toBuffer(),
-		`image/${imageFormat.format}`
-	);
+	const { info, data } = await transformedImage.toBuffer({ resolveWithObject: true });
+	const assetPath = fileManager.addAsset(newPath, data, `image/${imageFormat.format}`);
 	return {
-		width: metadata.width!,
+		width: info.width,
+		height: info.height,
 		src: assetPath
 	};
 };
