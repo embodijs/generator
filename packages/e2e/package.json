@@ -14,7 +14,7 @@
     "@embodi/markdown": "workspace:*",
     "embodi": "workspace:*",
     "sharp": "^0.34.2",
-    "svelte": "^5.34.9",
+    "svelte": "^5.36.12",
     "valibot": "^1.1.0",
     "vite": "^6.3.5"
   }
