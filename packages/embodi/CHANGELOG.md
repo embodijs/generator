@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.8
+
+### Patch Changes
+
+- a49097e: Fix the size returned for image
+
 ## 0.13.7
 
 ### Patch Changes
