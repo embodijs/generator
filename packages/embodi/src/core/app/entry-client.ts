@@ -37,11 +37,10 @@ const addLinkEvents = () => {
 		goto(document.location, { pushState: false });
 	});
 	const linkElements = document.querySelectorAll('a:not([data-embodi-reload])');
-	const origin = window.location.origin;
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
 		if (el && href) {
-			const linkURL = new URL(href, origin);
+			const linkURL = new URL(href, window.location.href);
 
 			if (linkURL.origin === origin) {
 				el.addEventListener('mousedown', async (e) => {
