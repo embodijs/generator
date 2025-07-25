@@ -17,7 +17,7 @@
     <div>{data.loadContent}</div>
   {/if}
   {@render children?.()}
-  <div id="marker"></div>
+  <div id="marker">&nbsp;</div>
 </main>
 
 <style>

@@ -8,4 +8,9 @@ test.describe('Embodi build and binding', () => {
     await page.getByText('relative').click();
     await expect(page.getByRole('heading', { name: 'This is some random second page' })).toBeVisible();
   });
+  test('scroll to end', async ({ page }) => {
+    await page.goto('/');
+    await page.getByText('Scroll to end').click();
+    await expect(page.locator('#marker')).toBeInViewport();
+  });
 });
