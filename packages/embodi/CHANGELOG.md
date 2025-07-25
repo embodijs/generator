@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.10
+
+### Patch Changes
+
+- b9aa7f9: Fix: Scroll to hash instead to top
+
 ## 0.13.9
 
 ### Patch Changes
