@@ -8,25 +8,40 @@ import { tick } from 'svelte';
 
 let clientRouter = createRouter();
 
-const goto = async (href: string | URL | Location, options?: { pushState?: boolean }) => {
+const goto = async (href: string | URL, options?: { pushState?: boolean; init?: boolean }) => {
 	try {
-		const current = typeof href === 'string' ? href : href.pathname;
-		const pageData = await clientRouter.load(current);
-		const { Layout, Component, html, data } = pageData;
-		await renderHook({ data: pageData.data });
-		pageStore.update((p) => ({ ...p, url: current }));
-		update({
-			Layout,
-			Component,
-			html,
-			data
-		});
-		if (!options || options.pushState) {
-			window.history.pushState({}, '', current);
+		const current = window.location.pathname;
+		const to = new URL(href, window.location.href);
+		console.log({ options, to, current, href: window.location.href });
+		if (options?.init || to.pathname !== current) {
+			console.log('Navigating to:', to.pathname);
+			const pageData = await clientRouter.load(to.pathname);
+			const { Layout, Component, html, data } = pageData;
+			await renderHook({ data: pageData.data });
+			pageStore.update((p) => ({ ...p, url: to.href }));
+			update({
+				Layout,
+				Component,
+				html,
+				data
+			});
+			await tick();
+			addLinkEvents();
 		}
-		await tick();
-		window.scrollTo(0, 0);
-		addLinkEvents();
+
+		if (to.hash) {
+			const element = document.getElementById(to.hash.slice(1));
+			console.log('scroll', element, to.hash);
+			if (element) {
+				element.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
+			}
+		} else {
+			window.scrollTo(0, 0);
+		}
+
+		if ((!options || options.pushState !== false) && to.href !== window.location.href) {
+			window.history.pushState({}, '', to);
+		}
 	} catch (error) {
 		console.error('Error during navigation:', error);
 	}
@@ -34,24 +49,29 @@ const goto = async (href: string | URL | Location, options?: { pushState?: boole
 
 const addLinkEvents = () => {
 	window.addEventListener('popstate', () => {
-		goto(document.location, { pushState: false });
+		goto(document.location.href, { pushState: false });
 	});
 	const linkElements = document.querySelectorAll('a:not([data-embodi-reload])');
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
 		if (el && href) {
 			const linkURL = new URL(href, window.location.href);
+			const onMouseDown = async (e: Event) => {
+				e.preventDefault();
+				await clientRouter.load(linkURL.pathname);
+			};
+
+			const onClick = async (e: Event) => {
+				e.preventDefault();
+				goto(linkURL);
+			};
 
 			if (linkURL.origin === origin) {
-				el.addEventListener('mousedown', async (e) => {
-					e.preventDefault();
-					await clientRouter.load(linkURL.pathname);
-				});
+				el.removeEventListener('mousedown', onMouseDown);
+				el.addEventListener('mousedown', onMouseDown);
 
-				el.addEventListener('click', async (e) => {
-					e.preventDefault();
-					goto(linkURL);
-				});
+				el.removeEventListener('click', onClick);
+				el.addEventListener('click', onClick);
 			}
 		}
 	}
@@ -59,7 +79,7 @@ const addLinkEvents = () => {
 
 const hydrateClient = async () => {
 	const currentUrl = window.location.pathname;
-	await goto(currentUrl, { pushState: false });
+	await goto(currentUrl, { pushState: false, init: true });
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,
 		props: { page }
