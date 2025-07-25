@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.9
+
+### Patch Changes
+
+- caa7d52: Fix: Navigate realtive paths with JS
+
 ## 0.13.8
 
 ### Patch Changes
