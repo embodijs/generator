@@ -45,6 +45,10 @@ export const createRouter = () => {
 
 	return {
 		load: loadPage,
+		preload: async (url: string) => {
+			const page = getPageImport(url);
+			await page();
+		},
 		path: convertUrlToPath
 	};
 };
