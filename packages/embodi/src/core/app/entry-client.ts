@@ -41,6 +41,8 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 		}
 	} catch (error) {
 		console.error('Error during navigation:', error);
+		//trigger full reload and page switch
+		window.location.href = typeof href === 'string' ? href : href.href;
 	}
 };
 
