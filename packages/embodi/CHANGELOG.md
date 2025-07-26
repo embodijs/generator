@@ -1,5 +1,11 @@
 # embodi
 
+## 0.13.11
+
+### Patch Changes
+
+- 6a12413: Fix: Load data.json only once and preload on pointerenter insted of mousedown
+
 ## 0.13.10
 
 ### Patch Changes
