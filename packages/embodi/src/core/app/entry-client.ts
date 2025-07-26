@@ -12,9 +12,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 	try {
 		const current = window.location.pathname;
 		const to = new URL(href, window.location.href);
-		console.log({ options, to, current, href: window.location.href });
 		if (options?.init || to.pathname !== current) {
-			console.log('Navigating to:', to.pathname);
 			const pageData = await clientRouter.load(to.pathname);
 			const { Layout, Component, html, data } = pageData;
 			await renderHook({ data: pageData.data });
@@ -31,7 +29,6 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 
 		if (to.hash) {
 			const element = document.getElementById(to.hash.slice(1));
-			console.log('scroll', element, to.hash);
 			if (element) {
 				element.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
 			}
@@ -56,21 +53,19 @@ const addLinkEvents = () => {
 		const href = el?.getAttribute('href');
 		if (el && href) {
 			const linkURL = new URL(href, window.location.href);
-			const onMouseDown = async (e: Event) => {
+			const preload = async (e: Event) => {
 				e.preventDefault();
-				await clientRouter.load(linkURL.pathname);
+				await clientRouter.preload(linkURL.pathname);
 			};
 
 			const onClick = async (e: Event) => {
 				e.preventDefault();
-				goto(linkURL);
+				await goto(linkURL);
 			};
 
 			if (linkURL.origin === origin) {
-				el.removeEventListener('mousedown', onMouseDown);
-				el.addEventListener('mousedown', onMouseDown);
+				el.addEventListener('pointerenter', preload);
 
-				el.removeEventListener('click', onClick);
 				el.addEventListener('click', onClick);
 			}
 		}
