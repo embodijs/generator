@@ -1,5 +1,12 @@
 # embodi
 
+## 0.13.12
+
+### Patch Changes
+
+- ad75507: Fix: Full page load after error in goto, to avoid not working navigation on updated pages.
+- 466f14c: Fix: Browser Navigation
+
 ## 0.13.11
 
 ### Patch Changes
