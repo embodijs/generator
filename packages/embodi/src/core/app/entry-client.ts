@@ -1,4 +1,4 @@
-import { createRouter } from './router-client.js';
+import { createRouter, PageDoesNotExistException } from './router-client.js';
 import { hydrate } from 'svelte';
 import { renderHook } from '$embodi/hooks';
 import SvelteRoot from './Root.svelte';
@@ -7,6 +7,14 @@ import { page, update } from './state.svelte.js';
 import { tick } from 'svelte';
 
 let clientRouter = createRouter();
+
+function isDynamicImportFetchError(error) {
+	return (
+		error.message.includes('Failed to fetch dynamically imported module') ||
+		error.message.includes('Loading chunk') ||
+		error.message.includes('Loading CSS chunk')
+	);
+}
 
 const goto = async (href: string | URL, options?: { pushState?: boolean; init?: boolean }) => {
 	try {
@@ -40,13 +48,20 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 			window.history.pushState({}, '', to);
 		}
 	} catch (error) {
+		if (error instanceof PageDoesNotExistException) {
+			return;
+		}
 		console.error('Error during navigation:', error);
+		//trigger full reload and page switch
+		if (isDynamicImportFetchError(error)) {
+			window.location.replace(href);
+		}
 	}
 };
 
 const addLinkEvents = () => {
 	window.addEventListener('popstate', () => {
-		goto(document.location.href, { pushState: false });
+		goto(window.location.href, { pushState: false, init: true });
 	});
 	const linkElements = document.querySelectorAll('a:not([data-embodi-reload])');
 	for (const el of linkElements) {
@@ -54,8 +69,12 @@ const addLinkEvents = () => {
 		if (el && href) {
 			const linkURL = new URL(href, window.location.href);
 			const preload = async (e: Event) => {
-				e.preventDefault();
-				await clientRouter.preload(linkURL.pathname);
+				try {
+					e.preventDefault();
+					await clientRouter.preload(linkURL.pathname);
+				} catch (error) {
+					console.error('Error during preload:', error);
+				}
 			};
 
 			const onClick = async (e: Event) => {

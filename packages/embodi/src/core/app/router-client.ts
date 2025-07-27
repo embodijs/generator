@@ -7,12 +7,19 @@ const convertUrlToPath = async (url: string) => {
 	return routes[url];
 };
 
+export class PageDoesNotExistException extends Error {
+	constructor(message = 'Page does not exist') {
+		super(message);
+		this.name = 'PageDoesNotExistException';
+	}
+}
+
 const getPageImport = (url: string): (() => Promise<{ default: PageData }>) => {
 	if (pages.hasOwnProperty(url) && typeof pages[url] === 'function') {
 		return pages[url];
 	}
 
-	throw new Error('Page does not exist');
+	throw new PageDoesNotExistException();
 };
 
 const getPageFromUrl = async (_url: string | URL) => {
