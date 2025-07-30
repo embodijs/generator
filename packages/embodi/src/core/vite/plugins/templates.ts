@@ -23,15 +23,20 @@ export const templatePlugin = (): Plugin => {
 				assert(projectConfig);
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
+				console.log({ path, id });
 
-				const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
-				const layout = getLayoutPath(path);
-				if (!layout) throw new Error(`Layout not found for id ${id}`);
-				const snippet = `export { default as Layout} from '${join(cwd, layoutRoot, layout)}';`;
-				if (options?.ssr) {
+				// const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
+				// const layout = getLayoutPath(path);
+				// if (!layout) throw new Error(`Layout not found for id ${id}`);
+				// const layoutPath = join(cwd, layoutRoot, layout);
+				const snippet = `export { default as Layout} from '$layout/${path}';`;
+				if (true) {
 					return `${snippet}\n
-					import { layouts } from '${join(cwd, layoutRoot, './layout.config.js')}';
-					export const schema = layouts['${path}'].schema;`;
+					export const loadPrehandler = async () => {
+						const prehandler = await import('$layout/${path}.js');
+						return prehandler
+					};
+					`;
 				}
 				return snippet;
 			}

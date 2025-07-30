@@ -49,9 +49,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				if (layout) {
 					result =
 						`
-					import * as l from '${layout}';\n
-					const { Layout, ...layoutDefinition } = l;\n
-					export { Layout, layoutDefinition };\n
+					export { Layout, loadPrehandler } from '${layout}';\n
 					` + result;
 				} else {
 					result = `export const Layout = undefined;\n` + result;

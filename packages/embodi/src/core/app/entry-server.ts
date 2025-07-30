@@ -181,6 +181,20 @@ export function hasRoute(url: string) {
 	return !!router.path(url);
 }
 
+export function resolvePath(path: string) {
+	if (path.startsWith('$assets/')) {
+		return resolve(process.cwd(), src.assets, extractAssetPath(path));
+	}
+	return resolve(path);
+}
+
+export function extractAssetPath(path: string) {
+	if (path.startsWith('$assets/')) {
+		return path.slice('$assets/'.length);
+	}
+	throw new Error(`Invalid asset path: ${path}`);
+}
+
 export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
 	fileManager.setBasePath({ src, dest });
 	const head = manifest
@@ -189,18 +203,26 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 
 	const pageData = await router.load(url);
 	if (!pageData) return;
-	const { html, Component, Layout, layoutDefinition } = pageData;
+	const { html, Component, Layout, loadPrehandler } = pageData;
+	const prehandler = await loadPrehandler();
+	console.log({ loadPrehandler, prehandler });
 	const unevaluatedData = await runLoadAction(pageData);
-	const data = layoutDefinition?.hasOwnProperty('schema')
-		? await v.parseAsync(
-				layoutDefinition.schema({
-					v,
-					e: prepareE(fileManager)
-				}),
-				unevaluatedData
-			)
-		: unevaluatedData;
-
+	const enriched = Object.hasOwn(prehandler, 'enrich')
+		? await prehandler.enrich({
+				html,
+				Component,
+				data: unevaluatedData,
+				helper: {
+					resolvePath,
+					fileManager,
+					extractAssetPath
+				}
+			})
+		: { html, Component, data: unevaluatedData };
+	const data = Object.hasOwn(prehandler, 'schema')
+		? await v.parseAsync(prehandler.schema, enriched.data)
+		: enriched.data;
+	console.log({ data });
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
 

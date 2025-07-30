@@ -1,6 +1,6 @@
 <script>
   import '../app.css';
-  import Image from 'embodi/Image.svelte';
+  import Image from './Image.svelte';
 
   let { data, children } = $props();
 </script>
