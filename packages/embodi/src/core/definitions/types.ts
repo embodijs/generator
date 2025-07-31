@@ -27,9 +27,11 @@ export type DataSchema = BaseSchema<
 	BaseIssue<unknown>
 >;
 
+export type EnrichActionReturn = { html: string; data: AnyObject };
+
 export type LoadAction = (event: LoadEvent) => Record<string, any>;
 export type PrehandlerLoadImport = () => Promise<{ schema: DataSchema; enrich: EnrichAction }>;
-export type EnrichAction = (event: LayoutEvent) => Record<string, any>;
+export type EnrichAction = (event: LayoutEvent) => MaybePromise<EnrichActionReturn>;
 
 type PageElements = {
 	Component?: Component;
