@@ -39,14 +39,28 @@ export class FileManager {
 	protected head: string;
 	protected baseSrc: BaseSrc | undefined;
 	protected baseDest: BaseDest | undefined;
+	protected static instance: FileManager | undefined;
 
-	constructor(options: FileManagerOptions = {}) {
+	protected constructor(options: FileManagerOptions = {}) {
 		this.files = new Map();
 		this.template = options.template;
 		this.head = options.head ?? '';
 	}
 
+	static getInstance() {
+		if (!FileManager.instance) {
+			console.log('create filemanager');
+			FileManager.instance = new FileManager();
+		}
+		return FileManager.instance;
+	}
+
+	setHead(head: string) {
+		this.head = head;
+	}
+
 	setTemplate(template: string) {
+		console.log('set Template');
 		this.template = template;
 	}
 

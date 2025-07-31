@@ -14,9 +14,17 @@ import { FileManager } from '../vite/utils/FileManager.js';
 import { extname } from 'path';
 import { src, dest } from '$embodi/config';
 import { page, update } from './state.svelte.js';
+import type { DataSchema } from 'exports/layout.js';
+import type {
+	AnyObject,
+	EnrichAction,
+	LayoutEvent,
+	PrehandlerLoadImport
+} from '../definitions/types.js';
+import type { Component } from 'svelte';
 
 const router = createRouter();
-
+export { FileManager };
 const createScriptTag = (url: string) => {
 	return `<script type="module" src="${addLeadingSlash(url)}" defer></script>`;
 };
@@ -183,19 +191,56 @@ export function hasRoute(url: string) {
 
 export function resolvePath(path: string) {
 	if (path.startsWith('$assets/')) {
-		return resolve(process.cwd(), src.assets, extractAssetPath(path));
+		return resolve(process.cwd(), src.assets, path.slice('$assets/'.length));
 	}
 	return resolve(path);
 }
 
-export function extractAssetPath(path: string) {
-	if (path.startsWith('$assets/')) {
-		return path.slice('$assets/'.length);
+export async function runEnrich(
+	enrich: EnrichAction | undefined,
+	{ html, data, url }: Pick<LayoutEvent, 'url' | 'html' | 'data'>
+) {
+	if (!enrich) {
+		return Promise.resolve({ html, data });
 	}
-	throw new Error(`Invalid asset path: ${path}`);
+	return enrich({
+		html,
+		url,
+		data,
+		helper: {
+			resolvePath,
+			fileManager: FileManager.getInstance()
+		}
+	});
 }
 
-export async function render(url: string, fileManager: FileManager, manifest?: Manifest) {
+export function validateData<T extends AnyObject>(schema: DataSchema | undefined, data: T) {
+	if (!schema) {
+		return data;
+	}
+	return v.parseAsync(schema, data);
+}
+
+export async function prehandle(elements: {
+	Layout: Component;
+	loadPrehandler: PrehandlerLoadImport;
+	url: URL;
+	data: AnyObject;
+	html: string;
+}) {
+	const { Layout, loadPrehandler, url } = elements;
+	let { html, data } = elements;
+	if (!Layout) {
+		return { html, data };
+	}
+	const { enrich, schema } = await loadPrehandler();
+	({ html, data } = await runEnrich(enrich, { html, data, url }));
+	data = await validateData(schema, data);
+	return { html, data };
+}
+
+export async function render(url: string, manifest?: Manifest) {
+	const fileManager = FileManager.getInstance();
 	fileManager.setBasePath({ src, dest });
 	const head = manifest
 		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
@@ -203,26 +248,10 @@ export async function render(url: string, fileManager: FileManager, manifest?: M
 
 	const pageData = await router.load(url);
 	if (!pageData) return;
-	const { html, Component, Layout, loadPrehandler } = pageData;
-	const prehandler = await loadPrehandler();
-	console.log({ loadPrehandler, prehandler });
-	const unevaluatedData = await runLoadAction(pageData);
-	const enriched = Object.hasOwn(prehandler, 'enrich')
-		? await prehandler.enrich({
-				html,
-				Component,
-				data: unevaluatedData,
-				helper: {
-					resolvePath,
-					fileManager,
-					extractAssetPath
-				}
-			})
-		: { html, Component, data: unevaluatedData };
-	const data = Object.hasOwn(prehandler, 'schema')
-		? await v.parseAsync(prehandler.schema, enriched.data)
-		: enriched.data;
-	console.log({ data });
+	const { Component, Layout } = pageData;
+	let data = await runLoadAction({ ...pageData, url });
+	let html: string;
+	({ data, html } = await prehandle({ ...pageData, data, url }));
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
 

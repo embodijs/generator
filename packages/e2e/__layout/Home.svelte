@@ -3,6 +3,7 @@
   import Image from './Image.svelte';
 
   let { data, children } = $props();
+  console.log({ data });
 </script>
 
 <main>

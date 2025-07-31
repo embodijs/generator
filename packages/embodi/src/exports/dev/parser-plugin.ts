@@ -30,10 +30,11 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 		},
 		load(id, config) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
-				if (!config?.ssr) {
-					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
-				} else {
+				if (config?.ssr) {
+					console.log('blugin export all');
 					return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
+				} else {
+					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
 				}
 			}
 		},
@@ -49,7 +50,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				if (layout) {
 					result =
 						`
-					export { Layout, loadPrehandler } from '${layout}';\n
+					export * from '${layout}';\n
 					` + result;
 				} else {
 					result = `export const Layout = undefined;\n` + result;

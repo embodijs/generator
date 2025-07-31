@@ -3,7 +3,6 @@ import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
-import { join } from 'path/posix';
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
@@ -30,7 +29,9 @@ export const templatePlugin = (): Plugin => {
 				// if (!layout) throw new Error(`Layout not found for id ${id}`);
 				// const layoutPath = join(cwd, layoutRoot, layout);
 				const snippet = `export { default as Layout} from '$layout/${path}';`;
-				if (true) {
+				console.log({ options, isSrr: options?.ssr === true });
+				if (options?.ssr === true) {
+					console.log('prehandler');
 					return `${snippet}\n
 					export const loadPrehandler = async () => {
 						const prehandler = await import('$layout/${path}.js');

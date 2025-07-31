@@ -199,9 +199,6 @@ export const devServerPlugin = (): Plugin => ({
 		};
 	},
 	configureServer(server) {
-		const fileManager = new FileManager({
-			head: `<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
-		});
 		const devServer = async (
 			req: Connect.IncomingMessage,
 			res: ServerResponse,
@@ -210,15 +207,17 @@ export const devServerPlugin = (): Plugin => ({
 			// TODO: add static file route here
 			try {
 				const { inputDirs, statics } = await loadConfig(cwd);
-				assert(req.url);
-				let url = req.url;
-
-				const isDataURL = url.endsWith('data.json');
-				const pageURL = isDataURL ? url.slice(0, -9) : addTrailingSlash(url);
-
-				const { render, hasRoute } = await server.ssrLoadModule(
+				assert(req.url, req.headers.host);
+				const { render, hasRoute, FileManager } = await server.ssrLoadModule(
 					`/node_modules/${packageJson.name}/dist/core/app/entry-server.js`
 				);
+				let url = req.url;
+				const fileManager = FileManager.getInstance();
+				fileManager.setHead(
+					`<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
+				);
+				const isDataURL = url.endsWith('data.json');
+				const pageURL = isDataURL ? url.slice(0, -9) : addTrailingSlash(url);
 
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
@@ -234,7 +233,7 @@ export const devServerPlugin = (): Plugin => ({
 				const template = await server.transformIndexHtml(pageURL, rawTemplate);
 				fileManager.setTemplate(template);
 
-				await render(pageURL, fileManager);
+				await render(pageURL);
 
 				if (!fileManager.hasPage(pageURL)) {
 					return next();

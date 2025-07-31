@@ -18,12 +18,6 @@ export type Layout = {
 	}) => ObjectSchema<any, any> | ObjectSchemaAsync<any, any>;
 };
 
-export type DataSchema = BaseSchema<
-	Record<string, unknown>,
-	Record<string, unknown>,
-	BaseIssue<unknown>
->;
-
 export const prepareComponentLoad = async (
 	cwd: string = process.cwd(),
 	{ inputDirs: { layout } }: EmbodiConfig

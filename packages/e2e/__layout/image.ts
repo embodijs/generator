@@ -79,7 +79,7 @@ export const storeImage = async ({
   original?: boolean;
 }): Promise<DefaultImageFile | ImageFile> => {
   const { info, data } = await image.toBuffer({ resolveWithObject: true });
-  const assetPath = helper.fileManager.addAsset(helper.extractAssetPath(path), data, `image/${getFileType(path)}`);
+  const assetPath = helper.fileManager.addAsset(path, data, `image/${getFileType(path)}`);
   if (original) {
     return {
       original: true,
