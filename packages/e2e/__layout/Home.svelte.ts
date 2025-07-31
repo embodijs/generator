@@ -1,6 +1,6 @@
-import { type DataSchema } from 'embodi/layout';
+import type { DataSchema } from 'embodi/layout';
 import * as v from 'valibot';
-import { loadImage, storeImage } from './image';
+import { loadImage, storeImage } from '@embodi/image';
 
 export const schema: DataSchema = v.objectAsync({
   title: v.string(),
