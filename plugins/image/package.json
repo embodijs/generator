@@ -22,13 +22,19 @@
 	"sideEffects": [
 		"**/*.css"
 	],
-	"svelte": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
+			"types": "./dist/server.d.ts",
+			"svelte": "./dist/server.js"
+		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"svelte": "./dist/client.js"
+		},
+		"./Image.svelte": {
+			"types": "./dist/Image.svelte.d.ts",
+			"svelte": "./dist/Image.svelte"
 		}
 	},
 	"peerDependencies": {
