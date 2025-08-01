@@ -27,7 +27,6 @@ import { generateHooksCode } from '../code-builder/hooks.js';
 import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 import assert from 'node:assert';
-import { FileManager } from '../utils/FileManager.js';
 import { addTrailingSlash } from '../utils/paths.js';
 
 const cwd = process.cwd(); // Current working directory
@@ -51,7 +50,7 @@ export const configPlugin = (): Plugin => ({
 				alias: {
 					'$embodi/*': resolve(cf, './virtual-modules/embodi/*'),
 					$assets: resolve(cwd, projectConfig.inputDirs.assets),
-					$layout: resolve(cwd, projectConfig.inputDirs.layout)
+					'$layout-internal': resolve(cwd, projectConfig.inputDirs.layout)
 				}
 			},
 			build: {

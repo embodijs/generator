@@ -1,7 +1,7 @@
 ---
 title: Welcome to Embodi
 hero: $assets/chain.jpg
-layout: $layout2/Home.svelte
+layout: $layout/Home.svelte
 ---
 
 ## This is some random second page

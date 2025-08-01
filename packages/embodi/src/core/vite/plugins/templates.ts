@@ -7,7 +7,7 @@ import assert from 'assert';
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
 	let projectConfig: EmbodiConfig;
-	let layoutValidator = prepareIdValidator('$layout2/');
+	let layoutValidator = prepareIdValidator('$layout/');
 	return {
 		name: 'vite-embodi-template-plugin',
 		async configResolved(config) {
@@ -28,13 +28,13 @@ export const templatePlugin = (): Plugin => {
 				// const layout = getLayoutPath(path);
 				// if (!layout) throw new Error(`Layout not found for id ${id}`);
 				// const layoutPath = join(cwd, layoutRoot, layout);
-				const snippet = `export { default as Layout} from '$layout/${path}';`;
+				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
 				console.log({ options, isSrr: options?.ssr === true });
 				if (options?.ssr === true) {
 					console.log('prehandler');
 					return `${snippet}\n
 					export const loadPrehandler = async () => {
-						const prehandler = await import('$layout/${path}.js');
+						const prehandler = await import('$layout-internal/${path}.js');
 						return prehandler
 					};
 					`;
