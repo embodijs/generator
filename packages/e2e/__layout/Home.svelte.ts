@@ -1,10 +1,10 @@
 import type { DataSchema } from 'embodi/layout';
 import * as v from 'valibot';
-import { loadImage, storeImage } from '@embodi/image';
+import { ImageFilesSchema, loadImage, storeImage } from '@embodi/image';
 
 export const schema: DataSchema = v.objectAsync({
   title: v.string(),
-  hero: v.array(v.any()),
+  hero: ImageFilesSchema,
   lang: v.string(),
   subtitle: v.string(),
   loadContent: v.optional(v.string())

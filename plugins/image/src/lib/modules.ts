@@ -1,7 +1,7 @@
 import type { LayoutEvent } from 'embodi/layout';
 import { extname } from 'path';
 import sharp from 'sharp';
-import type { DefaultImageFile, ImageFile } from './types.js';
+import type { DefaultImageFile, ImageFile } from './schema.js';
 
 const getFileType = (path: string) => {
 	const ext = extname(path);

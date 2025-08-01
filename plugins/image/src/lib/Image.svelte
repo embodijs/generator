@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { ImageFiles } from './types.js';
+	import type { ImageFiles } from './schema.js';
 
 	type Props = {
 		images: ImageFiles;
