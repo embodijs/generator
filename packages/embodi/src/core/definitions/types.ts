@@ -1,4 +1,12 @@
-import type { BaseIssue, BaseSchema } from 'valibot';
+import type {
+	BaseIssue,
+	BaseSchema,
+	ErrorMessage,
+	GenericSchema,
+	GenericSchemaAsync,
+	ObjectEntries,
+	ObjectSchema
+} from 'valibot';
 import type { FileManager } from '../vite/utils/FileManager.js';
 
 import type { Component } from 'svelte';
@@ -21,11 +29,7 @@ export type LayoutEvent = LoadEvent & {
 	};
 };
 
-export type DataSchema = BaseSchema<
-	Record<string, unknown>,
-	Record<string, unknown>,
-	BaseIssue<unknown>
->;
+export type DataSchema = GenericSchema<AnyObject> | GenericSchemaAsync<AnyObject>;
 
 export type EnrichActionReturn = { html: string; data: AnyObject };
 
