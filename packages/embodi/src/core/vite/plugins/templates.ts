@@ -3,12 +3,11 @@ import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
-import { join } from 'path/posix';
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
 	let projectConfig: EmbodiConfig;
-	let layoutValidator = prepareIdValidator('$layout2/');
+	let layoutValidator = prepareIdValidator('$layout/');
 	return {
 		name: 'vite-embodi-template-plugin',
 		async configResolved(config) {
@@ -23,15 +22,22 @@ export const templatePlugin = (): Plugin => {
 				assert(projectConfig);
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
+				console.log({ path, id });
 
-				const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
-				const layout = getLayoutPath(path);
-				if (!layout) throw new Error(`Layout not found for id ${id}`);
-				const snippet = `export { default as Layout} from '${join(cwd, layoutRoot, layout)}';`;
-				if (options?.ssr) {
+				// const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
+				// const layout = getLayoutPath(path);
+				// if (!layout) throw new Error(`Layout not found for id ${id}`);
+				// const layoutPath = join(cwd, layoutRoot, layout);
+				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
+				console.log({ options, isSrr: options?.ssr === true });
+				if (options?.ssr === true) {
+					console.log('prehandler');
 					return `${snippet}\n
-					import { layouts } from '${join(cwd, layoutRoot, './layout.config.js')}';
-					export const schema = layouts['${path}'].schema;`;
+					export const loadPrehandler = async () => {
+						const prehandler = await import('$layout-internal/${path}.js');
+						return prehandler
+					};
+					`;
 				}
 				return snippet;
 			}

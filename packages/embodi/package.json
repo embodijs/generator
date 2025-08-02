@@ -45,6 +45,10 @@
 			"types": "./dist/exports/config.d.ts",
 			"import": "./dist/exports/config.js"
 		},
+		"./layout": {
+			"types": "./dist/exports/layout.d.ts",
+			"import": "./dist/exports/layout.js"
+		},
 		"./Image.svelte": {
 			"svelte": "./dist/exports/Image.svelte"
 		}

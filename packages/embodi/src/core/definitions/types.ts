@@ -1,3 +1,14 @@
+import type {
+	BaseIssue,
+	BaseSchema,
+	ErrorMessage,
+	GenericSchema,
+	GenericSchemaAsync,
+	ObjectEntries,
+	ObjectSchema
+} from 'valibot';
+import type { FileManager } from '../vite/utils/FileManager.js';
+
 import type { Component } from 'svelte';
 
 export type MaybePromise<T> = T | Promise<T>;
@@ -7,15 +18,35 @@ export type RenderHook = (event: RenderHookEvent) => MaybePromise<unknown>;
 
 export type LoadEvent = {
 	data: Record<string, any>;
+	url: URL;
 };
-export type LoadAction = (event: LoadEvent) => Record<string, any>;
 
-export type PageData = {
+export type LayoutEvent = LoadEvent & {
+	html: string;
+	helper: {
+		fileManager: FileManager;
+		resolvePath: (path: string) => string;
+	};
+};
+
+export type DataSchema = GenericSchema<AnyObject> | GenericSchemaAsync<AnyObject>;
+
+export type EnrichActionReturn = { html: string; data: AnyObject };
+
+export type LoadAction = (event: LoadEvent) => Record<string, any>;
+export type PrehandlerLoadImport = () => Promise<{ schema: DataSchema; enrich: EnrichAction }>;
+export type EnrichAction = (event: LayoutEvent) => MaybePromise<EnrichActionReturn>;
+
+type PageElements = {
 	Component?: Component;
 	html?: string;
 	Layout?: Component;
 	data: Record<string, any>;
+};
+
+export type PageData = PageElements & {
 	load?: LoadAction;
+	loadPrehandler: PrehandlerLoadImport;
 };
 
 export type PageImportFunction = () => Promise<{ default: PageData }>;

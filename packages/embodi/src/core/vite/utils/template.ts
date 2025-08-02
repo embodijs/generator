@@ -1,4 +1,10 @@
-import type { ObjectSchema, ObjectSchemaAsync, TransformAction } from 'valibot';
+import type {
+	BaseIssue,
+	BaseSchema,
+	ObjectSchema,
+	ObjectSchemaAsync,
+	TransformAction
+} from 'valibot';
 import { importConfigFile, type EmbodiConfig } from './config.js';
 import { join } from 'node:path';
 
