@@ -37,6 +37,8 @@ const findAndReplaceImageInHTML = async (html: string, widths: number[], helper:
   return html;
 };
 
+export type Data = v.InferOutput<typeof schema>;
+
 export const enrich = async (elements) => {
   const { data, html, helper } = elements;
   const image = loadImage(data.hero, helper);
