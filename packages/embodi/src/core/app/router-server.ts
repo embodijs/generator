@@ -2,13 +2,13 @@ import { addTrailingSlash } from './utils/paths.js';
 import { routes, pages } from '$embodi/pages';
 import { data } from '$embodi/data';
 
-const convertUrlToPath = (url: string) => {
-	return routes[url];
+const convertUrlToPath = (url: URL) => {
+	return routes[url.pathname];
 };
 
-const getPageFromUrl = async (_url: string | URL) => {
-	const url = typeof _url === 'string' ? _url : _url.pathname;
-	const pageImportFu = pages[addTrailingSlash(url)];
+const getPageFromUrl = async (url: URL) => {
+	const { pathname } = url;
+	const pageImportFu = pages[addTrailingSlash(pathname)];
 	if (!pageImportFu) return;
 
 	const { default: page } = await pageImportFu();
@@ -24,7 +24,7 @@ const getPageFromUrl = async (_url: string | URL) => {
 };
 
 export const createRouter = () => {
-	const loadPage = async (url: string) => {
+	const loadPage = async (url: URL) => {
 		const page = getPageFromUrl(url);
 		return page;
 	};

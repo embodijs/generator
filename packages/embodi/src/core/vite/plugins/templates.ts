@@ -22,16 +22,13 @@ export const templatePlugin = (): Plugin => {
 				assert(projectConfig);
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
-				console.log({ path, id });
 
 				// const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
 				// const layout = getLayoutPath(path);
 				// if (!layout) throw new Error(`Layout not found for id ${id}`);
 				// const layoutPath = join(cwd, layoutRoot, layout);
 				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
-				console.log({ options, isSrr: options?.ssr === true });
 				if (options?.ssr === true) {
-					console.log('prehandler');
 					return `${snippet}\n
 					export const loadPrehandler = async () => {
 						const prehandler = await import('$layout-internal/${path}.js');

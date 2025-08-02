@@ -49,7 +49,6 @@ export class FileManager {
 
 	static getInstance() {
 		if (!FileManager.instance) {
-			console.log('create filemanager');
 			FileManager.instance = new FileManager();
 		}
 		return FileManager.instance;
@@ -60,7 +59,6 @@ export class FileManager {
 	}
 
 	setTemplate(template: string) {
-		console.log('set Template');
 		this.template = template;
 	}
 

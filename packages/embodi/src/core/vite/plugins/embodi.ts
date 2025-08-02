@@ -103,7 +103,7 @@ export const virtualPlugin = (): Plugin => ({
 		} else if (validateEmbodiId.load(id, 'config')) {
 			const config = await loadConfig(cwd);
 			const { src, dest } = getSrcDestDirs(config);
-			return `export const src = ${JSON.stringify(src)};\nexport const dest = ${JSON.stringify(dest)};`;
+			return `export const src = ${JSON.stringify(src)};\nexport const dest = ${JSON.stringify(dest)};\nexport const origin = new URL('${config.origin}');\n`;
 		} else if (validateEmbodiId.load(id, 'pages')) {
 			const config = await loadConfig(cwd);
 			const contentMap = await generateContentMap(config.inputDirs);

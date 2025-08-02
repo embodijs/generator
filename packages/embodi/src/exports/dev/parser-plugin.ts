@@ -31,7 +31,6 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 		load(id, config) {
 			if (id.endsWith(embodiFormat) && id.startsWith('\0')) {
 				if (config?.ssr) {
-					console.log('blugin export all');
 					return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
 				} else {
 					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;

@@ -78,10 +78,8 @@
 		"@sveltejs/vite-plugin-svelte": "^5.1.1",
 		"front-matter": "^4.0.2",
 		"html-minifier-terser": "^7.2.0",
-		"markdown-it": "^14.1.0",
 		"minimist": "^1.2.8",
 		"pipe-and-combine": "^0.8.1",
-		"sharp": "^0.34.3",
 		"valibot": "^1.1.0",
 		"vitest": "^3.2.4"
 	},
