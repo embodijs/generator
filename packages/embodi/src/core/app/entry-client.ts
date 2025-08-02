@@ -8,11 +8,12 @@ import { tick } from 'svelte';
 
 let clientRouter = createRouter();
 
-function isDynamicImportFetchError(error) {
+function isDynamicImportFetchError(error: unknown) {
 	return (
-		error.message.includes('Failed to fetch dynamically imported module') ||
-		error.message.includes('Loading chunk') ||
-		error.message.includes('Loading CSS chunk')
+		error instanceof Error &&
+		(error.message.includes('Failed to fetch dynamically imported module') ||
+			error.message.includes('Loading chunk') ||
+			error.message.includes('Loading CSS chunk'))
 	);
 }
 
@@ -24,7 +25,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 			const pageData = await clientRouter.load(to.pathname);
 			const { Layout, Component, html, data } = pageData;
 			await renderHook({ data: pageData.data });
-			pageStore.update((p) => ({ ...p, url: to.href }));
+			pageStore.update((p) => ({ ...p, url: to }));
 			update({
 				Layout,
 				Component,
@@ -92,7 +93,7 @@ const addLinkEvents = () => {
 };
 
 const hydrateClient = async () => {
-	const currentUrl = window.location.pathname;
+	const currentUrl = window.location.href;
 	await goto(currentUrl, { pushState: false, init: true });
 	hydrate(SvelteRoot, {
 		target: document.getElementById('app')!,

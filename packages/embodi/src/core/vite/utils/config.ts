@@ -17,6 +17,7 @@ export const FullPathSchema = v.custom<`/${string}`>(
 );
 
 export const EmbodiUserConfigSchema = v.object({
+	origin: v.optional(v.pipe(v.string(), v.url()), 'https://build.local'),
 	base: v.optional(v.string()),
 	dist: v.optional(v.string()),
 	dataDir: v.optional(v.string()),
@@ -38,6 +39,7 @@ export interface PublicDirs {
 }
 
 export interface EmbodiConfig {
+	origin: string;
 	statics: string;
 	dist: string;
 	plugins: VitePlugin[];
@@ -90,6 +92,7 @@ export const loadConfig = async (cwd: string = process.cwd()): Promise<EmbodiCon
 
 	const publicDir = config.publicDir ?? 'public';
 	const mixedConfig: EmbodiConfig = {
+		origin: config.origin,
 		statics: '',
 		dist: config.dist ? config.dist : 'dist',
 		plugins: config.plugins ?? [],
@@ -131,4 +134,5 @@ type EmbodiConfigModule = ReturnType<typeof getSrcDestDirs>;
 declare module '$embodi/config' {
 	export const src: EmbodiConfigModule['src'];
 	export const dest: EmbodiConfigModule['dest'];
+	export const origin: URL;
 }

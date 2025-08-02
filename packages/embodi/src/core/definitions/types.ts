@@ -1,12 +1,4 @@
-import type {
-	BaseIssue,
-	BaseSchema,
-	ErrorMessage,
-	GenericSchema,
-	GenericSchemaAsync,
-	ObjectEntries,
-	ObjectSchema
-} from 'valibot';
+import type { GenericSchema, GenericSchemaAsync } from 'valibot';
 import type { FileManager } from '../vite/utils/FileManager.js';
 
 import type { Component } from 'svelte';
@@ -22,7 +14,7 @@ export type LoadEvent = {
 };
 
 export type LayoutEvent = LoadEvent & {
-	html: string;
+	html: string | null;
 	helper: {
 		fileManager: FileManager;
 		resolvePath: (path: string) => string;

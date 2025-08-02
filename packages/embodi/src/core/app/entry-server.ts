@@ -8,11 +8,9 @@ import { runLoadAction } from './content-helper.js';
 import { page as pageStore } from '$embodi/stores/internal';
 import { VIRTUAL_PREFIX } from '$embodi/pages';
 import * as v from 'valibot';
-import sharp from 'sharp';
 import { resolve } from 'path';
 import { FileManager } from '../vite/utils/FileManager.js';
-import { extname } from 'path';
-import { src, dest } from '$embodi/config';
+import { src, dest, origin } from '$embodi/config';
 import { page, update } from './state.svelte.js';
 import type { DataSchema } from 'exports/layout.js';
 import type {
@@ -69,7 +67,7 @@ const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 };
 
 export function hasRoute(url: string) {
-	return !!router.path(url);
+	return !!router.path(new URL(url, origin));
 }
 
 export function resolvePath(path: string) {
@@ -105,11 +103,11 @@ export function validateData<T extends AnyObject>(schema: DataSchema | undefined
 }
 
 export async function prehandle(elements: {
-	Layout: Component;
+	Layout?: Component | undefined | null;
 	loadPrehandler: PrehandlerLoadImport;
 	url: URL;
 	data: AnyObject;
-	html: string;
+	html?: string | undefined | null;
 }) {
 	const { Layout, loadPrehandler, url } = elements;
 	let { html, data } = elements;
@@ -117,23 +115,24 @@ export async function prehandle(elements: {
 		return { html, data };
 	}
 	const { enrich, schema } = await loadPrehandler();
-	({ html, data } = await runEnrich(enrich, { html, data, url }));
+	({ html, data } = await runEnrich(enrich, { html: html ?? null, data, url }));
 	data = await validateData(schema, data);
 	return { html, data };
 }
 
-export async function render(url: string, manifest?: Manifest) {
+export async function render(path: string, manifest?: Manifest) {
 	const fileManager = FileManager.getInstance();
+	const url = new URL(path, origin);
 	fileManager.setBasePath({ src, dest });
 	const head = manifest
-		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.slice(0, -1)}`)
+		? createHeadFromManifest(manifest, `${VIRTUAL_PREFIX}${url.pathname.slice(0, -1)}`)
 		: '';
 
 	const pageData = await router.load(url);
 	if (!pageData) return;
 	const { Component, Layout } = pageData;
 	let data = await runLoadAction({ ...pageData, url });
-	let html: string;
+	let html: string | null | undefined;
 	({ data, html } = await prehandle({ ...pageData, data, url }));
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
@@ -149,7 +148,7 @@ export async function render(url: string, manifest?: Manifest) {
 		props: { page }
 	});
 	if (!rendered) return false;
-	fileManager.addPage(url, {
+	fileManager.addPage(url.pathname, {
 		head: `${rendered.head ?? ''}\n${head}`,
 		html: rendered.body,
 		data

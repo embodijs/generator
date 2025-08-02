@@ -15,5 +15,11 @@ export const loadPages = async <T extends string>(
 	);
 };
 
-export const runLoadAction = async ({ load, data }: { load?: LoadAction; data: AnyObject }) =>
-	load ? load({ data }) : data;
+export const runLoadAction = async ({
+	load,
+	...params
+}: {
+	load?: LoadAction;
+	data: AnyObject;
+	url: URL;
+}) => (load ? load(params) : params.data);
