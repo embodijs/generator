@@ -10,6 +10,8 @@ export const schema: DataSchema = v.objectAsync({
   loadContent: v.optional(v.string())
 });
 
+export type Data = v.InferOutput<typeof schema>;
+
 export const enrich = async (elements) => {
   const { data, helper } = elements;
   const image = loadImage(data.hero, helper);
