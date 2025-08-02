@@ -1,5 +1,13 @@
 # embodi
 
+## 0.14.0
+
+### Minor Changes
+
+- 8f155ae: rename $layout2 to $layout and use the resolve of vite for internal uses
+- 13c4690: Give each $layout file the possiblity to have a own file with definition and offer a function to manipulate/enrich the data and html
+- 647d068: Set page store url to type URL and add to load/enrich function url auf URL
+
 ## 0.13.12
 
 ### Patch Changes
