@@ -1,8 +1,7 @@
 # embodi
 
-> Version 0.11.x and 0.12.x are under development and currently not stable at all. Please keep using version 0.10.x.
->
-> Documentation is still for version 0.10.x.
+> Braking changes from 0.10.x to 0.14.x:
+> HTML and Markdown handling is moved to separate repositories and need to add as plugins in the `.embodi` config: [@embodi/html](https://www.npmjs.com/package/@embodi/html) and [@embodi/markdown](https://www.npmjs.com/package/@embodi/markdown)
 
 Welcome to Embodi, a static website generator based on [Svelte](https://svlete.dev) and [Vite](https://vitejs.dev). Embodi renders your pages for a fast load and hydrates them to a Single Page Application (SPA).
 
@@ -18,7 +17,7 @@ This will guide you through some steps and create a basic structure.
 
 ## Structure
 
-Embodi will read any Markdown or Svelte file the source directory ( default to `<root>/content` directory) in your project structure and convert it to a page. Markdown will only be interpreted as page if they `layout` attribute in front-matter.
+Embodi will read any Markdown or Svelte file from the source directory ( default to `<root>/content` directory) in your project structure and convert it to a page. Markdown will only be interpreted as page if they `layout: $layout/Some.svelte` attribute in front-matter.
 The name is a reference to a Svelte file in the `__layout` folder. The component gets the property data, which contain the front-matter data. The rendered markdown part is given into a slot. So each layout should display rendered content needs to have a slot. In layout components you can do everything you normally do with Svelte.
 
 ## Data
@@ -38,7 +37,7 @@ Front-matter is a block of YAML or JSON at the beginning of a file. It is used t
 Local data are stored in the same directory as the markdown file. The data is stored in YAML or JSON files and need to be named `+data.yaml` or `+data.json`. Files in a higher directory will overwrite files in a lower directory.
 At least the data will be merged with the front-matter data and may be overwritten.
 
-### Global data
+### Global data (deprecated use local data in root file instead)
 
 Global data is stored in the `__data` folder in the root directory. The data is stored in YAML or JSON files. The filename is used as the attribute name. The data is merged with the front-matter data and may be overwritten.
 
@@ -70,6 +69,65 @@ If you export a `data`, `html`, `Layout` or `Component` property, it will be ove
 ```ts
 export const data = {
 	title: 'Hello Embodi'
+};
+```
+
+## Layout
+
+Layouts could have two pieces: a Svelte file and a JS/TS file. The script file is optional and just offer you possibility to add some function to validate data or enrich/manipulate data and html.
+
+### Svelte component
+
+The svelte file is a normal Svelte file. The props would be a data file with the merged data and a children, which is at least the rendered content.
+
+### Script file
+
+The name of the script file have to follow the name of the svelte file e.g. `Home.svelte.ts`.
+
+In the following example you can see how `enriched` is used to resize a image.
+The schema will validate the result of all changes, so this is the schema for your Layout Component
+
+Call order:
+
+- loadAction
+- enrichAction
+- schema
+
+```ts
+import type { DataSchema } from 'embodi/layout';
+import * as v from 'valibot';
+import { ImageFiles, loadImage, storeImage } from '@embodi/image';
+
+export const schema: DataSchema = v.objectAsync({
+	title: v.string(),
+	hero: ImageFiles,
+	lang: v.string(),
+	subtitle: v.string(),
+	loadContent: v.optional(v.string())
+});
+
+// Will be ignored from embodi and is only for your own propose.
+// You can use it to type your component for example
+export type Data = v.InferOutput<typeof schema>;
+
+export const enrich = async (elements) => {
+	const { data, helper } = elements;
+	const image = loadImage(data.hero, helper);
+	const webp = image.autoOrient().webp({ quality: 70 });
+	const versions = await Promise.all(
+		[].map(async (width) => {
+			const version = webp.resize({ width });
+			await storeImage({ image: version, path: data.hero, helper });
+		})
+	);
+
+	return {
+		...elements,
+		data: {
+			...data,
+			hero: [await storeImage({ image, path: data.hero, helper, original: true }), ...versions]
+		}
+	};
 };
 ```
 
@@ -126,7 +184,7 @@ export interface CollectionMeta {
 }
 ```
 
-### Public files and images
+## Public files
 
 To store public files like `robots.txt`, images or css use the `public` folder in the root directory. To change the folder name use the `.embodi.js` file and set the option `publicDir` option. Files in the public directory are referenced without the absolute path e.g. `<root>/public/icon.png` need to be referenced as `/icon.png`
 
