@@ -3,7 +3,6 @@
   import { Image } from '@embodi/image/client';
 
   let { data, children } = $props();
-  console.log({ data });
 </script>
 
 <main>
