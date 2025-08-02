@@ -27,7 +27,7 @@ Embodi offers three ways to provide data to you layout components, the list is i
 
 - Front-matter
 - Local data
-- Global data
+- Global data (deprecated from version 0.14.0)
 
 ### Front-matter
 
@@ -45,7 +45,7 @@ Global data is stored in the `__data` folder in the root directory. The data is 
 ## Load actions
 
 Beside the useal content file you can create a script file with the same name e.g. `index.md` and `index.js`, but you could also just use a script file. The script gives you more options to load data or do other actions before rendering the content. The script file should be placed in the same directory as the content file.
-Additionally, you can use the `load` function to load data from a remote source. The function is a wrapper around the fetch function and returns the data as JSON.
+Additionally, you can use the `load` function to load data from a remote source. The function is a wrapper around the fetch function and returns the data as JSON and the current url.
 
 ```ts
 // index.js
