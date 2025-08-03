@@ -4,7 +4,9 @@ import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
 import { existsSync } from 'fs';}
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
-import { posix } from 'node:path';
+import { resolve } from 'node:path';
+import { join } from 'node:path/posix';
+
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
@@ -25,14 +27,18 @@ export const templatePlugin = (): Plugin => {
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
 
-				const layoutPath = posix.resolve(cwd, layoutRoot, path);
-				const layoutExtendsPathJS = posix.resolve(cwd, layoutRoot, path + '.js');
-				const layoutExtendsPathTS = posix.resolve(cwd, layoutRoot, path + '.ts');
+				const layoutPath = join('#root', layoutRoot, path);
+
 				const snippet = `export { default as Layout} from '${layoutPath}';`;
         if (options?.ssr === true) {
+         	const layoutExtendsPathJS = resolve(layoutRoot, path + '.js');
+          const layoutExtendsPathTS = resolve(layoutRoot, path + '.ts');
+          console.log(layoutExtendsPathJS);
+          console.log(layoutExtendsPathTS);
           if (existsSync(layoutExtendsPathJS) || existsSync(layoutExtendsPathTS)) {
+            console.log('file exists');
             return `${snippet}\n
-  				export * as layoutActions from '${layoutExtendsPathJS}';
+  				export * as layoutActions from '${layoutPath}.js';
   				`
           } else {
             return `${snippet}\n
