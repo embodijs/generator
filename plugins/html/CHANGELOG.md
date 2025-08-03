@@ -1,5 +1,12 @@
 # @embodi/html
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [233c69e]
+  - embodi@0.15.0
+
 ## 0.2.1
 
 ### Patch Changes

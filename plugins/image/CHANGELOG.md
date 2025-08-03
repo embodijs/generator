@@ -1,5 +1,12 @@
 # @embodi/image
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [233c69e]
+  - embodi@0.15.0
+
 ## 0.1.2
 
 ### Patch Changes
