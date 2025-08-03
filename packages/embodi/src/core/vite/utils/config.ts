@@ -28,7 +28,7 @@ export const EmbodiUserConfigSchema = v.object({
 	plugins: v.optional(v.array(VitePluginSchema))
 });
 
-export type EmbodiUserConfig = v.InferOutput<typeof EmbodiUserConfigSchema>;
+export type EmbodiUserConfig = v.InferInput<typeof EmbodiUserConfigSchema>;
 
 export interface PublicDirs {
 	public: string;

@@ -41,6 +41,10 @@
 		"./client": {
 			"types": "./client.d.ts"
 		},
+		"./layout": {
+			"types": "./dist/exports/layout.d.ts",
+			"import": "./dist/exports/layout.js"
+		},
 		"./config": {
 			"types": "./dist/exports/config.d.ts",
 			"import": "./dist/exports/config.js"
