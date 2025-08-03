@@ -216,7 +216,7 @@ export const devServerPlugin = (): Plugin => ({
 				fileManager.setHead(
 					`<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
 				);
-				const isDataURL = url.endsWith('data.json');
+				const isDataURL = url.endsWith('content.json');
 				const pageURL = isDataURL ? url.slice(0, -9) : addTrailingSlash(url);
 
 				if (!hasRoute(pageURL)) {
@@ -239,12 +239,12 @@ export const devServerPlugin = (): Plugin => ({
 					return next();
 				}
 
-				const { html, data } = fileManager.getPage(pageURL)!;
+				const { html, content } = fileManager.getPage(pageURL)!;
 				const headers = fileManager.getHeaders(pageURL);
 				res.writeHead(200, headers);
 
 				if (isDataURL) {
-					return res.end(data);
+					return res.end(content);
 				} else {
 					return res.end(html);
 				}
