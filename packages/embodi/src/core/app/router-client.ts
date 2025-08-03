@@ -28,19 +28,20 @@ const getPageFromUrl = async (_url: string | URL) => {
 	const pageImportFu = getPageImport(url);
 	const controller = new AbortController();
 	const loadData = async (url: string) =>
-		(await fetch(`${url}data.json`, { signal: controller.signal }))?.json();
+		(await fetch(`${url}content.json`, { signal: controller.signal }))?.json();
 	window.addEventListener('pagehide', () => {
 		controller.abort(); // Abort the fetch request when the page is hidden
 	});
-	const [{ default: page }, data] = await Promise.all([pageImportFu(), loadData(url)]);
+	const [{ default: page }, content] = await Promise.all([pageImportFu(), loadData(url)]);
 	const mergedData = {
 		...globalData,
-		...data
+		...content.data
 	};
 
 	return {
 		...page,
-		data: mergedData
+		data: mergedData,
+		html: content.html
 	};
 };
 

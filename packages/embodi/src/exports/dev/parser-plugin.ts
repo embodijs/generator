@@ -33,7 +33,7 @@ export function createContentParserPlugin(config: ContentParserPluginConfig): Pl
 				if (config?.ssr) {
 					return `export * from '${normalizeImportPath(id.slice(1, -7))}';`;
 				} else {
-					return `export { Layout, html } from '${normalizeImportPath(id.slice(1, -7))}';`;
+					return `export { Layout, Component } from '${normalizeImportPath(id.slice(1, -7))}';`;
 				}
 			}
 		},
