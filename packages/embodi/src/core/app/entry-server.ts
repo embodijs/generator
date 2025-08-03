@@ -54,6 +54,7 @@ const followImports = (
 
 const createHeadFromManifest = (manifest: Manifest, entry: string): string => {
 	const heads = [];
+	console.log({ manifest });
 	const { css, imports } = followImports(manifest, entry);
 	heads.push(...Array.from(css).map(createStyleTag));
 	heads.push(...Array.from(imports).map((url) => createScriptTag(url)));
