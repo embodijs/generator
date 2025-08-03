@@ -31,8 +31,12 @@ export const templatePlugin = (): Plugin => {
 				if (options?.ssr === true) {
 					return `${snippet}\n
 					export const loadPrehandler = async () => {
-						const prehandler = await import('$layout-internal/${path}.js');
-						return prehandler
+					  try {
+  						const prehandler = await import('$layout-internal/${path}.js');
+  						return prehandler;
+					  } catch (error) {
+						  return {};
+					  }
 					};
 					`;
 				}
