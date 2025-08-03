@@ -26,6 +26,7 @@ export type DataSchema = GenericSchema<AnyObject> | GenericSchemaAsync<AnyObject
 export type EnrichActionReturn = { html: string; data: AnyObject };
 
 export type LoadAction = (event: LoadEvent) => Record<string, any>;
+export type PrehandlerLoadImport = () => Promise<{ schema: DataSchema; enrich: EnrichAction }>;
 export type EnrichAction = (event: LayoutEvent) => MaybePromise<EnrichActionReturn>;
 
 type PageElements = {
@@ -37,7 +38,7 @@ type PageElements = {
 
 export type PageData = PageElements & {
 	load?: LoadAction;
-	layoutActions: { schema?: DataSchema; enrich?: EnrichAction };
+	loadPrehandler: PrehandlerLoadImport;
 };
 
 export type PageImportFunction = () => Promise<{ default: PageData }>;

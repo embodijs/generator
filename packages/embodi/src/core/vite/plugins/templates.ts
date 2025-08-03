@@ -1,10 +1,8 @@
 import { type Plugin } from 'vite';
 import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
-import { existsSync } from 'fs';}
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
-import { resolve } from 'node:path';
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
@@ -25,21 +23,23 @@ export const templatePlugin = (): Plugin => {
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
 
-				const layoutPath = resolve(cwd, layoutRoot, path);
-				const layoutExtendsPathJS = resolve(cwd, layoutRoot, path + '.js');
-				const layoutExtendsPathTS = resolve(cwd, layoutRoot, path + '.ts');
-				const snippet = `export { default as Layout} from '${layoutPath}';`;
-        if (options?.ssr === true) {
-          if (existsSync(layoutExtendsPathJS) || existsSync(layoutExtendsPathTS)) {
-            return `${snippet}\n
-  				export * as layoutActions from '${layoutExtendsPathJS}';
-  				`
-          } else {
-            return `${snippet}\n
-  				export const layoutActions = {};
-  				`
-          }
-        }
+				// const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
+				// const layout = getLayoutPath(path);
+				// if (!layout) throw new Error(`Layout not found for id ${id}`);
+				// const layoutPath = join(cwd, layoutRoot, layout);
+				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
+				if (options?.ssr === true) {
+					return `${snippet}\n
+					export const loadPrehandler = async () => {
+					  try {
+  						const prehandler = await import('$layout-internal/${path}.js');
+  						return prehandler;
+					  } catch (error) {
+						  return {};
+					  }
+					};
+					`;
+				}
 				return snippet;
 			}
 		}

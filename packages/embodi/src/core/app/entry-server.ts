@@ -13,7 +13,12 @@ import { FileManager } from '../vite/utils/FileManager.js';
 import { src, dest, origin } from '$embodi/config';
 import { page, update } from './state.svelte.js';
 import type { DataSchema } from 'exports/layout.js';
-import type { AnyObject, EnrichAction, LayoutEvent, PageData } from '../definitions/types.js';
+import type {
+	AnyObject,
+	EnrichAction,
+	LayoutEvent,
+	PrehandlerLoadImport
+} from '../definitions/types.js';
 import type { Component } from 'svelte';
 
 const router = createRouter();
@@ -97,19 +102,19 @@ export function validateData<T extends AnyObject>(schema: DataSchema | undefined
 	return v.parseAsync(schema, data);
 }
 
-export async function runLayoutActions(elements: {
+export async function prehandle(elements: {
 	Layout?: Component | undefined | null;
-	layoutActions: PageData['layoutActions'];
+	loadPrehandler: PrehandlerLoadImport;
 	url: URL;
 	data: AnyObject;
 	html?: string | undefined | null;
 }) {
-	const { Layout, layoutActions, url } = elements;
+	const { Layout, loadPrehandler, url } = elements;
 	let { html, data } = elements;
 	if (!Layout) {
 		return { html, data };
 	}
-	const { enrich, schema } = layoutActions;
+	const { enrich, schema } = await loadPrehandler();
 	({ html, data } = await runEnrich(enrich, { html: html ?? null, data, url }));
 	data = await validateData(schema, data);
 	return { html, data };
@@ -128,7 +133,7 @@ export async function render(path: string, manifest?: Manifest) {
 	const { Component, Layout } = pageData;
 	let data = await runLoadAction({ ...pageData, url });
 	let html: string | null | undefined;
-	({ data, html } = await runLayoutActions({ ...pageData, data, url }));
+	({ data, html } = await prehandle({ ...pageData, data, url }));
 	await renderHook({ data });
 	pageStore.update((p) => ({ ...p, url }));
 

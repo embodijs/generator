@@ -2,4 +2,4 @@
 'embodi': patch
 ---
 
-Fix: Check if layoutActions exists before generate the import
+Fix: Catch error when no additional file for a layout exists
