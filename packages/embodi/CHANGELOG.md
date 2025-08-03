@@ -1,5 +1,11 @@
 # embodi
 
+## 0.15.2
+
+### Patch Changes
+
+- 78c5c44: Fix dev mode
+
 ## 0.15.1
 
 ### Patch Changes
