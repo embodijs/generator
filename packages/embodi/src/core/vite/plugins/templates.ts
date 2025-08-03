@@ -1,8 +1,12 @@
 import { type Plugin } from 'vite';
 import { loadConfig, type EmbodiConfig } from '../utils/config.js';
 import { prepareIdValidator, resolvePipe } from '../utils/virtuals.js';
+import { existsSync } from 'fs';}
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
+import { resolve } from 'node:path';
+import { join } from 'node:path/posix';
+
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
@@ -23,23 +27,25 @@ export const templatePlugin = (): Plugin => {
 				const layoutRoot = projectConfig.inputDirs.layout;
 				const path = layoutValidator.getPath(id);
 
-				// const getLayoutPath = await prepareComponentLoad(cwd, projectConfig);
-				// const layout = getLayoutPath(path);
-				// if (!layout) throw new Error(`Layout not found for id ${id}`);
-				// const layoutPath = join(cwd, layoutRoot, layout);
-				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
-				if (options?.ssr === true) {
-					return `${snippet}\n
-					export const loadLayoutActions = async () => {
-					  try {
-  						const layoutActions = await import('$layout-internal/${path}.js');
-  						return layoutActions;
-					  } catch (error) {
-						  return {};
-					  }
-					};
-					`;
-				}
+				const layoutPath = join('#root', layoutRoot, path);
+
+				const snippet = `export { default as Layout} from '${layoutPath}';`;
+        if (options?.ssr === true) {
+         	const layoutExtendsPathJS = resolve(layoutRoot, path + '.js');
+          const layoutExtendsPathTS = resolve(layoutRoot, path + '.ts');
+          console.log(layoutExtendsPathJS);
+          console.log(layoutExtendsPathTS);
+          if (existsSync(layoutExtendsPathJS) || existsSync(layoutExtendsPathTS)) {
+            console.log('file exists');
+            return `${snippet}\n
+  				export * as layoutActions from '${layoutPath}.js';
+  				`
+          } else {
+            return `${snippet}\n
+  				export const layoutActions = {};
+  				`
+          }
+        }
 				return snippet;
 			}
 		}
