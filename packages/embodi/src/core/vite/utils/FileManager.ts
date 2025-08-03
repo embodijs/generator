@@ -8,7 +8,7 @@ import type { getSrcDestDirs } from './config.js';
 
 type FileManagerPageData = {
 	html: string;
-	content: Record<string, unknown>;
+	content: { html: string; data: Record<string, unknown> };
 	head: string;
 };
 
@@ -73,7 +73,7 @@ export class FileManager {
 		const dataPath = joinUrl(url, 'content.json');
 		const preloadDataSnippet = `<link rel="preload" type="application/json" href="${dataPath}" as="fetch" crossorigin="anonymous"></script>`;
 		const html = this.template
-			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.content, key.split('.')))
+			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.content.data, key.split('.')))
 			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
 		const htmlBuffer = Buffer.from(html);
