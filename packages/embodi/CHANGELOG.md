@@ -1,5 +1,11 @@
 # embodi
 
+## 0.14.3
+
+### Patch Changes
+
+- 6605b5f: Fix: Check if layoutActions exists before generate the import
+
 ## 0.14.2
 
 ### Patch Changes
