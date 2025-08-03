@@ -1,5 +1,14 @@
 # @embodi/html
 
+## 0.2.1
+
+### Patch Changes
+
+- 6cea1fa: Add default export
+- bbf0e58: Update dependencies and replace workspace:\*
+- Updated dependencies [4b9ff40]
+  - embodi@0.14.1
+
 ## 1.0.0
 
 ### Patch Changes
