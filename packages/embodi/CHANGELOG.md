@@ -1,5 +1,11 @@
 # embodi
 
+## 0.14.1
+
+### Patch Changes
+
+- 4b9ff40: Cleanup: Revmoce Image.svelte and LayoutConfig exports
+
 ## 0.14.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @embodi/markdown
 
+## 0.2.1
+
+### Patch Changes
+
+- bbf0e58: Update dependencies and replace workspace:\*
+- Updated dependencies [4b9ff40]
+  - embodi@0.14.1
+
 ## 1.0.0
 
 ### Minor Changes

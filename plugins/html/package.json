@@ -1,6 +1,6 @@
 {
   "name": "@embodi/html",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "type": "module",
   "main": "dist/plugin.cjs",
@@ -27,7 +27,7 @@
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.11.1",
   "peerDependencies": {
-    "embodi": ">=0.14.0",
+    "embodi": ">=0.14.1",
     "typescript": "^5.2.0",
     "vite": "^6.2.0"
   },
