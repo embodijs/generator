@@ -8,7 +8,7 @@ import type { getSrcDestDirs } from './config.js';
 
 type FileManagerPageData = {
 	html: string;
-	data: Record<string, unknown>;
+	content: { html: string; data: Record<string, unknown> };
 	head: string;
 };
 
@@ -70,10 +70,10 @@ export class FileManager {
 	addPage(url: string, data: FileManagerPageData) {
 		assert(this.template, 'Template is not set');
 		const htmlPath = joinUrl(url, 'index.html');
-		const dataPath = joinUrl(url, 'data.json');
+		const dataPath = joinUrl(url, 'content.json');
 		const preloadDataSnippet = `<link rel="preload" type="application/json" href="${dataPath}" as="fetch" crossorigin="anonymous"></script>`;
 		const html = this.template
-			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.data, key.split('.')))
+			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.content.data, key.split('.')))
 			.replace(`<!--app-head-->`, (data.head ?? '') + preloadDataSnippet + this.head)
 			.replace(`<!--app-html-->`, data.html ?? '');
 		const htmlBuffer = Buffer.from(html);
@@ -82,7 +82,7 @@ export class FileManager {
 			contentType: 'text/html',
 			length: htmlBuffer.length
 		});
-		const dataBuffer = Buffer.from(JSON.stringify(data.data));
+		const dataBuffer = Buffer.from(JSON.stringify(data.content));
 		this.files.set(dataPath, {
 			content: dataBuffer,
 			contentType: 'application/json',
@@ -144,10 +144,9 @@ export class FileManager {
 		return this.files.has(joinUrl(url, 'index.html'));
 	}
 
-	getPage(url: string): { html: Buffer; data: Buffer } | undefined {
+	getPage(url: string): { html?: Buffer; data?: Buffer } {
 		const html = this.files.get(joinUrl(url, 'index.html'))?.content;
 		const data = this.files.get(joinUrl(url, 'data.json'))?.content;
-		if (!html || !data) return;
 		return { html, data };
 	}
 

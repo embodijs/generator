@@ -146,7 +146,10 @@ export async function render(path: string, manifest?: Manifest) {
 	fileManager.addPage(url.pathname, {
 		head: `${rendered.head ?? ''}\n${head}`,
 		html: rendered.body,
-		data
+		content: {
+			data,
+			html
+		}
 	});
 	return true;
 }
