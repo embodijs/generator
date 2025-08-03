@@ -148,7 +148,7 @@ export async function render(path: string, manifest?: Manifest) {
 		html: rendered.body,
 		content: {
 			data,
-			html
+			html: html ?? undefined
 		}
 	});
 	return true;

@@ -28,6 +28,7 @@ import { isCompileException } from '../utils/exceptions.js';
 import { generateInternalStores, generateReadableStores } from '../code-builder/stores.js';
 import assert from 'node:assert';
 import { addTrailingSlash } from '../utils/paths.js';
+import { CONTENT_FILENAME } from '../utils/FileManager.js';
 
 const cwd = process.cwd(); // Current working directory
 const cf = resolve(dirname(fileURLToPath(import.meta.url)), '..'); // core folder
@@ -216,9 +217,10 @@ export const devServerPlugin = (): Plugin => ({
 				fileManager.setHead(
 					`<script type="module" defer src="/node_modules/${packageJson.name}/dist/core/app/entry-client.js"></script>`
 				);
-				const isDataURL = url.endsWith('content.json');
-				const pageURL = isDataURL ? url.slice(0, -9) : addTrailingSlash(url);
 
+				const isDataURL = url.endsWith(CONTENT_FILENAME);
+				const pageURL = isDataURL ? url.slice(0, -CONTENT_FILENAME.length) : addTrailingSlash(url);
+				console.log({ url, pageURL, isDataURL });
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
 						const content = fileManager.getFile(url);
@@ -240,7 +242,7 @@ export const devServerPlugin = (): Plugin => ({
 				}
 
 				const { html, content } = fileManager.getPage(pageURL)!;
-				const headers = fileManager.getHeaders(pageURL);
+				const headers = fileManager.getHeaders(url);
 				res.writeHead(200, headers);
 
 				if (isDataURL) {

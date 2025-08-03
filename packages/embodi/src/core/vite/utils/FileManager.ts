@@ -8,7 +8,7 @@ import type { getSrcDestDirs } from './config.js';
 
 type FileManagerPageData = {
 	html: string;
-	content: { html: string; data: Record<string, unknown> };
+	content: { html?: string; data: Record<string, unknown> };
 	head: string;
 };
 
@@ -32,6 +32,9 @@ export function getValue(data: Record<string, any>, attr: string[]) {
 		return getValue(value, attr.slice(1));
 	}
 }
+
+export const CONTENT_FILENAME = 'content.json';
+export const HTML_FILENAME = 'index.html';
 
 export class FileManager {
 	protected files: Map<string, { content: Buffer; contentType: string; length: number }>;
@@ -69,8 +72,8 @@ export class FileManager {
 
 	addPage(url: string, data: FileManagerPageData) {
 		assert(this.template, 'Template is not set');
-		const htmlPath = joinUrl(url, 'index.html');
-		const dataPath = joinUrl(url, 'content.json');
+		const htmlPath = joinUrl(url, HTML_FILENAME);
+		const dataPath = joinUrl(url, CONTENT_FILENAME);
 		const preloadDataSnippet = `<link rel="preload" type="application/json" href="${dataPath}" as="fetch" crossorigin="anonymous"></script>`;
 		const html = this.template
 			.replace(/%([\w.]+)%/g, (_, key) => getValue(data.content.data, key.split('.')))
@@ -141,13 +144,13 @@ export class FileManager {
 	}
 
 	hasPage(url: string): boolean {
-		return this.files.has(joinUrl(url, 'index.html'));
+		return this.files.has(joinUrl(url, HTML_FILENAME));
 	}
 
-	getPage(url: string): { html?: Buffer; data?: Buffer } {
-		const html = this.files.get(joinUrl(url, 'index.html'))?.content;
-		const data = this.files.get(joinUrl(url, 'data.json'))?.content;
-		return { html, data };
+	getPage(url: string): { html?: Buffer; content?: Buffer } {
+		const html = this.files.get(joinUrl(url, HTML_FILENAME))?.content;
+		const content = this.files.get(joinUrl(url, CONTENT_FILENAME))?.content;
+		return { html, content };
 	}
 
 	protected write(path: string, content: string | Buffer) {
