@@ -30,10 +30,10 @@ export const templatePlugin = (): Plugin => {
 				const snippet = `export { default as Layout} from '$layout-internal/${path}';`;
 				if (options?.ssr === true) {
 					return `${snippet}\n
-					export const loadPrehandler = async () => {
+					export const loadLayoutActions = async () => {
 					  try {
-  						const prehandler = await import('$layout-internal/${path}.js');
-  						return prehandler;
+  						const layoutActions = await import('$layout-internal/${path}.js');
+  						return layoutActions;
 					  } catch (error) {
 						  return {};
 					  }
