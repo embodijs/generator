@@ -1,5 +1,11 @@
 # embodi
 
+## 0.15.1
+
+### Patch Changes
+
+- 49d084a: Fix: Remove export Component on plugin parser
+
 ## 0.15.0
 
 ### Minor Changes
