@@ -8,9 +8,9 @@
     "preview": "embodi preview"
   },
   "devDependencies": {
-    "@embodi/markdown": "^0.2.0",
-    "@embodi/html": "^0.2.0",
-    "embodi": "^0.14.0",
+    "@embodi/markdown": "^0.2.1",
+    "@embodi/html": "^0.2.1",
+    "embodi": "^0.14.1",
     "svelte": "^5.1.0"
   }
 }
