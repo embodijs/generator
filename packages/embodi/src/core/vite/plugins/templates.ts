@@ -33,10 +33,7 @@ export const templatePlugin = (): Plugin => {
         if (options?.ssr === true) {
          	const layoutExtendsPathJS = resolve(layoutRoot, path + '.js');
           const layoutExtendsPathTS = resolve(layoutRoot, path + '.ts');
-          console.log(layoutExtendsPathJS);
-          console.log(layoutExtendsPathTS);
           if (existsSync(layoutExtendsPathJS) || existsSync(layoutExtendsPathTS)) {
-            console.log('file exists');
             return `${snippet}\n
   				export * as layoutActions from '${layoutPath}.js';
   				`
