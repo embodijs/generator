@@ -1,5 +1,12 @@
 # embodi
 
+## 0.14.4
+
+### Patch Changes
+
+- f0bf7ec: Fix: missing export for layout
+- 9e011de: Fix: origin should be not required in config file
+
 ## 0.14.3
 
 ### Patch Changes
