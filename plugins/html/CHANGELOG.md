@@ -9,7 +9,7 @@
 - Updated dependencies [4b9ff40]
   - embodi@0.14.1
 
-## 1.0.0
+## 0.2.0
 
 ### Patch Changes
 
