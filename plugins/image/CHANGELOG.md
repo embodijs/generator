@@ -1,5 +1,13 @@
 # @embodi/image
 
+## 0.1.2
+
+### Patch Changes
+
+- 4b99de2: set fix embodi version instead of workspace:\*
+- Updated dependencies [e0a1694]
+  - embodi@0.14.2
+
 ## 0.1.1
 
 ### Patch Changes

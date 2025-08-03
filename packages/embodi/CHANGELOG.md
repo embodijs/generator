@@ -1,5 +1,11 @@
 # embodi
 
+## 0.14.2
+
+### Patch Changes
+
+- e0a1694: Fix: Catch error when no additional file for a layout exists
+
 ## 0.14.1
 
 ### Patch Changes
