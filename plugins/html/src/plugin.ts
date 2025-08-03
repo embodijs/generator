@@ -7,3 +7,5 @@ export function embodiHtml(): Plugin {
     convertContent: (content) => content
   });
 }
+
+export default embodiHtml;
