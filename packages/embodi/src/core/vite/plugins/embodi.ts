@@ -220,7 +220,6 @@ export const devServerPlugin = (): Plugin => ({
 
 				const isDataURL = url.endsWith(CONTENT_FILENAME);
 				const pageURL = isDataURL ? url.slice(0, -CONTENT_FILENAME.length) : addTrailingSlash(url);
-				console.log({ url, pageURL, isDataURL });
 				if (!hasRoute(pageURL)) {
 					if (fileManager.has(url)) {
 						const content = fileManager.getFile(url);
