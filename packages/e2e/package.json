@@ -11,11 +11,11 @@
     "preview": "embodi preview"
   },
   "devDependencies": {
-    "@embodi/markdown": "workspace:*",
     "@embodi/image": "workspace:*",
+    "@embodi/markdown": "workspace:*",
     "embodi": "workspace:*",
     "sharp": "^0.34.3",
-    "svelte": "^5.36.16",
+    "svelte": "^5.37.3",
     "valibot": "^1.1.0",
     "vite": "^6.3.5"
   }

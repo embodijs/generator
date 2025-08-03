@@ -13,12 +13,7 @@ import { FileManager } from '../vite/utils/FileManager.js';
 import { src, dest, origin } from '$embodi/config';
 import { page, update } from './state.svelte.js';
 import type { DataSchema } from 'exports/layout.js';
-import type {
-	AnyObject,
-	EnrichAction,
-	LayoutEvent,
-	LayoutActionsImport
-} from '../definitions/types.js';
+import type { AnyObject, EnrichAction, LayoutEvent, PageData } from '../definitions/types.js';
 import type { Component } from 'svelte';
 
 const router = createRouter();
@@ -104,17 +99,17 @@ export function validateData<T extends AnyObject>(schema: DataSchema | undefined
 
 export async function runLayoutActions(elements: {
 	Layout?: Component | undefined | null;
-	loadLayoutActions: LayoutActionsImport;
+	layoutActions: PageData['layoutActions'];
 	url: URL;
 	data: AnyObject;
 	html?: string | undefined | null;
 }) {
-	const { Layout, loadLayoutActions, url } = elements;
+	const { Layout, layoutActions, url } = elements;
 	let { html, data } = elements;
 	if (!Layout) {
 		return { html, data };
 	}
-	const { enrich, schema } = await loadLayoutActions();
+	const { enrich, schema } = layoutActions;
 	({ html, data } = await runEnrich(enrich, { html: html ?? null, data, url }));
 	data = await validateData(schema, data);
 	return { html, data };
