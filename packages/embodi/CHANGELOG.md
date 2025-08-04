@@ -1,5 +1,12 @@
 # embodi
 
+## 0.15.3
+
+### Patch Changes
+
+- d122ea6: Fix: Page switch on hash link
+- b4734ba: Fix linking in dev mode
+
 ## 0.15.2
 
 ### Patch Changes
