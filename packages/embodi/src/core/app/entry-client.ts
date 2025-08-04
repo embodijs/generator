@@ -33,7 +33,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 				data
 			});
 			await tick();
-			addLinkEvents();
+			addLinkEvents(to);
 		}
 
 		if (to.hash) {
@@ -46,7 +46,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 		}
 
 		if ((!options || options.pushState !== false) && to.href !== window.location.href) {
-			window.history.pushState({}, '', to);
+			window.history.pushState({}, '', to.href);
 		}
 	} catch (error) {
 		if (error instanceof PageDoesNotExistException) {
@@ -60,7 +60,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 	}
 };
 
-const addLinkEvents = () => {
+const addLinkEvents = (site: URL) => {
 	window.addEventListener('popstate', () => {
 		goto(window.location.href, { pushState: false, init: true });
 	});
@@ -68,7 +68,7 @@ const addLinkEvents = () => {
 	for (const el of linkElements) {
 		const href = el?.getAttribute('href');
 		if (el && href) {
-			const linkURL = new URL(href, window.location.href);
+			const linkURL = new URL(href, site);
 			const preload = async (e: Event) => {
 				try {
 					e.preventDefault();
