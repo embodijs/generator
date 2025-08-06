@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
-    "@faker-js/faker": "^8.4.1",
+    "@faker-js/faker": "^9.9.0",
     "@playwright/test": "^1.54.2",
     "@types/node": "^24.1.0",
     "playwright": "^1.54.2",
