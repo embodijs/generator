@@ -10,7 +10,7 @@
   "devDependencies": {
     "@embodi/markdown": "^0.2.1",
     "@embodi/html": "^0.2.1",
-    "embodi": "^0.14.3",
-    "svelte": "^5.1.0"
+    "embodi": "^0.15.4",
+    "svelte": "^5.37.3"
   }
 }
