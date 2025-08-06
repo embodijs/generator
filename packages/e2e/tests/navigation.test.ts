@@ -11,7 +11,7 @@ test.describe('Embodi build and binding', () => {
   test('scroll to end', async ({ page }) => {
     await page.goto('/');
     await page.getByText('Scroll to end').click();
-    await expect(page.locator('#marker')).toBeInViewport();
+    await expect(page.locator('#märker')).toBeInViewport();
   });
 
   test('browser navigation', async ({ page }) => {
