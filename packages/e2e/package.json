@@ -13,6 +13,7 @@
   "devDependencies": {
     "@embodi/image": "workspace:*",
     "@embodi/markdown": "workspace:*",
+    "@embodi/html": "workspace:*",
     "embodi": "workspace:*",
     "sharp": "^0.34.3",
     "svelte": "^5.37.3",

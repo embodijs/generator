@@ -15,7 +15,7 @@ export const enrich = async (elements) => {
   const image = loadImage(data.hero, helper);
   const webp = image.autoOrient().webp({ quality: 70 });
   const versions = await Promise.all(
-    [].map(async (width) => {
+    [300, 700, 1300].map(async (width) => {
       const version = webp.resize({ width });
       await storeImage({ image: version, path: data.hero, helper });
     })
