@@ -1,5 +1,11 @@
 # embodi
 
+## 0.15.4
+
+### Patch Changes
+
+- 9abd93c: Fix: handle hash with unicode well
+
 ## 0.15.3
 
 ### Patch Changes
