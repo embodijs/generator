@@ -7,7 +7,7 @@
 
 <main>
   <a href="/comp/">Link to comp</a>
-  <a href="#marker">Scroll to end</a>
+  <a href="#märker">Scroll to end</a>
   <div class="img">
     <Image images={data.hero} sizes="50vw" alt="Hero" />
   </div>
@@ -19,7 +19,7 @@
   <div class="content">
     {@render children?.()}
   </div>
-  <div id="marker">&nbsp;</div>
+  <div id="märker">&nbsp;</div>
 </main>
 
 <style>

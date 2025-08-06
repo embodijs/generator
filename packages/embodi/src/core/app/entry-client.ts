@@ -37,7 +37,7 @@ const goto = async (href: string | URL, options?: { pushState?: boolean; init?: 
 		}
 
 		if (to.hash) {
-			const element = document.getElementById(to.hash.slice(1));
+			const element = document.querySelector(decodeURIComponent(to.hash));
 			if (element) {
 				element.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'smooth' });
 			}
