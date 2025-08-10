@@ -20,7 +20,7 @@ At the top in the front-matter part (starts and ends with `---`) and the markdow
 
 Files in the public folder are generally public. For example, you can use them to reference images
 
-![Some example image](/example.webp)
+![Some example image]($assets/example.webp)
 
 ## Global data
 
