@@ -1,5 +1,11 @@
 # @embodi/markdown
 
+## 0.3.0
+
+### Minor Changes
+
+- 832c047: allow to set allowDangerousHtml via settings
+
 ## 0.2.1
 
 ### Patch Changes
