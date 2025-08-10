@@ -8,14 +8,20 @@ import { createContentParserPlugin, type Plugin as VitePlugin } from 'embodi/dev
 interface MarkdownPluginOptions {
   remarkPlugins?: (Plugin | PluginTuple)[];
   rehypePlugins?: (Plugin | PluginTuple)[];
-  settings?: Settings;
+  settings?: Settings & { allowDangerousHtml: boolean };
 }
 
 export function embodiMarkdown(options: MarkdownPluginOptions = {}): VitePlugin {
   const { remarkPlugins, rehypePlugins, settings } = options;
 
   const processor = unified().use({
-    plugins: [remarkParse, ...(remarkPlugins || []), remarkRehype, ...(rehypePlugins || []), rehypeStringify],
+    plugins: [
+      remarkParse,
+      ...(remarkPlugins || []),
+      [remarkRehype, { allowDangerousHtml: !!settings?.allowDangerousHtml }],
+      ...(rehypePlugins || []),
+      rehypeStringify
+    ],
     settings
   } satisfies Preset);
 
