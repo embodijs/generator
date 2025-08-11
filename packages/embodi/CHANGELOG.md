@@ -1,5 +1,11 @@
 # embodi
 
+## 0.16.0
+
+### Minor Changes
+
+- ce5a6b6: Update vite version to 7
+
 ## 0.15.4
 
 ### Patch Changes
