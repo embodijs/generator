@@ -5,8 +5,18 @@ import { existsSync } from 'fs';}
 import { prepareComponentLoad } from '../utils/template.js';
 import assert from 'assert';
 import { resolve } from 'node:path';
-import { join } from 'node:path/posix';
+import { join, extname } from 'node:path/posix';
 
+
+const convertTo = (path: string) => {
+  const ext = extname(path);
+  return path.replace(ext, `js?${ext}`);
+};
+
+const convertFrom = (path: string) => {
+  const [_path, type] = path.split('?');
+  return [_path, type]
+};
 
 export const templatePlugin = (): Plugin => {
 	let cwd = process.cwd();
@@ -19,14 +29,18 @@ export const templatePlugin = (): Plugin => {
 			projectConfig = await loadConfig(cwd);
 		},
 		resolveId(id) {
-			return resolvePipe(layoutValidator.resolve(id));
+			const resolvedId = layoutValidator.resolve(id);
+			if(resolvedId) {
+			  return convertTo(resolvedId);
+			}
+			return null;
 		},
 		async load(id, options) {
 			if (layoutValidator.load(id)) {
 				assert(projectConfig);
+        const [pathPlaceholder, type] = convertFrom(layoutValidator.getPath(id));
 				const layoutRoot = projectConfig.inputDirs.layout;
-				const path = layoutValidator.getPath(id);
-
+				const path = pathPlaceholder.replace(/js$/, type);
 				const layoutPath = join('#root', layoutRoot, path);
 
 				const snippet = `export { default as Layout} from '${layoutPath}';`;

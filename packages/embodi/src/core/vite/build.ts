@@ -13,10 +13,10 @@ export const createConfig = async () => {
 	const config = await loadConfig();
 	const plugins: Array<Plugin | Plugin[]> = [
 		viteYaml(),
+		templatePlugin(),
 		svelte({
 			preprocess: vitePreprocess()
 		}),
-		templatePlugin(),
 		configPlugin(),
 		virtualPlugin(),
 		embodiSvelte(),
