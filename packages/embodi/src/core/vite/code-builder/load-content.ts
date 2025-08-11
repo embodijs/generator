@@ -7,7 +7,7 @@ import { UniqueArray } from '../utils/unique-array.js';
 import { FilesystemAdapter } from '@loom-io/node-filesystem-adapter';
 import { mergeOneLevelObjects } from '../utils/data.js';
 import type { AnyObject } from '../../definitions/types.js';
-import { normalize, resolve } from 'node:path';
+import { normalize } from 'node:path';
 import { normalizePath } from 'vite';
 import { addTrailingSlash } from '../utils/paths.js';
 
@@ -167,7 +167,7 @@ const mapUrlToArray = (
 	const urls = files
 		.map((file) => {
 			const [url, fileType] = transformPathToUrl(contentDir, file);
-			const absolutePath = resolve(adapter.getFullPath(file));
+			const absolutePath = adapter.getFullPath(file);
 			const index = ref.push(absolutePath);
 			return [url, index, fileType] as UrlMap;
 		})
