@@ -5,7 +5,6 @@ import { embodiMarkdown } from '@embodi/markdown';
 export default defineConfig({
   publicDir: './public',
   layoutDir: './__layout',
-  plugins: [embodiMarkdown()],
   source: '/content',
-  plugins: [tailwindcss()]
+  plugins: [tailwindcss(), embodiMarkdown()]
 });
