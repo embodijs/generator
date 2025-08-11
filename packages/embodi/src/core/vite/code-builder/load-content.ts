@@ -38,15 +38,8 @@ const resolveLinks = (refs: UniqueArray<string>, ...indezes: number[]) => {
 	return indezes.map((index) => refs.at(index)!);
 };
 const snippetPathEmdodi = (path: string) => normalizeImportPath(`${path}.embodi`);
-const snippetImportEmbodi = (path: string) => `import('${snippetPathEmdodi(path)}')`;
-const snippetImport = (path: string) => `import('${normalizeImportPath(path)}')`;
 const snippetObjectChunk = (name: string, value: string) => `"${name}": ${value}`;
-const snippetArray = (items: string[]) => `[${items.join(',')}]`;
 const snippetExport = (name: string, value: string) => `export const ${name} = ${value}`;
-const snippetPromiseAll = (items?: string[]): string =>
-	items?.length ? `Promise.all(${snippetArray(items)})` : '[]';
-const snippetDataImports = pipe(resolveLinks, map(snippetImport), snippetPromiseAll);
-const snippetContentImports = pipe(resolveLinks, map(snippetImportEmbodi), snippetPromiseAll);
 const generateIdMap = (link: string): [string, string] => [
 	`i_${crypto.randomUUID().replaceAll('-', '_')}`,
 	link
