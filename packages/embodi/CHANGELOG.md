@@ -1,5 +1,11 @@
 # embodi
 
+## 0.16.1
+
+### Patch Changes
+
+- 1fbc6e1: Fix: import of config file on window with file://
+
 ## 0.16.0
 
 ### Minor Changes

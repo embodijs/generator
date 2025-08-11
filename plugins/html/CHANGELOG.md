@@ -1,5 +1,16 @@
 # @embodi/html
 
+## 1.1.0
+
+### Minor Changes
+
+- 0d3d6f1: update embodi and vite version
+
+### Patch Changes
+
+- Updated dependencies [1fbc6e1]
+  - embodi@0.16.1
+
 ## 0.2.1
 
 ### Patch Changes
