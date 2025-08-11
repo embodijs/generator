@@ -65,7 +65,7 @@ export const importConfigFile = (name: string, path: string = process.cwd()) => 
 	}
 	const filePath = getFullPath(file);
 	if (isFileType(file, 'js')) {
-		return import(filePath);
+		return import(`file://${filePath}`);
 	} else if (isFileType(file, 'ts')) {
 		const result = buildSync({
 			entryPoints: [filePath],
