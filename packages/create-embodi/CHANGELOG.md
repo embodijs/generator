@@ -1,5 +1,11 @@
 # create-embodi
 
+## 0.5.0
+
+### Minor Changes
+
+- 0a0a62b: Update embodi to version 0.14.0 and add @embodi/markdown and @embodi/html as dependencies
+
 ## 0.4.2
 
 ### Patch Changes
