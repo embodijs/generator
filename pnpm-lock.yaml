@@ -53,6 +53,9 @@ importers:
 
   packages/e2e:
     devDependencies:
+      '@embodi/html':
+        specifier: workspace:*
+        version: link:../../plugins/html
       '@embodi/image':
         specifier: workspace:*
         version: link:../../plugins/image
