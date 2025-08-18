@@ -76,7 +76,7 @@
 		"front-matter": "^4.0.2",
 		"html-minifier-terser": "^7.2.0",
 		"minimist": "^1.2.8",
-		"pipe-and-combine": "^0.8.1",
+		"pipe-and-combine": "^0.9.0",
 		"valibot": "^1.1.0",
 		"vitest": "^3.2.4"
 	},
