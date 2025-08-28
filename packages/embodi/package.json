@@ -82,6 +82,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/embodijs/generator/tree/main/packages/embodi.git"
+		"url": "https://github.com/embodijs/generator"
 	}
 }
