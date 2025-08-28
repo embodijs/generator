@@ -9,13 +9,17 @@ import { join, extname } from 'node:path/posix';
 
 
 const convertTo = (path: string) => {
-  const ext = extname(path);
-  return path.replace(ext, `js?${ext}`);
+  const ext = extname(path,);
+  if (ext === '') {
+    throw new Error('Invalid layout path: Path need to include a file type');
+  }
+  return path.replace(ext, `.js?${ext}`);
 };
 
 const convertFrom = (path: string) => {
   const [_path, type] = path.split('?');
-  return [_path, type]
+  const ext = extname(_path);
+  return _path.replace(ext, type)
 };
 
 export const templatePlugin = (): Plugin => {
@@ -38,9 +42,8 @@ export const templatePlugin = (): Plugin => {
 		async load(id, options) {
 			if (layoutValidator.load(id)) {
 				assert(projectConfig);
-        const [pathPlaceholder, type] = convertFrom(layoutValidator.getPath(id));
+        const path = convertFrom(layoutValidator.getPath(id));
 				const layoutRoot = projectConfig.inputDirs.layout;
-				const path = pathPlaceholder.replace(/js$/, type);
 				const layoutPath = join('#root', layoutRoot, path);
 
 				const snippet = `export { default as Layout} from '${layoutPath}';`;
