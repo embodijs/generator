@@ -1,5 +1,11 @@
 # embodi
 
+## 0.16.3
+
+### Patch Changes
+
+- 44f9f03: fix: reload file produce layout loading. Fix by handle sreachQuery of path different and set a clear type
+
 ## 0.16.2
 
 ### Patch Changes
