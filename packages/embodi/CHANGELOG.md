@@ -1,5 +1,11 @@
 # embodi
 
+## 0.16.2
+
+### Patch Changes
+
+- 9350e0b: fix: Layout failed loading after changing a file
+
 ## 0.16.1
 
 ### Patch Changes
