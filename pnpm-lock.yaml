@@ -111,8 +111,8 @@ importers:
         specifier: ^1.2.8
         version: 1.2.8
       pipe-and-combine:
-        specifier: ^0.8.1
-        version: 0.8.1
+        specifier: ^0.9.0
+        version: 0.9.0
       svelte:
         specifier: ^5.36.0
         version: 5.38.1
@@ -2263,6 +2263,9 @@ packages:
   pipe-and-combine@0.8.1:
     resolution: {integrity: sha512-Kcb8BY1MjB5poVb6fUW9Pl7A1Z7f4VH18B5fF40azKQYhu1PWJFjb4IKFEwq4BiPNlb3DxztYlcuXXH9qWBAWg==}
     engines: {pnpm: '>=10.0.0'}
+
+  pipe-and-combine@0.9.0:
+    resolution: {integrity: sha512-SZxZoHbU5IGdVM8wXQ3efcZ3ZCn1SRoYZiGQxtrVm8EmtPivtx6QnJmAUSNN0KxmEmFirVEj5KtQm57uZTWN8w==}
 
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
@@ -4888,6 +4891,8 @@ snapshots:
   pify@4.0.1: {}
 
   pipe-and-combine@0.8.1: {}
+
+  pipe-and-combine@0.9.0: {}
 
   pirates@4.0.7: {}
 
