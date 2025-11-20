@@ -57,7 +57,8 @@
 		"@types/html-minifier-terser": "^7.0.2",
 		"@types/markdown-it": "^14.1.2",
 		"esbuild": "^0.25.8",
-		"rollup": "^4.46.2"
+		"rollup": "^4.46.2",
+		"vitest": "^4.0.12"
 	},
 	"peerDependencies": {
 		"svelte": "^5.36.0",
@@ -77,8 +78,7 @@
 		"html-minifier-terser": "^7.2.0",
 		"minimist": "^1.2.8",
 		"pipe-and-combine": "^0.8.1",
-		"valibot": "^1.1.0",
-		"vitest": "^3.2.4"
+		"valibot": "^1.1.0"
 	},
 	"repository": {
 		"type": "git",
